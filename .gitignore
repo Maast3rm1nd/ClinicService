@@ -361,3 +361,41 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# === Зависимости (NPM) ===
+node_modules/
+/npm-debug.log*
+/yarn-error.log*
+
+# === Кэш и сборка Angular ===
+.angular/
+/dist/
+/bazel-out/
+
+# === Логи и временные файлы Node.js ===
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# === Переменные окружения (чувствительные данные) ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === Покрытие тестов (Coverage) ===
+/coverage/
+/.nyc_output
+
+# === Кэш IDE (VS Code и Visual Studio) ===
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+.vs/
