@@ -1,0 +1,381 @@
+<Project>
+  <Name>Clinic</Name>
+  <Version>1.0.0</Version>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>Clinic_patients_registration</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>Patients</Name>
+        <Access>Public</Access>
+        <Location left="378" top="37" />
+        <Size width="313" height="234" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string FullName</Member>
+        <Member type="Field">public string? ShortName = string.Empty</Member>
+        <Member type="Field">public string? PassportNumber</Member>
+        <Member type="Field">public DateTimeOffset BirthDate</Member>
+        <Member type="Field">public string? PhoneNumber</Member>
+        <Member type="Field">public string? BloodGroup</Member>
+        <Member type="Field">public string? Allergies</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetAppointments()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>MedicalCards</Name>
+        <Access>Public</Access>
+        <Location left="843" top="65" />
+        <Size width="289" height="230" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid Patient</Member>
+        <Member type="Field">public ulong RecordNumber</Member>
+        <Member type="Field">public DateTimeOffset AppointmentDate</Member>
+        <Member type="Field">public Guid Policy</Member>
+        <Member type="Field">public List&lt;Guid&gt; Diagnoses</Member>
+        <Member type="Method">public Guid AddDiagnosis()</Member>
+        <Member type="Method">public Guid EditDiagnosis()</Member>
+        <Member type="Method">public List&lt;Guid&gt; DeleteDiagnosis()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Policies</Name>
+        <Access>Public</Access>
+        <Location left="1272" top="98" />
+        <Size width="220" height="213" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string MedicalPolicyNumber</Member>
+        <Member type="Field">public PolicyType? MedicalPolicyType</Member>
+        <Member type="Field">public Guid InsuranceProvider</Member>
+        <Member type="Field">public string? Description</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetPatients()</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetMedicalCards()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Enum">
+        <Name>PolicyType</Name>
+        <Access>Public</Access>
+        <Location left="1588" top="16" />
+        <Size width="249" height="124" />
+        <Collapsed>False</Collapsed>
+        <Value>EHIC</Value>
+        <Value>Private</Value>
+        <Value>Mixed</Value>
+      </Entity>
+      <Entity type="Class">
+        <Name>Specialisations</Name>
+        <Access>Public</Access>
+        <Location left="296" top="381" />
+        <Size width="220" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string name</Member>
+        <Member type="Field">public List&lt;Guid&gt; Doctors</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetDoctors()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Doctors</Name>
+        <Access>Public</Access>
+        <Location left="1087" top="568" />
+        <Size width="220" height="196" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string FullName</Member>
+        <Member type="Field">public string? ShortName = string.Empty</Member>
+        <Member type="Field">public Guid Specialisation</Member>
+        <Member type="Field">public DoctorWorkStatus WorkStatus</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetSchedule()</Member>
+        <Member type="Method">public Guid GetCurrentPatient()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Diagnoses</Name>
+        <Access>Public</Access>
+        <Location left="1584" top="650" />
+        <Size width="220" height="247" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string IcdCode</Member>
+        <Member type="Field">public DateTimeOffset DateIssued</Member>
+        <Member type="Field">public DateTimeOffset? DateEdited</Member>
+        <Member type="Field">public Guid Doctor</Member>
+        <Member type="Field">public Guid MedicalCard</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Schedule</Name>
+        <Access>Public</Access>
+        <Location left="1145" top="868" />
+        <Size width="220" height="160" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid Doctor</Member>
+        <Member type="Field">public List&lt;Guid&gt; Appointments</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Appointments</Name>
+        <Access>Public</Access>
+        <Location left="729" top="721" />
+        <Size width="235" height="281" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid Patient</Member>
+        <Member type="Field">public Guid MedicalCard</Member>
+        <Member type="Field">public Guid Doctor</Member>
+        <Member type="Field">public Guid Administrator</Member>
+        <Member type="Field">public AppointmentDateTimeOffset Date</Member>
+        <Member type="Field">public AppointmentStatus Status</Member>
+        <Member type="Field">public string? PreliminaryReason</Member>
+        <Member type="Method">public Guid Confirm()</Member>
+        <Member type="Method">public Guid Reschedule()</Member>
+        <Member type="Method">public List&lt;Guid&gt; Cancel()</Member>
+        <Member type="Method">public Guid Complete()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Administrators</Name>
+        <Access>Public</Access>
+        <Location left="296" top="602" />
+        <Size width="210" height="264" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string FullName</Member>
+        <Member type="Field">public string? Shortname</Member>
+        <Member type="Method">public Guid CreateAppointment()</Member>
+        <Member type="Method">public Guid EditAppointment()</Member>
+        <Member type="Method">public Guid DeleteAppointment()</Member>
+        <Member type="Method">public Guid GetMedicalCard()</Member>
+        <Member type="Method">public Guid AddAppointmentSlip()</Member>
+        <Member type="Method">public Guid EditAppointmentSlip()</Member>
+        <Member type="Method">public List&lt;Guid&gt; DeleteAppointmentSlip()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Enum">
+        <Name>AppointmentStatus</Name>
+        <Access>Public</Access>
+        <Location left="710" top="1044" />
+        <Size width="235" height="146" />
+        <Collapsed>False</Collapsed>
+        <Value>Pending</Value>
+        <Value>Confirmed</Value>
+        <Value>Cancelled</Value>
+        <Value>Completed</Value>
+        <Value>Rescheduled</Value>
+      </Entity>
+      <Entity type="Enum">
+        <Name>DoctorWorkStatus</Name>
+        <Access>Public</Access>
+        <Location left="1180" top="1075" />
+        <Size width="249" height="124" />
+        <Collapsed>False</Collapsed>
+        <Value>AtWork</Value>
+        <Value>SickLeave</Value>
+        <Value>Vacation</Value>
+      </Entity>
+      <Entity type="Class">
+        <Name>InsuranceProviders</Name>
+        <Access>Public</Access>
+        <Location left="1711" top="261" />
+        <Size width="278" height="178" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string Name</Member>
+        <Member type="Field">public string LicenseNumber</Member>
+        <Member type="Field">public string? PhoneNumber</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Association" first="0" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>818</X>
+          <Y>143</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Patients</StartRole>
+        <EndRole>Patient</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="2" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Policies</StartRole>
+        <EndRole>Policy</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="12" second="2">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>InsuranceProviders</StartRole>
+        <EndRole>InsuranceProvider</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="4" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1062</X>
+          <Y>680</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Specialisations</StartRole>
+        <EndRole>Specialisation</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="1" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1105</X>
+          <Y>313</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1609</X>
+          <Y>625</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>MedicalCards</StartRole>
+        <EndRole>MedicalCard</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="5" second="8">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1016</X>
+          <Y>603</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>989</X>
+          <Y>803</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="5" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1462</X>
+          <Y>681</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="9" second="8">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Administrators</StartRole>
+        <EndRole>Administrator</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="1" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1261</X>
+          <Y>421</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1672</X>
+          <Y>622</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Diagnoses</StartRole>
+        <EndRole>Guid</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="5" second="7">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>0..1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="8" second="7">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Guid</StartRole>
+        <EndRole>Appointments</EndRole>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="5" second="4">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>905</X>
+          <Y>642</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>541</X>
+          <Y>480</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartRole>Guid</StartRole>
+        <EndRole>Doctors</EndRole>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>
