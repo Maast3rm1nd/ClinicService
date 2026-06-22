@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="ClinicServiceDBTools/ClinicServiceDBTools.csproj" Id="58211e1b-5d8d-4ce5-8834-458fd86587bb" />
   <Project Path="WS_ClinicService/WS_ClinicService.csproj" />
 </Solution>
