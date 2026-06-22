@@ -1,11 +1,10 @@
 <Project>
   <Name>Clinic</Name>
-  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
     <Name>Clinic_patients_registration</Name>
     <Language>CSharp</Language>
     <Entities>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Patients</Name>
         <Access>Public</Access>
         <Location left="378" top="37" />
@@ -21,11 +20,8 @@
         <Member type="Field">public string? Allergies</Member>
         <Member type="Method">public List&lt;Guid&gt; GetAppointments()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>MedicalCards</Name>
         <Access>Public</Access>
         <Location left="843" top="65" />
@@ -41,11 +37,8 @@
         <Member type="Method">public Guid EditDiagnosis()</Member>
         <Member type="Method">public List&lt;Guid&gt; DeleteDiagnosis()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Policies</Name>
         <Access>Public</Access>
         <Location left="1272" top="98" />
@@ -59,11 +52,8 @@
         <Member type="Method">public List&lt;Guid&gt; GetPatients()</Member>
         <Member type="Method">public List&lt;Guid&gt; GetMedicalCards()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>PolicyType</Name>
         <Access>Public</Access>
         <Location left="1588" top="16" />
@@ -73,8 +63,7 @@
         <Value>Private</Value>
         <Value>Mixed</Value>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Specialisations</Name>
         <Access>Public</Access>
         <Location left="296" top="381" />
@@ -85,11 +74,8 @@
         <Member type="Field">public List&lt;Guid&gt; Doctors</Member>
         <Member type="Method">public List&lt;Guid&gt; GetDoctors()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Doctors</Name>
         <Access>Public</Access>
         <Location left="1087" top="568" />
@@ -103,11 +89,8 @@
         <Member type="Method">public List&lt;Guid&gt; GetSchedule()</Member>
         <Member type="Method">public Guid GetCurrentPatient()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Diagnoses</Name>
         <Access>Public</Access>
         <Location left="1584" top="650" />
@@ -120,11 +103,8 @@
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public Guid MedicalCard</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Schedule</Name>
         <Access>Public</Access>
         <Location left="1145" top="868" />
@@ -134,11 +114,8 @@
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public List&lt;Guid&gt; Appointments</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Appointments</Name>
         <Access>Public</Access>
         <Location left="729" top="721" />
@@ -157,11 +134,8 @@
         <Member type="Method">public List&lt;Guid&gt; Cancel()</Member>
         <Member type="Method">public Guid Complete()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Administrators</Name>
         <Access>Public</Access>
         <Location left="296" top="602" />
@@ -179,11 +153,8 @@
         <Member type="Method">public Guid EditAppointmentSlip()</Member>
         <Member type="Method">public List&lt;Guid&gt; DeleteAppointmentSlip()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>AppointmentStatus</Name>
         <Access>Public</Access>
         <Location left="710" top="1044" />
@@ -196,7 +167,6 @@
         <Value>Rescheduled</Value>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>DoctorWorkStatus</Name>
         <Access>Public</Access>
         <Location left="1180" top="1075" />
@@ -206,8 +176,7 @@
         <Value>SickLeave</Value>
         <Value>Vacation</Value>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>InsuranceProviders</Name>
         <Access>Public</Access>
         <Location left="1711" top="261" />
@@ -218,57 +187,45 @@
         <Member type="Field">public string LicenseNumber</Member>
         <Member type="Field">public string? PhoneNumber</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
     </Entities>
     <Relationships>
-      <Relationship type="Association" first="0" second="1">
-        <StartOrientation>Horizontal</StartOrientation>
-        <EndOrientation>Horizontal</EndOrientation>
-        <BendPoint relativeToStartShape="False">
-          <X>818</X>
-          <Y>143</Y>
-        </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
-        <StartRole>Patients</StartRole>
-        <EndRole>Patient</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
-      </Relationship>
       <Relationship type="Association" first="2" second="1">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Policies</StartRole>
         <EndRole>Policy</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="12" second="2">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>InsuranceProviders</StartRole>
         <EndRole>InsuranceProvider</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="5">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>543</X>
+          <Y>436</Y>
+        </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>1062</X>
           <Y>680</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Specialisations</StartRole>
         <EndRole>Specialisation</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="6">
@@ -282,29 +239,29 @@
           <X>1609</X>
           <Y>625</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>MedicalCards</StartRole>
         <EndRole>MedicalCard</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="8">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1016</X>
-          <Y>603</Y>
+          <X>1062</X>
+          <Y>591</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>989</X>
           <Y>803</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Doctors</StartRole>
         <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="6">
@@ -314,21 +271,21 @@
           <X>1462</X>
           <Y>681</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Doctors</StartRole>
         <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="9" second="8">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Administrators</StartRole>
         <EndRole>Administrator</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="6">
@@ -342,36 +299,36 @@
           <X>1672</X>
           <Y>622</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Diagnoses</StartRole>
         <EndRole>Guid</EndRole>
         <StartMultiplicity>0..*</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
+        <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="7">
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Doctors</StartRole>
         <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..1</StartMultiplicity>
+        <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="8" second="7">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Guid</StartRole>
         <EndRole>Appointments</EndRole>
         <StartMultiplicity>1</StartMultiplicity>
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="4">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
@@ -379,15 +336,25 @@
           <Y>642</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>541</X>
-          <Y>480</Y>
+          <X>542</X>
+          <Y>498</Y>
         </BendPoint>
-        <Direction>Unidirectional</Direction>
-        <AssociationType>Composition</AssociationType>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
         <StartRole>Guid</StartRole>
         <EndRole>Doctors</EndRole>
         <StartMultiplicity>1</StartMultiplicity>
         <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="0" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Patients</StartRole>
+        <EndRole>Patient</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
     </Relationships>
   </ProjectItem>
