@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="*" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="*" />
-    <PackageReference Include="AutoMapper" Version="*" />
-    <PackageReference Include="MediatR" Version="*" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="*" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="*" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="*" />
+    <PackageReference Include="Autofac" Version="9.*" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.*" />
+    <PackageReference Include="AutoMapper" Version="16.*" />
+    <PackageReference Include="MediatR" Version="14.*" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.*" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="10.*" />
   </ItemGroup>
 
 </Project>
