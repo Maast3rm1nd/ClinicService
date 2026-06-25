@@ -217,6 +217,15 @@
         <Member type="Method">public Guid GetCurrentPatient()</Member>
         <Modifier>None</Modifier>
       </Entity>
+      <Entity type="Enum">
+        <Name>PersonType</Name>
+        <Access>Public</Access>
+        <Location left="128" top="372" />
+        <Size width="162" height="134" />
+        <Collapsed>False</Collapsed>
+        <Value>Doctor</Value>
+        <Value>Administrator</Value>
+      </Entity>
     </Entities>
     <Relationships>
       <Relationship type="Association" first="2" second="1">
