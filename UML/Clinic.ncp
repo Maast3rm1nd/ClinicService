@@ -5,41 +5,43 @@
     <Language>CSharp</Language>
     <Entities>
       <Entity type="Class">
-        <Name>Patients</Name>
+        <Name>PatientSnapshot</Name>
         <Access>Public</Access>
         <Location left="378" top="37" />
-        <Size width="313" height="234" />
+        <Size width="313" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string FullName</Member>
-        <Member type="Field">public string? ShortName = string.Empty</Member>
+        <Member type="Field">public string? ShortName</Member>
         <Member type="Field">public string? PassportNumber</Member>
         <Member type="Field">public DateTimeOffset BirthDate</Member>
         <Member type="Field">public string? PhoneNumber</Member>
         <Member type="Field">public string? BloodGroup</Member>
         <Member type="Field">public string? Allergies</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Member type="Method">public List&lt;Guid&gt; GetAppointments()</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>MedicalCards</Name>
+        <Name>MedicalCardSnapshot</Name>
         <Access>Public</Access>
-        <Location left="843" top="65" />
-        <Size width="289" height="230" />
+        <Location left="843" top="66" />
+        <Size width="289" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid Patient</Member>
         <Member type="Field">public ulong RecordNumber</Member>
-        <Member type="Field">public DateTimeOffset AppointmentDate</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public Guid Policy</Member>
         <Member type="Field">public List&lt;Guid&gt; Diagnoses</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Member type="Method">public Guid AddDiagnosis()</Member>
         <Member type="Method">public Guid EditDiagnosis()</Member>
         <Member type="Method">public List&lt;Guid&gt; DeleteDiagnosis()</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>Policies</Name>
+        <Name>PoliciySnapshot</Name>
         <Access>Public</Access>
         <Location left="1272" top="98" />
         <Size width="220" height="213" />
@@ -49,6 +51,7 @@
         <Member type="Field">public PolicyType? MedicalPolicyType</Member>
         <Member type="Field">public Guid InsuranceProvider</Member>
         <Member type="Field">public string? Description</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Member type="Method">public List&lt;Guid&gt; GetPatients()</Member>
         <Member type="Method">public List&lt;Guid&gt; GetMedicalCards()</Member>
         <Modifier>None</Modifier>
@@ -64,55 +67,39 @@
         <Value>Mixed</Value>
       </Entity>
       <Entity type="Class">
-        <Name>Specialisations</Name>
+        <Name>SpecialisationSnapshot</Name>
         <Access>Public</Access>
-        <Location left="296" top="381" />
-        <Size width="220" height="145" />
+        <Location left="501" top="323" />
+        <Size width="220" height="162" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string name</Member>
         <Member type="Field">public List&lt;Guid&gt; Doctors</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Member type="Method">public List&lt;Guid&gt; GetDoctors()</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>Doctors</Name>
+        <Name>DiagnosisSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1088" top="540" />
-        <Size width="220" height="247" />
-        <Collapsed>False</Collapsed>
-        <Member type="Field">public Guid Id</Member>
-        <Member type="Field">public string FullName</Member>
-        <Member type="Field">public string? ShortName = string.Empty</Member>
-        <Member type="Field">public Guid Specialisation</Member>
-        <Member type="Field">public DoctorWorkStatus WorkStatus</Member>
-        <Member type="Method">public List&lt;Guid&gt; GetSchedule()</Member>
-        <Member type="Method">public Guid GetCurrentPatient()</Member>
-        <Member type="Method">public Guid AddDiagnosis()</Member>
-        <Member type="Method">public void EditDiagnosis()</Member>
-        <Member type="Method">public List&lt;Guid&gt; DeleteDiagnoses()</Member>
-        <Modifier>None</Modifier>
-      </Entity>
-      <Entity type="Class">
-        <Name>Diagnoses</Name>
-        <Access>Public</Access>
-        <Location left="1585" top="650" />
+        <Location left="1525" top="540" />
         <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string IcdCode</Member>
-        <Member type="Field">public Guid IssuedDoctor</Member>
-        <Member type="Field">public DateTimeOffset DateIssued</Member>
+        <Member type="Field">public Guid Doctor</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public Guid EditedDoctor</Member>
-        <Member type="Field">public DateTimeOffset? DateEdited</Member>
+        <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public DiagnosisStatuses Status</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
         <Name>Schedule</Name>
         <Access>Public</Access>
-        <Location left="1145" top="868" />
+        <Location left="1180" top="851" />
         <Size width="220" height="160" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -121,21 +108,22 @@
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
-        <Name>Appointments</Name>
+        <Name>AppointmentSnapshot</Name>
         <Access>Public</Access>
-        <Location left="511" top="703" />
-        <Size width="286" height="315" />
+        <Location left="501" top="787" />
+        <Size width="286" height="332" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid Patient</Member>
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public Guid CreatedBy</Member>
-        <Member type="Field">public DateTimeOffset CreateAppointmentDateTime</Member>
+        <Member type="Field">public DateTimeOffset CreationtDateTime</Member>
         <Member type="Field">public Guid EditedBy</Member>
-        <Member type="Field">public DateTimeOffset EditAppointmentDateTime</Member>
+        <Member type="Field">public DateTimeOffset EditDateTime</Member>
         <Member type="Field">public AppointmentStatus Status</Member>
         <Member type="Field">public string? PreliminaryReason</Member>
+        <Member type="Field">public bool IsActual</Member>
         <Member type="Method">public Guid Confirm()</Member>
         <Member type="Method">public Guid Reschedule()</Member>
         <Member type="Method">public List&lt;Guid&gt; Cancel()</Member>
@@ -145,13 +133,10 @@
       <Entity type="Class">
         <Name>Administrators</Name>
         <Access>Public</Access>
-        <Location left="129" top="621" />
+        <Location left="73" top="681" />
         <Size width="210" height="264" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
-        <Member type="Field">public string FullName</Member>
-        <Member type="Field">public string? Shortname</Member>
-        <Member type="Field">public string Login</Member>
         <Member type="Method">public Guid CreateAppointment()</Member>
         <Member type="Method">public Guid EditAppointment()</Member>
         <Member type="Method">public Guid DeleteAppointment()</Member>
@@ -164,7 +149,7 @@
       <Entity type="Enum">
         <Name>AppointmentStatus</Name>
         <Access>Public</Access>
-        <Location left="710" top="1043" />
+        <Location left="842" top="1097" />
         <Size width="235" height="146" />
         <Collapsed>False</Collapsed>
         <Value>Pending</Value>
@@ -204,6 +189,34 @@
         <Value>Actual</Value>
         <Value>Inactual</Value>
       </Entity>
+      <Entity type="Class">
+        <Name>PersonSnapshot</Name>
+        <Access>Public</Access>
+        <Location left="487" top="532" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public string FullName</Member>
+        <Member type="Field">public string? ShortName</Member>
+        <Member type="Field">public string Login</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
+        <Member type="Field">public DateTimeOffset? EditDateTime</Member>
+        <Member type="Field">public bool IsActual</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Doctors</Name>
+        <Access>Public</Access>
+        <Location left="933" top="506" />
+        <Size width="339" height="252" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid Specialisation</Member>
+        <Member type="Field">public DoctorWorkStatus WorkStatus</Member>
+        <Member type="Method">public List&lt;Guid&gt; GetSchedule()</Member>
+        <Member type="Method">public Guid GetCurrentPatient()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
     </Entities>
     <Relationships>
       <Relationship type="Association" first="2" second="1">
@@ -218,7 +231,7 @@
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
-      <Relationship type="Association" first="12" second="2">
+      <Relationship type="Association" first="11" second="2">
         <Label>
         </Label>
         <StartOrientation>Horizontal</StartOrientation>
@@ -230,38 +243,18 @@
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
-      <Relationship type="Association" first="4" second="5">
-        <Label>
-        </Label>
-        <StartOrientation>Horizontal</StartOrientation>
-        <EndOrientation>Horizontal</EndOrientation>
-        <BendPoint relativeToStartShape="True">
-          <X>543</X>
-          <Y>436</Y>
-        </BendPoint>
-        <BendPoint relativeToStartShape="False">
-          <X>1063</X>
-          <Y>652</Y>
-        </BendPoint>
-        <Direction>Bidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-        <StartRole>Specialisations</StartRole>
-        <EndRole>Specialisation</EndRole>
-        <StartMultiplicity>0..*</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
-      </Relationship>
-      <Relationship type="Association" first="1" second="6">
+      <Relationship type="Association" first="1" second="5">
         <Label>
         </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
           <X>1105</X>
-          <Y>313</Y>
+          <Y>331</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1610</X>
-          <Y>625</Y>
+          <X>1550</X>
+          <Y>515</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -270,66 +263,28 @@
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
-      <Relationship type="Association" first="5" second="8">
-        <Label>
-        </Label>
-        <StartOrientation>Horizontal</StartOrientation>
-        <EndOrientation>Horizontal</EndOrientation>
-        <BendPoint relativeToStartShape="True">
-          <X>1063</X>
-          <Y>563</Y>
-        </BendPoint>
-        <BendPoint relativeToStartShape="False">
-          <X>822</X>
-          <Y>785</Y>
-        </BendPoint>
-        <Direction>Bidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-        <StartRole>Doctors</StartRole>
-        <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..*</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
-      </Relationship>
-      <Relationship type="Association" first="5" second="6">
-        <Label>
-        </Label>
-        <StartOrientation>Horizontal</StartOrientation>
-        <EndOrientation>Horizontal</EndOrientation>
-        <BendPoint relativeToStartShape="False">
-          <X>1463</X>
-          <Y>681</Y>
-        </BendPoint>
-        <Direction>Bidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-        <StartRole>Doctors</StartRole>
-        <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..*</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
-      </Relationship>
-      <Relationship type="Association" first="9" second="8">
-        <Label>
-        </Label>
+      <Relationship type="Association" first="8" second="7">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
         <StartRole>Administrators</StartRole>
         <EndRole>Administrator</EndRole>
-        <StartMultiplicity>0..*</StartMultiplicity>
+        <StartMultiplicity>1..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
-      <Relationship type="Association" first="1" second="6">
+      <Relationship type="Association" first="1" second="5">
         <Label>
         </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1261</X>
-          <Y>421</Y>
+          <X>1250</X>
+          <Y>459</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1673</X>
-          <Y>622</Y>
+          <X>1613</X>
+          <Y>512</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -338,45 +293,17 @@
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
-      <Relationship type="Association" first="5" second="7">
-        <Label>
-        </Label>
-        <StartOrientation>Vertical</StartOrientation>
-        <EndOrientation>Vertical</EndOrientation>
-        <Direction>Bidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-        <StartRole>Doctors</StartRole>
-        <EndRole>Doctor</EndRole>
-        <StartMultiplicity>0..*</StartMultiplicity>
-        <EndMultiplicity>1</EndMultiplicity>
-      </Relationship>
-      <Relationship type="Association" first="8" second="7">
+      <Relationship type="Association" first="7" second="6">
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1152</X>
+          <Y>957</Y>
+        </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
         <StartRole>Guid</StartRole>
         <EndRole>Appointments</EndRole>
-        <StartMultiplicity>1</StartMultiplicity>
-        <EndMultiplicity>0..*</EndMultiplicity>
-      </Relationship>
-      <Relationship type="Association" first="5" second="4">
-        <Label>
-        </Label>
-        <StartOrientation>Horizontal</StartOrientation>
-        <EndOrientation>Horizontal</EndOrientation>
-        <BendPoint relativeToStartShape="True">
-          <X>906</X>
-          <Y>614</Y>
-        </BendPoint>
-        <BendPoint relativeToStartShape="False">
-          <X>542</X>
-          <Y>498</Y>
-        </BendPoint>
-        <Direction>Bidirectional</Direction>
-        <AssociationType>Association</AssociationType>
-        <StartRole>Guid</StartRole>
-        <EndRole>Doctors</EndRole>
         <StartMultiplicity>1</StartMultiplicity>
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
@@ -389,6 +316,82 @@
         <AssociationType>Association</AssociationType>
         <StartRole>Patients</StartRole>
         <EndRole>Patient</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="13" second="8">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>id</StartRole>
+        <EndRole>Id</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="4" second="14">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>908</X>
+          <Y>579</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Specialisations</StartRole>
+        <EndRole>Specialisation</EndRole>
+        <StartMultiplicity>1..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="7" second="14">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>816</X>
+          <Y>864</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>908</X>
+          <Y>700</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="14" second="6">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="13" second="14">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>908</X>
+          <Y>640</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Id</StartRole>
+        <EndRole>Id</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="14" second="5">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>Doctors</StartRole>
+        <EndRole>Doctor</EndRole>
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
