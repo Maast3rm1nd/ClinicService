@@ -78,8 +78,8 @@
       <Entity type="Class">
         <Name>Doctors</Name>
         <Access>Public</Access>
-        <Location left="1087" top="568" />
-        <Size width="220" height="196" />
+        <Location left="1088" top="540" />
+        <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string FullName</Member>
@@ -88,20 +88,25 @@
         <Member type="Field">public DoctorWorkStatus WorkStatus</Member>
         <Member type="Method">public List&lt;Guid&gt; GetSchedule()</Member>
         <Member type="Method">public Guid GetCurrentPatient()</Member>
+        <Member type="Method">public Guid AddDiagnosis()</Member>
+        <Member type="Method">public void EditDiagnosis()</Member>
+        <Member type="Method">public List&lt;Guid&gt; DeleteDiagnoses()</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
         <Name>Diagnoses</Name>
         <Access>Public</Access>
-        <Location left="1584" top="650" />
+        <Location left="1585" top="650" />
         <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string IcdCode</Member>
+        <Member type="Field">public Guid IssuedDoctor</Member>
         <Member type="Field">public DateTimeOffset DateIssued</Member>
+        <Member type="Field">public Guid EditedDoctor</Member>
         <Member type="Field">public DateTimeOffset? DateEdited</Member>
-        <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public Guid MedicalCard</Member>
+        <Member type="Field">public DiagnosisStatuses Status</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
@@ -118,15 +123,17 @@
       <Entity type="Class">
         <Name>Appointments</Name>
         <Access>Public</Access>
-        <Location left="729" top="721" />
-        <Size width="235" height="281" />
+        <Location left="511" top="703" />
+        <Size width="286" height="315" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid Patient</Member>
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public Guid Doctor</Member>
-        <Member type="Field">public Guid Administrator</Member>
-        <Member type="Field">public AppointmentDateTimeOffset Date</Member>
+        <Member type="Field">public Guid CreatedBy</Member>
+        <Member type="Field">public DateTimeOffset CreateAppointmentDateTime</Member>
+        <Member type="Field">public Guid EditedBy</Member>
+        <Member type="Field">public DateTimeOffset EditAppointmentDateTime</Member>
         <Member type="Field">public AppointmentStatus Status</Member>
         <Member type="Field">public string? PreliminaryReason</Member>
         <Member type="Method">public Guid Confirm()</Member>
@@ -138,7 +145,7 @@
       <Entity type="Class">
         <Name>Administrators</Name>
         <Access>Public</Access>
-        <Location left="296" top="602" />
+        <Location left="129" top="621" />
         <Size width="210" height="264" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -157,7 +164,7 @@
       <Entity type="Enum">
         <Name>AppointmentStatus</Name>
         <Access>Public</Access>
-        <Location left="710" top="1044" />
+        <Location left="710" top="1043" />
         <Size width="235" height="146" />
         <Collapsed>False</Collapsed>
         <Value>Pending</Value>
@@ -188,9 +195,20 @@
         <Member type="Field">public string? PhoneNumber</Member>
         <Modifier>None</Modifier>
       </Entity>
+      <Entity type="Enum">
+        <Name>DiagnosisStatuses</Name>
+        <Access>Public</Access>
+        <Location left="1759" top="1001" />
+        <Size width="249" height="124" />
+        <Collapsed>False</Collapsed>
+        <Value>Actual</Value>
+        <Value>Inactual</Value>
+      </Entity>
     </Entities>
     <Relationships>
       <Relationship type="Association" first="2" second="1">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -201,6 +219,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="12" second="2">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -211,6 +231,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="5">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
@@ -218,8 +240,8 @@
           <Y>436</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1062</X>
-          <Y>680</Y>
+          <X>1063</X>
+          <Y>652</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -229,6 +251,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
@@ -236,7 +260,7 @@
           <Y>313</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1609</X>
+          <X>1610</X>
           <Y>625</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
@@ -247,15 +271,17 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="8">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1062</X>
-          <Y>591</Y>
+          <X>1063</X>
+          <Y>563</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>989</X>
-          <Y>803</Y>
+          <X>822</X>
+          <Y>785</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -265,10 +291,12 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
-          <X>1462</X>
+          <X>1463</X>
           <Y>681</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
@@ -279,6 +307,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="9" second="8">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -289,6 +319,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
@@ -296,7 +328,7 @@
           <Y>421</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1672</X>
+          <X>1673</X>
           <Y>622</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
@@ -307,6 +339,8 @@
         <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="7">
+        <Label>
+        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -317,8 +351,6 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="8" second="7">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -329,11 +361,13 @@
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="5" second="4">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>905</X>
-          <Y>642</Y>
+          <X>906</X>
+          <Y>614</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>542</X>
@@ -347,6 +381,8 @@
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="0" second="1">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
