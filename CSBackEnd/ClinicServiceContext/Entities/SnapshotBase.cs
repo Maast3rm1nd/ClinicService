@@ -2,6 +2,6 @@
 {
     public class SnapshotBase: BaseEntity
     {
-        public bool IsActual { get; set; }
+        public bool IsCurrent { get; set; }
     }
 }
