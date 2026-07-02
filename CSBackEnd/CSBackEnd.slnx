@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ClinicServiceBase/ClinicServiceBase.csproj" Id="34f93c15-2e38-4772-8983-f74027134488" />
   <Project Path="ClinicServiceContext/ClinicServiceContext.csproj" Id="5744ebdc-ce52-4ca1-9226-62c9a4d489a6" />
   <Project Path="ClinicServiceDBTools/ClinicServiceDBUtilite.csproj" Id="58211e1b-5d8d-4ce5-8834-458fd86587bb" />
   <Project Path="WS_ClinicService/WS_ClinicService.csproj" />
