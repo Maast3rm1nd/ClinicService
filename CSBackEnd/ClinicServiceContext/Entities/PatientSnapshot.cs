@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ClinicServiceContext.Entities
+﻿namespace ClinicServiceContext.Entities
 {
     public class PatientSnapshot: SnapshotBase
     {
