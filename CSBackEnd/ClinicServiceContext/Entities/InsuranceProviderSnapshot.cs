@@ -1,6 +1,6 @@
 ﻿namespace ClinicServiceContext.Entities
 {
-    public class InsuranceProviders : SnapshotBase
+    public class InsuranceProviderSnapshot : SnapshotBase
     {
         public Guid Id { get; set; }
 
