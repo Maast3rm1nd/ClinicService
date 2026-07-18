@@ -13,6 +13,7 @@
     <PackageReference Include="CommandLineParser" Version="2.*" />
     <PackageReference Include="dbup-core" Version="6.*" />
     <PackageReference Include="dbup-postgresql" Version="7.*" />
+    <PackageReference Include="dbup-sqlite" Version="6.*" />
     <PackageReference Include="dbup-sqlserver" Version="7.*" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.*" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.*" />
