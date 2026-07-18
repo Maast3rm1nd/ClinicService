@@ -9,11 +9,7 @@
 
         public Guid Doctor { get; set; }
 
-        public DateTimeOffset CreationDateTime {  get; set; }
-
         public Guid? EditedDoctor { get; set; }
-
-        public DateTimeOffset? EditDateTime { get; set; }
 
         public Guid MedicalCard { get; set; }
 

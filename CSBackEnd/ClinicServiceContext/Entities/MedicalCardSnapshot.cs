@@ -8,8 +8,6 @@
 
         public ulong RecordNumber { get; set; }
 
-        public DateTimeOffset CreationDateTime { get; set; }
-
         public Guid? Policy { get; set; }
 
         public ICollection<Guid>? Diagnoses { get; set; }

@@ -1,15 +1,14 @@
 <Project>
   <Name>Clinic</Name>
-  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
     <Name>Clinic_patients_registration</Name>
     <Language>CSharp</Language>
     <Entities>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>PatientSnapshot</Name>
         <Access>Public</Access>
-        <Location left="378" top="36" />
-        <Size width="313" height="247" />
+        <Location left="322" top="24" />
+        <Size width="313" height="281" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id = Guid.NewGuid()</Member>
         <Member type="Field">public string FullName</Member>
@@ -19,18 +18,17 @@
         <Member type="Field">public string? PhoneNumber</Member>
         <Member type="Field">public string? BloodGroup</Member>
         <Member type="Field">public string? Allergies</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; GetAppointments()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>MedicalCardSnapshot</Name>
         <Access>Public</Access>
-        <Location left="843" top="66" />
-        <Size width="289" height="247" />
+        <Location left="816" top="58" />
+        <Size width="289" height="264" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid Patient</Member>
@@ -39,34 +37,31 @@
         <Member type="Field">public Guid Policy</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Diagnoses</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Member type="Method">public Guid AddDiagnosis()</Member>
         <Member type="Method">public Guid EditDiagnosis()</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; DeleteDiagnosis()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="policy_snapshot" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>PolicySnapshot</Name>
         <Access>Public</Access>
-        <Location left="1272" top="98" />
-        <Size width="220" height="213" />
+        <Location left="1262" top="106" />
+        <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string MedicalPolicyNumber</Member>
         <Member type="Field">public PolicyType? MedicalPolicyType</Member>
         <Member type="Field">public Guid InsuranceProvider</Member>
         <Member type="Field">public string? Description</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; GetPatients()</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; GetMedicalCards()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>PolicyType</Name>
         <Access>Public</Access>
         <Location left="1588" top="16" />
@@ -76,27 +71,24 @@
         <Value>Private</Value>
         <Value>Mixed</Value>
       </Entity>
-      <Entity type="Class" nhmTableName="specialisation_snapshot" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>SpecialisationSnapshot</Name>
         <Access>Public</Access>
         <Location left="501" top="323" />
-        <Size width="220" height="162" />
+        <Size width="220" height="179" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string Name</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Doctors</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; GetDoctors()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>DiagnosisSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1525" top="540" />
+        <Location left="1525" top="539" />
         <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -108,12 +100,10 @@
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public DiagnosisStatuses Status</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Schedule</Name>
         <Access>Public</Access>
         <Location left="1180" top="851" />
@@ -123,15 +113,12 @@
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Appointments</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>AppointmentSnapshot</Name>
         <Access>Public</Access>
-        <Location left="501" top="787" />
-        <Size width="286" height="349" />
+        <Location left="501" top="786" />
+        <Size width="286" height="366" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid Patient</Member>
@@ -145,16 +132,14 @@
         <Member type="Field">public AppointmentStatus Status</Member>
         <Member type="Field">public string? PreliminaryReason</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Member type="Method">public Guid Confirm()</Member>
         <Member type="Method">public Guid Reschedule()</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; Cancel()</Member>
         <Member type="Method">public Guid Complete()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Administrators</Name>
         <Access>Public</Access>
         <Location left="73" top="681" />
@@ -169,11 +154,8 @@
         <Member type="Method">public Guid EditAppointmentSlip()</Member>
         <Member type="Method">public ICollection&lt;Guid&gt; DeleteAppointmentSlip()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>AppointmentStatus</Name>
         <Access>Public</Access>
         <Location left="842" top="1097" />
@@ -186,7 +168,6 @@
         <Value>Rescheduled</Value>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>DoctorWorkStatus</Name>
         <Access>Public</Access>
         <Location left="1180" top="1075" />
@@ -196,24 +177,22 @@
         <Value>SickLeave</Value>
         <Value>Vacation</Value>
       </Entity>
-      <Entity type="Class" nhmTableName="insurance_provider_snapshot" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>InsuranceProviderSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1711" top="261" />
-        <Size width="278" height="178" />
+        <Location left="1708" top="263" />
+        <Size width="278" height="196" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public string Name</Member>
         <Member type="Field">public string LicenseNumber</Member>
         <Member type="Field">public string? PhoneNumber</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>DiagnosisStatus</Name>
         <Access>Public</Access>
         <Location left="1759" top="1001" />
@@ -222,8 +201,7 @@
         <Value>Actual</Value>
         <Value>Inactual</Value>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>PersonSnapshot</Name>
         <Access>Public</Access>
         <Location left="487" top="532" />
@@ -236,12 +214,10 @@
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
+        <Member type="Field">public bool isDeleated</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
-      <Entity type="Class" nhmTableName="" idGenerator="">
-        <GeneratorParameters />
+      <Entity type="Class">
         <Name>Doctors</Name>
         <Access>Public</Access>
         <Location left="935" top="505" />
@@ -253,11 +229,8 @@
         <Member type="Method">public ICollection&lt;Guid&gt; GetSchedule()</Member>
         <Member type="Method">public Guid GetCurrentPatient()</Member>
         <Modifier>None</Modifier>
-        <Stereotype>
-        </Stereotype>
       </Entity>
       <Entity type="Enum">
-        <GeneratorParameters />
         <Name>PersonType</Name>
         <Access>Public</Access>
         <Location left="128" top="372" />
@@ -266,16 +239,9 @@
         <Value>Doctor</Value>
         <Value>Administrator</Value>
       </Entity>
-      <Entity type="Comment">
-        <Text>Позже добавить снапшотам параметр isDeleated</Text>
-        <Location left="1178" top="16" />
-        <Size width="160" height="75" />
-      </Entity>
     </Entities>
     <Relationships>
       <Relationship type="Association" first="2" second="1">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -286,8 +252,6 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="11" second="2">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -298,17 +262,15 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="5">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1105</X>
-          <Y>331</Y>
+          <X>1078</X>
+          <Y>340</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>1550</X>
-          <Y>515</Y>
+          <Y>514</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -318,6 +280,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="8" second="7">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -328,17 +292,15 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="5">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1250</X>
-          <Y>459</Y>
+          <X>1223</X>
+          <Y>451</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>1613</X>
-          <Y>512</Y>
+          <Y>511</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -348,6 +310,8 @@
         <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -362,8 +326,6 @@
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="0" second="1">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -374,6 +336,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="13" second="8">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -384,6 +348,8 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -398,11 +364,13 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
           <X>816</X>
-          <Y>864</Y>
+          <Y>863</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>910</X>
@@ -416,6 +384,8 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="14" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -426,6 +396,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="13" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -440,6 +412,8 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="14" second="5">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -450,8 +424,6 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="14">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
@@ -470,8 +442,6 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="6">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>

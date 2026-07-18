@@ -17,11 +17,7 @@ namespace ClinicServiceContext.Entities
 
         public Guid CreatedBy { get; set; }
 
-        public DateTimeOffset CreationDateTime {  get; set; }
-
         public Guid? EditedBy { get; set; }
-
-        public DateTimeOffset EditDateTime { get; set; }
 
         public AppointmentStatus Status { get; set; }
 

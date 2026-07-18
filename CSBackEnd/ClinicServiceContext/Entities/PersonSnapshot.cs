@@ -13,8 +13,6 @@ namespace ClinicServiceContext.Entities
 
         public string Login { get; set; }
 
-        public DateTimeOffset? EditDateTime { get; set; }
-
         public PersonType Type { get; set; }
     }
 }
