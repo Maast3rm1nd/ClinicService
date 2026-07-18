@@ -17,4 +17,8 @@
     <ProjectReference Include="..\ClinicServiceContext\ClinicServiceContext.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\Tables\" />
+  </ItemGroup>
+
 </Project>
