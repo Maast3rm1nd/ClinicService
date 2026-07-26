@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\Tables\**" />
+    <EmbeddedResource Remove="DTO\Tables\**" />
+    <None Remove="DTO\Tables\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*" />
@@ -15,10 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClinicServiceContext\ClinicServiceContext.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTO\Tables\" />
   </ItemGroup>
 
 </Project>
