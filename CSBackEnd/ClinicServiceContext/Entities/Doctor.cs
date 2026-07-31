@@ -2,7 +2,7 @@
 
 namespace ClinicServiceContext.Entities
 {
-    public class Doctors: PersonSnapshot
+    public class Doctor: PersonSnapshot
     {
         public List<Guid> Specialisations { get; set; }
 
