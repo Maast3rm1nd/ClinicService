@@ -1,9 +1,15 @@
+using Autofac.Extensions.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var services = builder.Services;
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+services.AddControllers(conf =>
+{
+    conf.EnableEndpointRouting = false;
+    
+});
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
