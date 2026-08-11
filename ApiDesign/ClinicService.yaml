@@ -1,0 +1,1506 @@
+openapi: 3.0.3
+info:
+  title: Clinic Service API
+  version: 1.0.0
+
+servers:
+  - url: https://api.clinic.local/v1
+
+tags:
+  - name: Patients
+  - name: MedicalCards
+  - name: Policies
+  - name: InsuranceProviders
+  - name: Doctors
+  - name: Specialisations
+  - name: Diagnoses
+  - name: Appointments
+  - name: Schedules
+  - name: Administrators
+  - name: Persons
+
+paths:
+  /patients:
+    get:
+      tags:
+        - Patients
+      summary: Get patients list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Patients
+      summary: Create patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - birthDate
+              properties:
+                fullName:
+                  type: string
+                shortName:
+                  type: string
+                  nullable: true
+                passportNumber:
+                  type: string
+                  nullable: true
+                birthDate:
+                  type: string
+                  format: date-time
+                phoneNumber:
+                  type: string
+                  nullable: true
+                bloodGroup:
+                  type: string
+                  nullable: true
+                allergies:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /patients/{id}:
+    get:
+      tags:
+        - Patients
+      summary: Get patient by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+        - name: includeHistory
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Patient data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Patients
+      summary: Update patient
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientSnapshot'
+      responses:
+        '200':
+          description: Patient updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Patients
+      summary: Delete patient
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /medical-cards:
+    get:
+      tags:
+        - MedicalCards
+      summary: Get medical cards list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: patientId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MedicalCardSnapshot'
+
+    post:
+      tags:
+        - MedicalCards
+      summary: Create medical card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - patient
+                - policy
+              properties:
+                patient:
+                  type: string
+                  format: uuid
+                policy:
+                  type: string
+                  format: uuid
+                diagnoses:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Medical card created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalCardSnapshot'
+
+  /medical-cards/{id}:
+    get:
+      tags:
+        - MedicalCards
+      summary: Get medical card by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Medical card data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalCardSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /policies:
+    get:
+      tags:
+        - Policies
+      summary: Get policies list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: insuranceProviderId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PolicySnapshot'
+
+    post:
+      tags:
+        - Policies
+      summary: Create policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - medicalPolicyNumber
+                - insuranceProvider
+              properties:
+                medicalPolicyNumber:
+                  type: string
+                medicalPolicyType:
+                  $ref: '#/components/schemas/PolicyType'
+                insuranceProvider:
+                  type: string
+                  format: uuid
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Policy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySnapshot'
+
+  /policies/{id}:
+    get:
+      tags:
+        - Policies
+      summary: Get policy by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Policy data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /insurance-providers:
+    get:
+      tags:
+        - InsuranceProviders
+      summary: Get insurance providers list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/InsuranceProviderSnapshot'
+
+    post:
+      tags:
+        - InsuranceProviders
+      summary: Create insurance provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - licenseNumber
+              properties:
+                name:
+                  type: string
+                licenseNumber:
+                  type: string
+                phoneNumber:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Insurance provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProviderSnapshot'
+
+  /doctors:
+    get:
+      tags:
+        - Doctors
+      summary: Get doctors list
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: specialisationId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: workStatus
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/DoctorWorkStatus'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Doctors'
+
+  /doctors/{id}:
+    get:
+      tags:
+        - Doctors
+      summary: Get doctor by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Doctor data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doctors'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+        - Doctors
+      summary: Update doctor
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                doctorWorkStatus:
+                  $ref: '#/components/schemas/DoctorWorkStatus'
+                specialisations:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Doctor updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doctors'
+
+  /specialisations:
+    get:
+      tags:
+        - Specialisations
+      summary: Get specialisations list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SpecialisationSnapshot'
+
+    post:
+      tags:
+        - Specialisations
+      summary: Create specialisation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                doctors:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Specialisation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialisationSnapshot'
+
+  /specialisations/{id}:
+    get:
+      tags:
+        - Specialisations
+      summary: Get specialisation by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Specialisation data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialisationSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /diagnoses:
+    get:
+      tags:
+        - Diagnoses
+      summary: Get diagnoses list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: medicalCardId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/DiagnosisStatus'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DiagnosisSnapshot'
+
+    post:
+      tags:
+        - Diagnoses
+      summary: Create diagnosis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - icdCode
+                - doctor
+                - medicalCard
+              properties:
+                icdCode:
+                  type: string
+                doctor:
+                  type: string
+                  format: uuid
+                medicalCard:
+                  type: string
+                  format: uuid
+                status:
+                  $ref: '#/components/schemas/DiagnosisStatus'
+      responses:
+        '201':
+          description: Diagnosis created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisSnapshot'
+
+  /diagnoses/{id}:
+    get:
+      tags:
+        - Diagnoses
+      summary: Get diagnosis by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Diagnosis data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+        - Diagnoses
+      summary: Update diagnosis
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - editedDoctor
+                - status
+              properties:
+                editedDoctor:
+                  type: string
+                  format: uuid
+                status:
+                  $ref: '#/components/schemas/DiagnosisStatus'
+      responses:
+        '200':
+          description: Diagnosis updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisSnapshot'
+
+  /appointments:
+    get:
+      tags:
+        - Appointments
+      summary: Get appointments list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: patientId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: doctorId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppointmentStatus'
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AppointmentSnapshot'
+
+    post:
+      tags:
+        - Appointments
+      summary: Create appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - patient
+                - medicalCard
+                - doctor
+                - appointmentDateTime
+                - createdBy
+              properties:
+                patient:
+                  type: string
+                  format: uuid
+                medicalCard:
+                  type: string
+                  format: uuid
+                doctor:
+                  type: string
+                  format: uuid
+                appointmentDateTime:
+                  type: string
+                  format: date-time
+                createdBy:
+                  type: string
+                  format: uuid
+                preliminaryReason:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+        '409':
+          description: Schedule conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /appointments/{id}:
+    get:
+      tags:
+        - Appointments
+      summary: Get appointment by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Appointment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Appointments
+      summary: Update appointment
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - editedBy
+              properties:
+                editedBy:
+                  type: string
+                  format: uuid
+                appointmentDateTime:
+                  type: string
+                  format: date-time
+                status:
+                  $ref: '#/components/schemas/AppointmentStatus'
+                preliminaryReason:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Appointment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+
+    delete:
+      tags:
+        - Appointments
+      summary: Cancel appointment
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /schedules:
+    get:
+      tags:
+        - Schedules
+      summary: Get schedules list
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: doctorId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Schedule'
+
+    post:
+      tags:
+        - Schedules
+      summary: Create schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - doctor
+              properties:
+                doctor:
+                  type: string
+                  format: uuid
+                appointments:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+
+  /schedules/{id}:
+    get:
+      tags:
+        - Schedules
+      summary: Get schedule by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Schedule data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /persons:
+    get:
+      tags:
+        - Persons
+      summary: Get persons list
+      parameters:
+        - $ref: '#/components/parameters/isCurrentParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - name: personType
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/PersonType'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PersonSnapshot'
+
+    post:
+      tags:
+        - Persons
+      summary: Create person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - login
+              properties:
+                fullName:
+                  type: string
+                shortName:
+                  type: string
+                  nullable: true
+                login:
+                  type: string
+      responses:
+        '201':
+          description: Person created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSnapshot'
+
+  /persons/{id}:
+    get:
+      tags:
+        - Persons
+      summary: Get person by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Person data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/medical-cards/{id}:
+    get:
+      tags:
+        - Administrators
+      summary: Get medical card
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Medical card data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalCardSnapshot'
+
+  /admin/appointment-slips:
+    post:
+      tags:
+        - Administrators
+      summary: Add appointment slip
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scheduleId
+                - appointmentDateTime
+              properties:
+                scheduleId:
+                  type: string
+                  format: uuid
+                appointmentDateTime:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Appointment slip added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+
+  /admin/appointment-slips/{id}:
+    put:
+      tags:
+        - Administrators
+      summary: Edit appointment slip
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentSnapshot'
+      responses:
+        '200':
+          description: Appointment slip updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+
+    delete:
+      tags:
+        - Administrators
+      summary: Delete appointment slip
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Appointment slips deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletedIds:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    PolicyType:
+      type: string
+      enum:
+        - EHIC
+        - Private
+        - Mixed
+
+    AppointmentStatus:
+      type: string
+      enum:
+        - Pending
+        - Confirmed
+        - Cancelled
+        - Completed
+        - Rescheduled
+
+    DiagnosisStatus:
+      type: string
+      enum:
+        - Actual
+        - Inactual
+
+    DoctorWorkStatus:
+      type: string
+      enum:
+        - AtWork
+        - SickLeave
+        - Vacation
+
+    PersonType:
+      type: string
+      enum:
+        - Doctor
+        - Administrator
+
+    PatientSnapshot:
+      type: object
+      required:
+        - id
+        - fullName
+        - birthDate
+        - creationDateTime
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        passportNumber:
+          type: string
+          nullable: true
+        birthDate:
+          type: string
+          format: date-time
+        phoneNumber:
+          type: string
+          nullable: true
+        bloodGroup:
+          type: string
+          nullable: true
+        allergies:
+          type: string
+          nullable: true
+        creationDateTime:
+          type: string
+          format: date-time
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    MedicalCardSnapshot:
+      type: object
+      required:
+        - id
+        - patient
+        - recordNumber
+        - creationDateTime
+        - policy
+        - diagnoses
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient:
+          type: string
+          format: uuid
+        recordNumber:
+          type: integer
+          format: int64
+          minimum: 0
+        creationDateTime:
+          type: string
+          format: date-time
+        policy:
+          type: string
+          format: uuid
+        diagnoses:
+          type: array
+          items:
+            type: string
+            format: uuid
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    PolicySnapshot:
+      type: object
+      required:
+        - id
+        - medicalPolicyNumber
+        - insuranceProvider
+        - creationDateTime
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        medicalPolicyNumber:
+          type: string
+        medicalPolicyType:
+          $ref: '#/components/schemas/PolicyType'
+        insuranceProvider:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+        creationDateTime:
+          type: string
+          format: date-time
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    InsuranceProviderSnapshot:
+      type: object
+      required:
+        - id
+        - name
+        - licenseNumber
+        - creationDateTime
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        licenseNumber:
+          type: string
+        phoneNumber:
+          type: string
+          nullable: true
+        creationDateTime:
+          type: string
+          format: date-time
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    SpecialisationSnapshot:
+      type: object
+      required:
+        - id
+        - name
+        - doctors
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        doctors:
+          type: array
+          items:
+            type: string
+            format: uuid
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    DiagnosisSnapshot:
+      type: object
+      required:
+        - id
+        - icdCode
+        - doctor
+        - creationDateTime
+        - medicalCard
+        - status
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        icdCode:
+          type: string
+        doctor:
+          type: string
+          format: uuid
+        creationDateTime:
+          type: string
+          format: date-time
+        editedDoctor:
+          type: string
+          format: uuid
+        editDateTime:
+          type: string
+          format: date-time
+          nullable: true
+        medicalCard:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/DiagnosisStatus'
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    Schedule:
+      type: object
+      required:
+        - id
+        - doctor
+        - appointments
+      properties:
+        id:
+          type: string
+          format: uuid
+        doctor:
+          type: string
+          format: uuid
+        appointments:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    AppointmentSnapshot:
+      type: object
+      required:
+        - id
+        - patient
+        - medicalCard
+        - doctor
+        - appointmentDateTime
+        - createdBy
+        - creationtDateTime
+        - status
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient:
+          type: string
+          format: uuid
+        medicalCard:
+          type: string
+          format: uuid
+        doctor:
+          type: string
+          format: uuid
+        appointmentDateTime:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+          format: uuid
+        creationtDateTime:
+          type: string
+          format: date-time
+        editedBy:
+          type: string
+          format: uuid
+          nullable: true
+        editDateTime:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AppointmentStatus'
+        preliminaryReason:
+          type: string
+          nullable: true
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    PersonSnapshot:
+      type: object
+      required:
+        - id
+        - fullName
+        - login
+        - creationDateTime
+        - isCurrent
+        - isDeleated
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        login:
+          type: string
+        creationDateTime:
+          type: string
+          format: date-time
+        editDateTime:
+          type: string
+          format: date-time
+          nullable: true
+        isCurrent:
+          type: boolean
+        isDeleated:
+          type: boolean
+
+    Doctors:
+      type: object
+      required:
+        - id
+        - specialisations
+        - doctorWorkStatus
+      properties:
+        id:
+          type: string
+          format: uuid
+        specialisations:
+          type: array
+          items:
+            type: string
+            format: uuid
+        doctorWorkStatus:
+          $ref: '#/components/schemas/DoctorWorkStatus'
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        details:
+          type: string
+
+    PaginatedResponse:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+
+  parameters:
+    idParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    isCurrentParam:
+      name: isCurrent
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: true
+
+    pageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    pageSizeParam:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    BadRequest:
+      description: Bad request
+
+    Unauthorized:
+      description: Unauthorized
+
+    Forbidden:
+      description: Forbidden
+
+    NotFound:
+      description: Not found
+
+    NoContent:
+      description: No content
+
+    Conflict:
+      description: Conflict
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
