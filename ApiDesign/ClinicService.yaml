@@ -25,33 +25,26 @@ paths:
       tags:
         - Patients
       summary: Get patients list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: search
-          in: query
-          required: false
-          schema:
-            type: string
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/PatientSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PatientSnapshot'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -96,14 +89,16 @@ paths:
                 $ref: '#/components/schemas/PatientSnapshot'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '422':
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /patients/{id}:
     get:
@@ -112,12 +107,6 @@ paths:
       summary: Get patient by ID
       parameters:
         - $ref: '#/components/parameters/idParam'
-        - name: includeHistory
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: false
       responses:
         '200':
           description: Patient data
@@ -125,8 +114,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     put:
       tags:
@@ -147,8 +142,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     delete:
       tags:
@@ -159,38 +160,40 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /medical-cards:
     get:
       tags:
         - MedicalCards
       summary: Get medical cards list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: patientId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/MedicalCardSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -224,6 +227,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /medical-cards/{id}:
     get:
@@ -239,38 +254,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - MedicalCards
+      summary: Update medical card
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicalCardSnapshot'
+      responses:
+        '200':
+          description: Medical card updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - MedicalCards
+      summary: Delete medical card
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /policies:
     get:
       tags:
         - Policies
       summary: Get policies list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: insuranceProviderId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/PolicySnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PolicySnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -303,6 +366,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicySnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /policies/{id}:
     get:
@@ -318,32 +393,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicySnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Policies
+      summary: Update policy
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicySnapshot'
+      responses:
+        '200':
+          description: Policy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Policies
+      summary: Delete policy
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /insurance-providers:
     get:
       tags:
         - InsuranceProviders
       summary: Get insurance providers list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/InsuranceProviderSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -373,40 +502,158 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /insurance-providers/{id}:
+    get:
+      tags:
+        - InsuranceProviders
+      summary: Get insurance provider by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Insurance provider data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - InsuranceProviders
+      summary: Update insurance provider
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceProviderSnapshot'
+      responses:
+        '200':
+          description: Insurance provider updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - InsuranceProviders
+      summary: Delete insurance provider
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /doctors:
     get:
       tags:
         - Doctors
       summary: Get doctors list
-      parameters:
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: specialisationId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: workStatus
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/DoctorWorkStatus'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Doctors'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Doctors'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Doctors
+      summary: Create doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - specialisations
+                - doctorWorkStatus
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                specialisations:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                doctorWorkStatus:
+                  $ref: '#/components/schemas/DoctorWorkStatus'
+      responses:
+        '201':
+          description: Doctor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doctors'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /doctors/{id}:
     get:
@@ -422,10 +669,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Doctors'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
-    patch:
+    put:
       tags:
         - Doctors
       summary: Update doctor
@@ -436,15 +689,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                doctorWorkStatus:
-                  $ref: '#/components/schemas/DoctorWorkStatus'
-                specialisations:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
+              $ref: '#/components/schemas/Doctors'
       responses:
         '200':
           description: Doctor updated
@@ -452,30 +697,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Doctors'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Doctors
+      summary: Delete doctor
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /specialisations:
     get:
       tags:
         - Specialisations
       summary: Get specialisations list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/SpecialisationSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SpecialisationSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -504,6 +777,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpecialisationSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /specialisations/{id}:
     get:
@@ -519,43 +804,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SpecialisationSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Specialisations
+      summary: Update specialisation
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecialisationSnapshot'
+      responses:
+        '200':
+          description: Specialisation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialisationSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Specialisations
+      summary: Delete specialisation
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /diagnoses:
     get:
       tags:
         - Diagnoses
       summary: Get diagnoses list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: medicalCardId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: status
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/DiagnosisStatus'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/DiagnosisSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DiagnosisSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -589,6 +917,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiagnosisSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /diagnoses/{id}:
     get:
@@ -604,10 +944,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiagnosisSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
-    patch:
+    put:
       tags:
         - Diagnoses
       summary: Update diagnosis
@@ -618,16 +964,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - editedDoctor
-                - status
-              properties:
-                editedDoctor:
-                  type: string
-                  format: uuid
-                status:
-                  $ref: '#/components/schemas/DiagnosisStatus'
+              $ref: '#/components/schemas/DiagnosisSnapshot'
       responses:
         '200':
           description: Diagnosis updated
@@ -635,59 +972,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiagnosisSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Diagnoses
+      summary: Delete diagnosis
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /appointments:
     get:
       tags:
         - Appointments
       summary: Get appointments list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: patientId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: doctorId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: status
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/AppointmentStatus'
-        - name: fromDate
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: toDate
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date-time
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/AppointmentSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -731,12 +1067,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '409':
           description: Schedule conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /appointments/{id}:
     get:
@@ -752,8 +1100,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     put:
       tags:
@@ -788,6 +1142,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Schedule conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     delete:
       tags:
@@ -798,37 +1166,40 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /schedules:
     get:
       tags:
         - Schedules
       summary: Get schedules list
-      parameters:
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: doctorId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Schedule'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -858,6 +1229,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /schedules/{id}:
     get:
@@ -873,37 +1256,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Schedules
+      summary: Update schedule
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        '200':
+          description: Schedule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Schedules
+      summary: Delete schedule
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /persons:
     get:
       tags:
         - Persons
       summary: Get persons list
-      parameters:
-        - $ref: '#/components/parameters/isCurrentParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - name: personType
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/PersonType'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/PersonSnapshot'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PersonSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       tags:
@@ -933,6 +1365,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PersonSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /persons/{id}:
     get:
@@ -948,8 +1392,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PersonSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Persons
+      summary: Update person
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonSnapshot'
+      responses:
+        '200':
+          description: Person updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Persons
+      summary: Delete person
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /admin/medical-cards/{id}:
     get:
@@ -965,6 +1461,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /admin/appointment-slips:
     post:
@@ -994,6 +1498,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /admin/appointment-slips/{id}:
     put:
@@ -1015,6 +1531,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     delete:
       tags:
@@ -1035,6 +1559,14 @@ paths:
                     items:
                       type: string
                       format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /health:
     get:
@@ -1099,8 +1631,6 @@ components:
         - fullName
         - birthDate
         - creationDateTime
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1128,10 +1658,10 @@ components:
         creationDateTime:
           type: string
           format: date-time
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
+        editDateTime:
+          type: string
+          format: date-time
+          nullable: true
 
     MedicalCardSnapshot:
       type: object
@@ -1142,8 +1672,6 @@ components:
         - creationDateTime
         - policy
         - diagnoses
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1166,10 +1694,6 @@ components:
           items:
             type: string
             format: uuid
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     PolicySnapshot:
       type: object
@@ -1178,8 +1702,6 @@ components:
         - medicalPolicyNumber
         - insuranceProvider
         - creationDateTime
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1197,10 +1719,6 @@ components:
         creationDateTime:
           type: string
           format: date-time
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     InsuranceProviderSnapshot:
       type: object
@@ -1209,8 +1727,6 @@ components:
         - name
         - licenseNumber
         - creationDateTime
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1225,10 +1741,6 @@ components:
         creationDateTime:
           type: string
           format: date-time
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     SpecialisationSnapshot:
       type: object
@@ -1236,8 +1748,6 @@ components:
         - id
         - name
         - doctors
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1249,10 +1759,6 @@ components:
           items:
             type: string
             format: uuid
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     DiagnosisSnapshot:
       type: object
@@ -1263,8 +1769,6 @@ components:
         - creationDateTime
         - medicalCard
         - status
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1289,10 +1793,6 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/DiagnosisStatus'
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     Schedule:
       type: object
@@ -1324,8 +1824,6 @@ components:
         - createdBy
         - creationtDateTime
         - status
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1361,10 +1859,6 @@ components:
         preliminaryReason:
           type: string
           nullable: true
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     PersonSnapshot:
       type: object
@@ -1373,8 +1867,6 @@ components:
         - fullName
         - login
         - creationDateTime
-        - isCurrent
-        - isDeleated
       properties:
         id:
           type: string
@@ -1393,10 +1885,6 @@ components:
           type: string
           format: date-time
           nullable: true
-        isCurrent:
-          type: boolean
-        isDeleated:
-          type: boolean
 
     Doctors:
       type: object
@@ -1429,17 +1917,6 @@ components:
         details:
           type: string
 
-    PaginatedResponse:
-      type: object
-      properties:
-        totalCount:
-          type: integer
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        totalPages:
-          type: integer
 
   parameters:
     idParam:
@@ -1450,39 +1927,13 @@ components:
         type: string
         format: uuid
 
-    isCurrentParam:
-      name: isCurrent
-      in: query
-      required: false
-      schema:
-        type: boolean
-        default: true
-
-    pageParam:
-      name: page
-      in: query
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-
-    pageSizeParam:
-      name: pageSize
-      in: query
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
 
   responses:
+    NoContent:
+      description: No Content
+  
     BadRequest:
       description: Bad request
-
-    Unauthorized:
-      description: Unauthorized
 
     Forbidden:
       description: Forbidden
@@ -1490,11 +1941,8 @@ components:
     NotFound:
       description: Not found
 
-    NoContent:
-      description: No content
-
-    Conflict:
-      description: Conflict
+    InternalServerError:
+      description: Internal Server Error
 
   securitySchemes:
     BearerAuth:
