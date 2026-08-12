@@ -14,12 +14,20 @@
     <PackageReference Include="AutoMapper" Version="16.*" />
     <PackageReference Include="MediatR" Version="14.*" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.*" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />
     <PackageReference Include="Microsoft.OpenApi" Version="3.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClinicServiceBase\ClinicServiceBase.csproj" />
+    <ProjectReference Include="..\ClinicServiceContext\ClinicServiceContext.csproj" />
   </ItemGroup>
 
 </Project>
