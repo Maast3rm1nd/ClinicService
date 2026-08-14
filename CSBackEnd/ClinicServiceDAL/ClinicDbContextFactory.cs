@@ -1,0 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+
+namespace ClinicServiceDAL
+{
+    public class ClinicDbContextFactory : IDesignTimeDbContextFactory<ClinicDbContext>
+    {
+        public ClinicDbContext CreateDbContext(string[] args)
+        {
+            var provider = Environment.GetEnvironmentVariable("CLINIC_DB_PROVIDER") ?? "sqlite";
+            var connectionString = Environment.GetEnvironmentVariable("CLINIC_CONNECTION_STRING") ?? "Data Source=clinic.db";
+
+            var optionsBuilder = new DbContextOptionsBuilder<ClinicDbContext>();
+            optionsBuilder.UseClinicDatabase(provider, connectionString);
+
+            return new ClinicDbContext(optionsBuilder.Options);
+        }
+    }
+}

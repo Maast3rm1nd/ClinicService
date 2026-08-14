@@ -7,7 +7,6 @@
         public ulong RecordNumber { get; set; }
         public DateTimeOffset CreationDateTime { get; set; }
         public Guid PolicyId { get; set; }
-        public bool IsCurrent { get; set; }
 
         public PatientSnapshotDto Patient { get; set; }
         public PolicySnapshotDto Policy { get; set; }

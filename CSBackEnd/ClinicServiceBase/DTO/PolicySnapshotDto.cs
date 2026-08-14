@@ -9,7 +9,6 @@ namespace ClinicServiceBase.DTO
         public PolicyType? MedicalPolicyType { get; set; }
         public Guid InsuranceProviderId { get; set; }
         public string? Description { get; set; }
-        public bool IsCurrent { get; set; }
 
         public InsuranceProviderSnapshotDto InsuranceProvider { get; set; }
         public ICollection<MedicalCardSnapshotDto> MedicalCards { get; set; }

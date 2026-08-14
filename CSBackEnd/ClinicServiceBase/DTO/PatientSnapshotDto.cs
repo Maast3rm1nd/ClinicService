@@ -10,9 +10,7 @@
         public string? PhoneNumber { get; set; }
         public string? BloodGroup { get; set; }
         public string? Allergies { get; set; }
-        public bool IsCurrent { get; set; }
 
-        
         public ICollection<MedicalCardSnapshotDto> MedicalCards { get; set; }
         public ICollection<AppointmentSnapshotDto> Appointments { get; set; }
 

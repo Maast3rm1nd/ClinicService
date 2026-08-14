@@ -10,7 +10,6 @@ namespace ClinicServiceBase.DTO
         public string Login { get; set; }
         public DateTimeOffset CreationDateTime { get; set; }
         public DateTimeOffset? EditDateTime { get; set; }
-        public bool IsCurrent { get; set; }
         public PersonType PersonType { get; set; }
         public DoctorsDto Doctor { get; set; }
         public AdministratorsDto Administrator { get; set; }

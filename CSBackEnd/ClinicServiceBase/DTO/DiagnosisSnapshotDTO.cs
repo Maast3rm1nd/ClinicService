@@ -12,7 +12,6 @@ namespace ClinicServiceBase.DTO
         public DateTimeOffset? EditDateTime { get; set; }
         public Guid MedicalCardId { get; set; }
         public DiagnosisStatus Status { get; set; }
-        public bool IsCurrent { get; set; }
 
         public DoctorsDto Doctor { get; set; }
         public DoctorsDto EditedDoctor { get; set; }

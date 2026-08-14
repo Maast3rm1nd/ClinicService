@@ -15,7 +15,6 @@ namespace ClinicServiceBase.DTO
         public DateTimeOffset? EditDateTime { get; set; }
         public AppointmentStatus Status { get; set; }
         public string? PreliminaryReason { get; set; }
-        public bool IsCurrent { get; set; }
 
         // Навигационные свойства
         public PatientSnapshotDto Patient { get; set; }
