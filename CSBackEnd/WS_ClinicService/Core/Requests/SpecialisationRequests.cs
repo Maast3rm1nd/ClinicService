@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Specialisation = ClinicServiceContext.Entities.SpecialisationSnapshot;
-using SpecialisationSnapshot = WS_ClinicService.Contracts.Responses.SpecialisationSnapshot;
+using SpecialisationSnapshot = ClinicServiceBase.DTO.SpecialisationSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateSpecialisationCommand(CreateSpecialisationRequest Request) : IRequest<SpecialisationSnapshot>;
 
-    public record UpdateSpecialisationCommand(Guid Id, SpecialisationSnapshot Specialisation) : IRequest<SpecialisationSnapshot>;
+    public record UpdateSpecialisationCommand(Guid Id, UpdateSpecialisationRequest Request) : IRequest<SpecialisationSnapshot>;
 
     public record DeleteSpecialisationCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,15 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Специализация с id {request.Id} не найдена");
 
-            mapper.Map(request.Specialisation, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.Name))
+            {
+                entity.Name = request.Request.Name;
+            }
+
+            if (request.Request.Doctors != null)
+            {
+                entity.Doctors = request.Request.Doctors;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

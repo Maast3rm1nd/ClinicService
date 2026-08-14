@@ -19,14 +19,14 @@ namespace ClinicServiceDAL.Repositories
             return UpdateObject(schedule);
         }
 
-        public async Task<Schedule> GetSchedules(Guid[] ids, CancellationToken cancellationToken)
+        public async Task<Schedule?> GetSchedules(Guid[] ids, CancellationToken cancellationToken)
         {
             return (await GetObjectsByIds(ids, cancellationToken)).FirstOrDefault();
         }
 
         public Task DeleteSchedule(Guid scheduleId)
         {
-            return SoftDeleteById(scheduleId);
+            return DeleteObjectById(scheduleId);
         }
     }
 }

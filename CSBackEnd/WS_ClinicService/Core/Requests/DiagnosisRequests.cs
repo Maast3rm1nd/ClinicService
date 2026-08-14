@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Diagnosis = ClinicServiceContext.Entities.DiagnosisSnapshot;
-using DiagnosisSnapshot = WS_ClinicService.Contracts.Responses.DiagnosisSnapshot;
+using DiagnosisSnapshot = ClinicServiceBase.DTO.DiagnosisSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateDiagnosisCommand(CreateDiagnosisRequest Request) : IRequest<DiagnosisSnapshot>;
 
-    public record UpdateDiagnosisCommand(Guid Id, DiagnosisSnapshot Diagnosis) : IRequest<DiagnosisSnapshot>;
+    public record UpdateDiagnosisCommand(Guid Id, UpdateDiagnosisRequest Request) : IRequest<DiagnosisSnapshot>;
 
     public record DeleteDiagnosisCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,30 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Диагноз с id {request.Id} не найден");
 
-            mapper.Map(request.Diagnosis, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.IcdCode))
+            {
+                entity.IcdCode = request.Request.IcdCode;
+            }
+
+            if (request.Request.Doctor.HasValue)
+            {
+                entity.Doctor = request.Request.Doctor.Value;
+            }
+
+            if (request.Request.EditedDoctor.HasValue)
+            {
+                entity.EditedDoctor = request.Request.EditedDoctor.Value;
+            }
+
+            if (request.Request.MedicalCard.HasValue)
+            {
+                entity.MedicalCard = request.Request.MedicalCard.Value;
+            }
+
+            if (request.Request.Status.HasValue)
+            {
+                entity.Status = request.Request.Status.Value;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

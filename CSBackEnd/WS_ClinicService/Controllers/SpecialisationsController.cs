@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<SpecialisationSnapshot>>> GetSpecialisations(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<SpecialisationSnapshotDto>>> GetSpecialisations(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<SpecialisationSnapshot>
+            return Ok(new ListResponse<SpecialisationSnapshotDto>
             {
                 Data = await _sender.Send(new GetSpecialisationsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<SpecialisationSnapshot>> CreateSpecialisation([FromBody] CreateSpecialisationRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<SpecialisationSnapshotDto>> CreateSpecialisation([FromBody] CreateSpecialisationRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreateSpecialisationCommand(request), cancellationToken);
 
@@ -37,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<SpecialisationSnapshot>> GetSpecialisationById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<SpecialisationSnapshotDto>> GetSpecialisationById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetSpecialisationByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<SpecialisationSnapshot>> UpdateSpecialisation(Guid id, [FromBody] SpecialisationSnapshot specialisation, CancellationToken cancellationToken)
+        public async Task<ActionResult<SpecialisationSnapshotDto>> UpdateSpecialisation(Guid id, [FromBody] UpdateSpecialisationRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateSpecialisationCommand(id, specialisation), cancellationToken));
+            return Ok(await _sender.Send(new UpdateSpecialisationCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

@@ -2,7 +2,7 @@
 {
     public class Schedule: IEditableEntity
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid Doctor {  get; set; }
 

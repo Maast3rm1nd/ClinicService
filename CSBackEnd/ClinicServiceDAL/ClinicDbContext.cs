@@ -49,7 +49,7 @@ namespace ClinicServiceDAL
 
             modelBuilder.Entity<PersonSnapshot>()
                 .HasDiscriminator<PersonType>(p => p.Type)
-                .HasValue<PersonSnapshot>((PersonType)0)
+                .HasValue<PersonSnapshot>(PersonType.Person)
                 .HasValue<Doctor>(PersonType.Doctor)
                 .HasValue<Administrator>(PersonType.Administrator);
         }

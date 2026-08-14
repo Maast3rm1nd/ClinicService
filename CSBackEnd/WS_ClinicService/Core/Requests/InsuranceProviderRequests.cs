@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using InsuranceProvider = ClinicServiceContext.Entities.InsuranceProviderSnapshot;
-using InsuranceProviderSnapshot = WS_ClinicService.Contracts.Responses.InsuranceProviderSnapshot;
+using InsuranceProviderSnapshot = ClinicServiceBase.DTO.InsuranceProviderSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateInsuranceProviderCommand(CreateInsuranceProviderRequest Request) : IRequest<InsuranceProviderSnapshot>;
 
-    public record UpdateInsuranceProviderCommand(Guid Id, InsuranceProviderSnapshot Provider) : IRequest<InsuranceProviderSnapshot>;
+    public record UpdateInsuranceProviderCommand(Guid Id, UpdateInsuranceProviderRequest Request) : IRequest<InsuranceProviderSnapshot>;
 
     public record DeleteInsuranceProviderCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,17 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Страховая компания с id {request.Id} не найдена");
 
-            mapper.Map(request.Provider, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.Name))
+            {
+                entity.Name = request.Request.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Request.LicenseNumber))
+            {
+                entity.LicenseNumber = request.Request.LicenseNumber;
+            }
+
+            entity.PhoneNumber = request.Request.PhoneNumber ?? entity.PhoneNumber;
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

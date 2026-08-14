@@ -19,7 +19,7 @@ namespace ClinicServiceDAL.Repositories
             return UpdateObject(policy);
         }
 
-        public async Task<PolicySnapshot> GetPolicies(Guid[] ids, CancellationToken cancellationToken)
+        public async Task<PolicySnapshot?> GetPolicies(Guid[] ids, CancellationToken cancellationToken)
         {
             return (await GetObjectsByIds(ids, cancellationToken)).FirstOrDefault();
         }

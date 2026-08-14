@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<InsuranceProviderSnapshot>>> GetInsuranceProviders(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<InsuranceProviderSnapshotDto>>> GetInsuranceProviders(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<InsuranceProviderSnapshot>
+            return Ok(new ListResponse<InsuranceProviderSnapshotDto>
             {
                 Data = await _sender.Send(new GetInsuranceProvidersQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<InsuranceProviderSnapshot>> CreateInsuranceProvider([FromBody] CreateInsuranceProviderRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<InsuranceProviderSnapshotDto>> CreateInsuranceProvider([FromBody] CreateInsuranceProviderRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreateInsuranceProviderCommand(request), cancellationToken);
 
@@ -37,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<InsuranceProviderSnapshot>> GetInsuranceProviderById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<InsuranceProviderSnapshotDto>> GetInsuranceProviderById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetInsuranceProviderByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<InsuranceProviderSnapshot>> UpdateInsuranceProvider(Guid id, [FromBody] InsuranceProviderSnapshot provider, CancellationToken cancellationToken)
+        public async Task<ActionResult<InsuranceProviderSnapshotDto>> UpdateInsuranceProvider(Guid id, [FromBody] UpdateInsuranceProviderRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateInsuranceProviderCommand(id, provider), cancellationToken));
+            return Ok(await _sender.Send(new UpdateInsuranceProviderCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

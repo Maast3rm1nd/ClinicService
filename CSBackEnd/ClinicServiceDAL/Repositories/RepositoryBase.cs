@@ -29,13 +29,13 @@ namespace ClinicServiceDAL.Repositories
                 .ToArrayAsync(cancellationToken);
         }
 
-        public virtual async Task<TEntity> GetObjectsById(Guid id, CancellationToken cancellationToken)
+        public virtual async Task<TEntity?> GetObjectsById(Guid id, CancellationToken cancellationToken)
         {
             return await DbSet.AsNoTracking()
                 .SingleOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id, cancellationToken);
         }
 
-        public virtual async Task<TEntity> GetObjectsByFilter(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken)
+        public virtual async Task<TEntity?> GetObjectsByFilter(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken)
         {
             return await DbSet.AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
         }

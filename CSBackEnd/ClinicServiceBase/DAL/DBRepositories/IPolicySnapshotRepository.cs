@@ -8,7 +8,7 @@ namespace ClinicServiceBase.DAL.DBRepositories
 
         Task EditPolicy(PolicySnapshot policy);
 
-        Task<PolicySnapshot> GetPolicies(Guid[] ids, CancellationToken cancellationToken);
+        Task<PolicySnapshot?> GetPolicies(Guid[] ids, CancellationToken cancellationToken);
 
         Task DeletePolicy(Guid policyId);
     }

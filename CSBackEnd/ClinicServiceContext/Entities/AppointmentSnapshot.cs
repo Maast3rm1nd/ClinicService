@@ -4,9 +4,6 @@ namespace ClinicServiceContext.Entities
 {
     public class AppointmentSnapshot : SnapshotBase
     {
-
-        public Guid Id { get; set; }
-
         public Guid Patient { get; set; }
 
         public Guid MedicalCard { get; set; }

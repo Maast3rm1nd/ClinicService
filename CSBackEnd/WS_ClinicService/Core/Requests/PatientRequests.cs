@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Patient = ClinicServiceContext.Entities.PatientSnapshot;
-using PatientSnapshot = WS_ClinicService.Contracts.Responses.PatientSnapshot;
+using PatientSnapshot = ClinicServiceBase.DTO.PatientSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreatePatientCommand(CreatePatientRequest Request) : IRequest<PatientSnapshot>;
 
-    public record UpdatePatientCommand(Guid Id, PatientSnapshot Patient) : IRequest<PatientSnapshot>;
+    public record UpdatePatientCommand(Guid Id, UpdatePatientRequest Request) : IRequest<PatientSnapshot>;
 
     public record DeletePatientCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,21 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Пациент с id {request.Id} не найден");
 
-            mapper.Map(request.Patient, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.FullName))
+            {
+                entity.FullName = request.Request.FullName;
+            }
+
+            entity.ShortName = request.Request.ShortName ?? entity.ShortName;
+            entity.PassportNumber = request.Request.PassportNumber ?? entity.PassportNumber;
+            entity.PhoneNumber = request.Request.PhoneNumber ?? entity.PhoneNumber;
+            entity.BloodGroup = request.Request.BloodGroup ?? entity.BloodGroup;
+            entity.Allergies = request.Request.Allergies ?? entity.Allergies;
+
+            if (request.Request.BirthDate.HasValue)
+            {
+                entity.BirthDate = request.Request.BirthDate.Value;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

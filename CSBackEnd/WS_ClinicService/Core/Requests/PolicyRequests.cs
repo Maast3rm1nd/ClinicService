@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Policy = ClinicServiceContext.Entities.PolicySnapshot;
-using PolicySnapshot = WS_ClinicService.Contracts.Responses.PolicySnapshot;
+using PolicySnapshot = ClinicServiceBase.DTO.PolicySnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreatePolicyCommand(CreatePolicyRequest Request) : IRequest<PolicySnapshot>;
 
-    public record UpdatePolicyCommand(Guid Id, PolicySnapshot Policy) : IRequest<PolicySnapshot>;
+    public record UpdatePolicyCommand(Guid Id, UpdatePolicyRequest Request) : IRequest<PolicySnapshot>;
 
     public record DeletePolicyCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,22 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Полис с id {request.Id} не найден");
 
-            mapper.Map(request.Policy, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.MedicalPolicyNumber))
+            {
+                entity.MedicalPolicyNumber = request.Request.MedicalPolicyNumber;
+            }
+
+            if (request.Request.MedicalPolicyType.HasValue)
+            {
+                entity.MedicalPolicyType = request.Request.MedicalPolicyType.Value;
+            }
+
+            if (request.Request.InsuranceProvider.HasValue)
+            {
+                entity.InsuranceProvider = request.Request.InsuranceProvider.Value;
+            }
+
+            entity.Description = request.Request.Description ?? entity.Description;
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

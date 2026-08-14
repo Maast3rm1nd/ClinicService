@@ -25,7 +25,7 @@ services.AddControllers(conf =>
     conf.Filters.Add(typeof(ValidationFilter));
 }).AddNewtonsoftJson(x =>
 {
-    x.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+    x.SerializerSettings.Converters.Add(new StringEnumConverter());
     x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     x.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 }).ConfigureApiBehaviorOptions(y =>

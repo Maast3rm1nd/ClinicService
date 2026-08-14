@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<Schedule>>> GetSchedules(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<ScheduleDto>>> GetSchedules(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<Schedule>
+            return Ok(new ListResponse<ScheduleDto>
             {
                 Data = await _sender.Send(new GetSchedulesQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Schedule>> CreateSchedule([FromBody] CreateScheduleRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ScheduleDto>> CreateSchedule([FromBody] CreateScheduleRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreateScheduleCommand(request), cancellationToken);
 
@@ -37,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Schedule>> GetScheduleById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ScheduleDto>> GetScheduleById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetScheduleByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<Schedule>> UpdateSchedule(Guid id, [FromBody] Schedule schedule, CancellationToken cancellationToken)
+        public async Task<ActionResult<ScheduleDto>> UpdateSchedule(Guid id, [FromBody] UpdateScheduleRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateScheduleCommand(id, schedule), cancellationToken));
+            return Ok(await _sender.Send(new UpdateScheduleCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

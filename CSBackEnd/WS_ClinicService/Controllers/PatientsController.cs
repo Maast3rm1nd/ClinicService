@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<PatientSnapshot>>> GetPatients(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<PatientSnapshotDto>>> GetPatients(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<PatientSnapshot>
+            return Ok(new ListResponse<PatientSnapshotDto>
             {
                 Data = await _sender.Send(new GetPatientsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<PatientSnapshot>> CreatePatient([FromBody] CreatePatientRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<PatientSnapshotDto>> CreatePatient([FromBody] CreatePatientRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreatePatientCommand(request), cancellationToken);
 
@@ -37,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<PatientSnapshot>> GetPatientById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PatientSnapshotDto>> GetPatientById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetPatientByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<PatientSnapshot>> UpdatePatient(Guid id, [FromBody] PatientSnapshot patient, CancellationToken cancellationToken)
+        public async Task<ActionResult<PatientSnapshotDto>> UpdatePatient(Guid id, [FromBody] UpdatePatientRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdatePatientCommand(id, patient), cancellationToken));
+            return Ok(await _sender.Send(new UpdatePatientCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

@@ -2,9 +2,6 @@
 {
     public class DiagnosisSnapshot : SnapshotBase
     {
-
-        public Guid Id { get; set; }
-
         public string IcdCode { get; set; }
 
         public Guid Doctor { get; set; }

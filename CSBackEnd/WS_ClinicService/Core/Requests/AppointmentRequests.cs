@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Appointment = ClinicServiceContext.Entities.AppointmentSnapshot;
-using AppointmentSnapshot = WS_ClinicService.Contracts.Responses.AppointmentSnapshot;
+using AppointmentSnapshot = ClinicServiceBase.DTO.AppointmentSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -48,11 +49,32 @@ namespace WS_ClinicService.Core.Requests
 
             var entity = mapper.Map<Appointment>(request.Request);
 
+            await EnsureNoConflict(repository, entity, cancellationToken);
+
             await repository.AddObject(entity);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
             return mapper.Map<AppointmentSnapshot>(entity);
+        }
+
+        private static async Task EnsureNoConflict(
+            IAppointmentSnapshotRepository repository,
+            Appointment entity,
+            CancellationToken cancellationToken)
+        {
+            var conflict = await repository.GetObjectsByFilter(
+                a => a.Id != entity.Id
+                     && a.Doctor == entity.Doctor
+                     && a.AppointmentDateTime == entity.AppointmentDateTime
+                     && !a.IsDeleted,
+                cancellationToken);
+
+            if (conflict != null)
+            {
+                throw new ConflictException(
+                    $"Врач занят: на {entity.AppointmentDateTime:O} уже существует приём (id {conflict.Id})");
+            }
         }
     }
 
@@ -65,12 +87,15 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Приём с id {request.Id} не найден");
 
-            entity.EditedBy = request.Request.EditedBy;
-
-            if (request.Request.AppointmentDateTime.HasValue)
+            if (request.Request.AppointmentDateTime.HasValue
+                && request.Request.AppointmentDateTime.Value != entity.AppointmentDateTime)
             {
+                await EnsureNoConflict(repository, entity, request.Request.AppointmentDateTime.Value, cancellationToken);
+
                 entity.AppointmentDateTime = request.Request.AppointmentDateTime.Value;
             }
+
+            entity.EditedBy = request.Request.EditedBy;
 
             if (request.Request.Status.HasValue)
             {
@@ -89,6 +114,26 @@ namespace WS_ClinicService.Core.Requests
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
             return mapper.Map<AppointmentSnapshot>(entity);
+        }
+
+        private static async Task EnsureNoConflict(
+            IAppointmentSnapshotRepository repository,
+            Appointment entity,
+            DateTimeOffset appointmentDateTime,
+            CancellationToken cancellationToken)
+        {
+            var conflict = await repository.GetObjectsByFilter(
+                a => a.Id != entity.Id
+                     && a.Doctor == entity.Doctor
+                     && a.AppointmentDateTime == appointmentDateTime
+                     && !a.IsDeleted,
+                cancellationToken);
+
+            if (conflict != null)
+            {
+                throw new ConflictException(
+                    $"Врач занят: на {appointmentDateTime:O} уже существует приём (id {conflict.Id})");
+            }
         }
     }
 

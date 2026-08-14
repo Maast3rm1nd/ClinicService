@@ -4,8 +4,14 @@
     {
         public Guid Id { get; set; }
 
-        public PersonSnapshotDto Person { get; set; }
-        public ICollection<AppointmentSnapshotDto> CreatedAppointments { get; set; }
-        public ICollection<AppointmentSnapshotDto> EditedAppointments { get; set; }
+        public string FullName { get; set; }
+
+        public string? ShortName { get; set; }
+
+        public string Login { get; set; }
+
+        public DateTimeOffset CreationDateTime { get; set; }
+
+        public DateTimeOffset? EditDateTime { get; set; }
     }
 }

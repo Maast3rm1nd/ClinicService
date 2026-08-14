@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<AppointmentSnapshot>>> GetAppointments(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<AppointmentSnapshotDto>>> GetAppointments(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<AppointmentSnapshot>
+            return Ok(new ListResponse<AppointmentSnapshotDto>
             {
                 Data = await _sender.Send(new GetAppointmentsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<AppointmentSnapshot>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentSnapshotDto>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreateAppointmentCommand(request), cancellationToken);
 
@@ -37,13 +38,13 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<AppointmentSnapshot>> GetAppointmentById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentSnapshotDto>> GetAppointmentById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetAppointmentByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<AppointmentSnapshot>> UpdateAppointment(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentSnapshotDto>> UpdateAppointment(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new UpdateAppointmentCommand(id, request), cancellationToken));
         }

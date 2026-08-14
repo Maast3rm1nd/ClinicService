@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<Doctors>>> GetDoctors(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<DoctorsDto>>> GetDoctors(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<Doctors>
+            return Ok(new ListResponse<DoctorsDto>
             {
                 Data = await _sender.Send(new GetDoctorsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctors>> CreateDoctor([FromBody] CreateDoctorRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<DoctorsDto>> CreateDoctor([FromBody] CreateDoctorRequest request, CancellationToken cancellationToken)
         {
             var created = await _sender.Send(new CreateDoctorCommand(request), cancellationToken);
 
@@ -37,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Doctors>> GetDoctorById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<DoctorsDto>> GetDoctorById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _sender.Send(new GetDoctorByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<Doctors>> UpdateDoctor(Guid id, [FromBody] Doctors doctor, CancellationToken cancellationToken)
+        public async Task<ActionResult<DoctorsDto>> UpdateDoctor(Guid id, [FromBody] UpdateDoctorRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateDoctorCommand(id, doctor), cancellationToken));
+            return Ok(await _sender.Send(new UpdateDoctorCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
