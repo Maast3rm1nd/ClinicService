@@ -14,11 +14,14 @@ namespace WS_ClinicService.Controllers
     {
         private readonly IOptions<AuthOptions> _authOptions;
 
+        private readonly IOptions<JwtOptions> _jwtOptions;
+
         private readonly TokenService _tokenService;
 
-        public AuthController(IOptions<AuthOptions> authOptions, TokenService tokenService)
+        public AuthController(IOptions<AuthOptions> authOptions, IOptions<JwtOptions> jwtOptions, TokenService tokenService)
         {
             _authOptions = authOptions;
+            _jwtOptions = jwtOptions;
             _tokenService = tokenService;
         }
 
@@ -41,7 +44,7 @@ namespace WS_ClinicService.Controllers
             {
                 AccessToken = _tokenService.CreateToken(user.Login, user.Role),
                 TokenType = "Bearer",
-                ExpiresIn = 3600
+                ExpiresIn = _jwtOptions.Value.ExpiresMinutes * 60
             });
         }
     }

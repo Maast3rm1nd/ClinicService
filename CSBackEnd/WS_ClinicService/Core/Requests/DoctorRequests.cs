@@ -2,11 +2,13 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using ClinicServiceContext.Enums;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using DoctorEntity = ClinicServiceContext.Entities.Doctor;
-using DoctorSnapshot = WS_ClinicService.Contracts.Responses.Doctors;
+using DoctorSnapshot = ClinicServiceBase.DTO.DoctorsDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +18,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateDoctorCommand(CreateDoctorRequest Request) : IRequest<DoctorSnapshot>;
 
-    public record UpdateDoctorCommand(Guid Id, DoctorSnapshot Doctor) : IRequest<DoctorSnapshot>;
+    public record UpdateDoctorCommand(Guid Id, UpdateDoctorRequest Request) : IRequest<DoctorSnapshot>;
 
     public record DeleteDoctorCommand(Guid Id) : IRequest<Unit>;
 
@@ -48,6 +50,8 @@ namespace WS_ClinicService.Core.Requests
 
             var entity = mapper.Map<DoctorEntity>(request.Request);
 
+            entity.Type = PersonType.Doctor;
+
             await repository.AddObject(entity);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
@@ -65,7 +69,27 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Врач с id {request.Id} не найден");
 
-            mapper.Map(request.Doctor, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.FullName))
+            {
+                entity.FullName = request.Request.FullName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Request.Login))
+            {
+                entity.Login = request.Request.Login;
+            }
+
+            entity.ShortName = request.Request.ShortName ?? entity.ShortName;
+
+            if (request.Request.Specialisations != null)
+            {
+                entity.Specialisations = request.Request.Specialisations;
+            }
+
+            if (request.Request.DoctorWorkStatus.HasValue)
+            {
+                entity.DoctorWorkStatus = request.Request.DoctorWorkStatus.Value;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

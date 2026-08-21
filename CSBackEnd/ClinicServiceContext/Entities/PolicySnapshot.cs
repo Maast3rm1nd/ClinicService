@@ -4,8 +4,6 @@ namespace ClinicServiceContext.Entities
 {
     public class PolicySnapshot : SnapshotBase
     {
-        public Guid Id { get; set; }
-
         public string MedicalPolicyNumber { get; set; }
 
         public PolicyType MedicalPolicyType { get; set; }

@@ -46,8 +46,85 @@ namespace WS_ClinicService.Core.Validators
         public CreateDoctorRequestValidator()
         {
             RuleFor(x => x.Id).NotEqual(Guid.Empty);
+            RuleFor(x => x.FullName).NotEmpty();
+            RuleFor(x => x.Login).NotEmpty();
             RuleFor(x => x.Specialisations).NotNull().NotEmpty();
             RuleFor(x => x.DoctorWorkStatus).IsInEnum();
+        }
+    }
+
+    public class UpdateDoctorRequestValidator : AbstractValidator<UpdateDoctorRequest>
+    {
+        public UpdateDoctorRequestValidator()
+        {
+            RuleFor(x => x.DoctorWorkStatus).IsInEnum().When(x => x.DoctorWorkStatus.HasValue);
+        }
+    }
+
+    public class UpdatePatientRequestValidator : AbstractValidator<UpdatePatientRequest>
+    {
+        public UpdatePatientRequestValidator()
+        {
+            RuleFor(x => x.BirthDate).LessThan(DateTimeOffset.UtcNow).When(x => x.BirthDate.HasValue);
+        }
+    }
+
+    public class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonRequest>
+    {
+        public UpdatePersonRequestValidator()
+        {
+            RuleFor(x => x.FullName).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.FullName));
+            RuleFor(x => x.Login).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.Login));
+        }
+    }
+
+    public class UpdateScheduleRequestValidator : AbstractValidator<UpdateScheduleRequest>
+    {
+        public UpdateScheduleRequestValidator()
+        {
+            RuleFor(x => x.Doctor).NotEqual(Guid.Empty).When(x => x.Doctor.HasValue);
+        }
+    }
+
+    public class UpdateDiagnosisRequestValidator : AbstractValidator<UpdateDiagnosisRequest>
+    {
+        public UpdateDiagnosisRequestValidator()
+        {
+            RuleFor(x => x.Status).IsInEnum().When(x => x.Status.HasValue);
+        }
+    }
+
+    public class UpdateMedicalCardRequestValidator : AbstractValidator<UpdateMedicalCardRequest>
+    {
+        public UpdateMedicalCardRequestValidator()
+        {
+            RuleFor(x => x.Patient).NotEqual(Guid.Empty).When(x => x.Patient.HasValue);
+            RuleFor(x => x.Policy).NotEqual(Guid.Empty).When(x => x.Policy.HasValue);
+        }
+    }
+
+    public class UpdatePolicyRequestValidator : AbstractValidator<UpdatePolicyRequest>
+    {
+        public UpdatePolicyRequestValidator()
+        {
+            RuleFor(x => x.MedicalPolicyType).IsInEnum().When(x => x.MedicalPolicyType.HasValue);
+        }
+    }
+
+    public class UpdateInsuranceProviderRequestValidator : AbstractValidator<UpdateInsuranceProviderRequest>
+    {
+        public UpdateInsuranceProviderRequestValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.Name));
+            RuleFor(x => x.LicenseNumber).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.LicenseNumber));
+        }
+    }
+
+    public class UpdateSpecialisationRequestValidator : AbstractValidator<UpdateSpecialisationRequest>
+    {
+        public UpdateSpecialisationRequestValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.Name));
         }
     }
 

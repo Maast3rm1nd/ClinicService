@@ -3,9 +3,9 @@
     public class SpecialisationSnapshotDto
     {
         public Guid Id { get; set; }
+
         public string Name { get; set; }
 
-        public ICollection<DoctorsDto> Doctors { get; set; }
-
+        public List<Guid>? Doctors { get; set; }
     }
 }

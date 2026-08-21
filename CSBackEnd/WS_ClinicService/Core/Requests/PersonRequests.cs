@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Person = ClinicServiceContext.Entities.PersonSnapshot;
-using PersonSnapshot = WS_ClinicService.Contracts.Responses.PersonSnapshot;
+using PersonSnapshot = ClinicServiceBase.DTO.PersonSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreatePersonCommand(CreatePersonRequest Request) : IRequest<PersonSnapshot>;
 
-    public record UpdatePersonCommand(Guid Id, PersonSnapshot Person) : IRequest<PersonSnapshot>;
+    public record UpdatePersonCommand(Guid Id, UpdatePersonRequest Request) : IRequest<PersonSnapshot>;
 
     public record DeletePersonCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,17 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Персона с id {request.Id} не найдена");
 
-            mapper.Map(request.Person, entity);
+            if (!string.IsNullOrWhiteSpace(request.Request.FullName))
+            {
+                entity.FullName = request.Request.FullName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Request.Login))
+            {
+                entity.Login = request.Request.Login;
+            }
+
+            entity.ShortName = request.Request.ShortName ?? entity.ShortName;
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

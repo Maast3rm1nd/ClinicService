@@ -2,15 +2,16 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using ClinicServiceContext.Enums;
 using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using MedicalCard = ClinicServiceContext.Entities.MedicalCardSnapshot;
-using MedicalCardSnapshot = WS_ClinicService.Contracts.Responses.MedicalCardSnapshot;
+using MedicalCardSnapshot = ClinicServiceBase.DTO.MedicalCardSnapshotDto;
 using Appointment = ClinicServiceContext.Entities.AppointmentSnapshot;
-using AppointmentSnapshot = WS_ClinicService.Contracts.Responses.AppointmentSnapshot;
+using AppointmentSnapshot = ClinicServiceBase.DTO.AppointmentSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -18,7 +19,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record AddAppointmentSlipCommand(AddAppointmentSlipRequest Request) : IRequest<AppointmentSnapshot>;
 
-    public record UpdateAppointmentSlipCommand(Guid Id, AppointmentSnapshot AppointmentSlip) : IRequest<AppointmentSnapshot>;
+    public record UpdateAppointmentSlipCommand(Guid Id, UpdateAppointmentRequest Request) : IRequest<AppointmentSnapshot>;
 
     public record DeleteAppointmentSlipCommand(Guid Id) : IRequest<DeleteAppointmentSlipsResponse>;
 
@@ -73,7 +74,22 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Талон с id {request.Id} не найден");
 
-            mapper.Map(request.AppointmentSlip, entity);
+            entity.EditedBy = request.Request.EditedBy;
+
+            if (request.Request.AppointmentDateTime.HasValue)
+            {
+                entity.AppointmentDateTime = request.Request.AppointmentDateTime.Value;
+            }
+
+            if (request.Request.Status.HasValue)
+            {
+                entity.Status = request.Request.Status.Value;
+            }
+
+            if (request.Request.PreliminaryReason != null)
+            {
+                entity.PremilinaryReason = request.Request.PreliminaryReason;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 
@@ -89,7 +105,19 @@ namespace WS_ClinicService.Core.Requests
     {
         public async Task<DeleteAppointmentSlipsResponse> Handle(DeleteAppointmentSlipCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.GetRepository<IAppointmentSnapshotRepository>().SoftDeleteById(request.Id);
+            var scheduleRepository = unitOfWork.GetRepository<IScheduleRepository>();
+            var appointmentRepository = unitOfWork.GetRepository<IAppointmentSnapshotRepository>();
+
+            var schedule = await scheduleRepository.GetObjectsByFilter(
+                s => s.Appointments.Contains(request.Id), cancellationToken);
+
+            if (schedule != null)
+            {
+                schedule.Appointments.Remove(request.Id);
+                await scheduleRepository.UpdateObject(schedule);
+            }
+
+            await appointmentRepository.SoftDeleteById(request.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 

@@ -8,7 +8,7 @@ namespace ClinicServiceBase.DAL.DBRepositories
 
         Task EditSchedule(Schedule schedule);
 
-        Task<Schedule> GetSchedules(Guid[] ids, CancellationToken cancellationToken);
+        Task<Schedule?> GetSchedules(Guid[] ids, CancellationToken cancellationToken);
 
         Task DeleteSchedule(Guid scheduleId);
     }

@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using MedicalCard = ClinicServiceContext.Entities.MedicalCardSnapshot;
-using MedicalCardSnapshot = WS_ClinicService.Contracts.Responses.MedicalCardSnapshot;
+using MedicalCardSnapshot = ClinicServiceBase.DTO.MedicalCardSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateMedicalCardCommand(CreateMedicalCardRequest Request) : IRequest<MedicalCardSnapshot>;
 
-    public record UpdateMedicalCardCommand(Guid Id, MedicalCardSnapshot MedicalCard) : IRequest<MedicalCardSnapshot>;
+    public record UpdateMedicalCardCommand(Guid Id, UpdateMedicalCardRequest Request) : IRequest<MedicalCardSnapshot>;
 
     public record DeleteMedicalCardCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,20 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Медицинская карта с id {request.Id} не найдена");
 
-            mapper.Map(request.MedicalCard, entity);
+            if (request.Request.Patient.HasValue)
+            {
+                entity.Patient = request.Request.Patient.Value;
+            }
+
+            if (request.Request.Policy.HasValue)
+            {
+                entity.Policy = request.Request.Policy.Value;
+            }
+
+            if (request.Request.Diagnoses != null)
+            {
+                entity.Diagnoses = request.Request.Diagnoses;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 

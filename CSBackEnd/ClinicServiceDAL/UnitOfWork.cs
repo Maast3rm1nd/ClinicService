@@ -46,11 +46,30 @@ namespace ClinicServiceDAL
         {
             if (!_repositories.TryGetValue(typeof(T), out var repository))
             {
-                repository = (IClinicServiseRepository)Activator.CreateInstance(typeof(T), _context)!;
+                repository = (IClinicServiseRepository)Activator.CreateInstance(FindImplementation(typeof(T)), _context)!;
                 _repositories[typeof(T)] = repository;
             }
 
             return (T)repository;
+        }
+
+        private static Type FindImplementation(Type contractType)
+        {
+            if (!contractType.IsInterface)
+            {
+                return contractType;
+            }
+
+            var expectedName = contractType.Name[1..];
+
+            var implementation = typeof(UnitOfWork).Assembly.GetTypes()
+                .FirstOrDefault(t => !t.IsInterface
+                    && !t.IsAbstract
+                    && t.Name == expectedName
+                    && contractType.IsAssignableFrom(t));
+
+            return implementation
+                ?? throw new InvalidOperationException($"No implementation found for repository '{contractType.Name}'.");
         }
 
         public void Dispose()

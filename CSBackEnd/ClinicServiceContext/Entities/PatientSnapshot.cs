@@ -2,8 +2,6 @@
 {
     public class PatientSnapshot: SnapshotBase
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         public string FullName { get; set; }
 
         public string? ShortName { get; set; }

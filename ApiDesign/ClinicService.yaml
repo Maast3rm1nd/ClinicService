@@ -18,6 +18,7 @@ tags:
   - name: Schedules
   - name: Administrators
   - name: Persons
+  - name: Auth
 
 paths:
   /patients:
@@ -1568,6 +1569,39 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /health:
     get:
       tags:
@@ -1621,6 +1655,7 @@ components:
     PersonType:
       type: string
       enum:
+        - Person
         - Doctor
         - Administrator
 
@@ -1822,7 +1857,7 @@ components:
         - doctor
         - appointmentDateTime
         - createdBy
-        - creationtDateTime
+        - creationDateTime
         - status
       properties:
         id:
@@ -1843,7 +1878,7 @@ components:
         createdBy:
           type: string
           format: uuid
-        creationtDateTime:
+        creationDateTime:
           type: string
           format: date-time
         editedBy:
@@ -1917,6 +1952,20 @@ components:
         details:
           type: string
 
+    TokenResponse:
+      type: object
+      required:
+        - accessToken
+        - tokenType
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+
 
   parameters:
     idParam:
@@ -1935,11 +1984,17 @@ components:
     BadRequest:
       description: Bad request
 
+    Unauthorized:
+      description: Unauthorized
+
     Forbidden:
       description: Forbidden
 
     NotFound:
       description: Not found
+
+    UnprocessableEntity:
+      description: Validation error
 
     InternalServerError:
       description: Internal Server Error

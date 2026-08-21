@@ -1,3 +1,4 @@
+using ClinicServiceBase.DTO;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,13 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("medical-cards/{id:guid}")]
-        public async Task<ActionResult<MedicalCardSnapshot>> GetMedicalCard(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<MedicalCardSnapshotDto>> GetMedicalCard(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetAdminMedicalCardQuery(id), cancellationToken));
         }
 
         [HttpPost("appointment-slips")]
-        public async Task<ActionResult<AppointmentSnapshot>> AddAppointmentSlip([FromBody] AddAppointmentSlipRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentSnapshotDto>> AddAppointmentSlip([FromBody] AddAppointmentSlipRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new AddAppointmentSlipCommand(request), cancellationToken);
 
@@ -34,7 +35,7 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPut("appointment-slips/{id:guid}")]
-        public async Task<ActionResult<AppointmentSnapshot>> EditAppointmentSlip(Guid id, [FromBody] AppointmentSnapshot appointmentSlip, CancellationToken cancellationToken)
+        public async Task<ActionResult<AppointmentSnapshotDto>> EditAppointmentSlip(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateAppointmentSlipCommand(id, appointmentSlip), cancellationToken));
         }

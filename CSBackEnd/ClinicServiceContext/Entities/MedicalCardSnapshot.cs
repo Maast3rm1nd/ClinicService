@@ -2,8 +2,6 @@
 {
     public class MedicalCardSnapshot : SnapshotBase
     {
-        public Guid Id { get; set; }
-
         public Guid Patient { get; set; }
 
         public ulong RecordNumber { get; set; }

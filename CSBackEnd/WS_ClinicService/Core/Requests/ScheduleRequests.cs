@@ -2,11 +2,12 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using MediatR;
+using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using ScheduleEntity = ClinicServiceContext.Entities.Schedule;
-using ScheduleSnapshot = WS_ClinicService.Contracts.Responses.Schedule;
+using ScheduleSnapshot = ClinicServiceBase.DTO.ScheduleDto;
 
 namespace WS_ClinicService.Core.Requests
 {
@@ -16,7 +17,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record CreateScheduleCommand(CreateScheduleRequest Request) : IRequest<ScheduleSnapshot>;
 
-    public record UpdateScheduleCommand(Guid Id, ScheduleSnapshot Schedule) : IRequest<ScheduleSnapshot>;
+    public record UpdateScheduleCommand(Guid Id, UpdateScheduleRequest Request) : IRequest<ScheduleSnapshot>;
 
     public record DeleteScheduleCommand(Guid Id) : IRequest<Unit>;
 
@@ -65,7 +66,15 @@ namespace WS_ClinicService.Core.Requests
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Расписание с id {request.Id} не найдено");
 
-            mapper.Map(request.Schedule, entity);
+            if (request.Request.Doctor.HasValue)
+            {
+                entity.Doctor = request.Request.Doctor.Value;
+            }
+
+            if (request.Request.Appointments != null)
+            {
+                entity.Appointments = request.Request.Appointments;
+            }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;
 
@@ -81,7 +90,7 @@ namespace WS_ClinicService.Core.Requests
     {
         public async Task<Unit> Handle(DeleteScheduleCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.GetRepository<IScheduleRepository>().SoftDeleteById(request.Id);
+            await unitOfWork.GetRepository<IScheduleRepository>().DeleteObjectById(request.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 

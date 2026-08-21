@@ -2,7 +2,7 @@
 {
     public class Entity
     { 
-        public Guid Id { get; set; } = new Guid();
+        public Guid Id { get; set; } = Guid.NewGuid();
     }
 
     public class BaseEntity: Entity
