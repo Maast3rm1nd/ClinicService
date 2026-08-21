@@ -12,11 +12,11 @@ namespace WS_ClinicService.Controllers
     [Authorize]
     public class PersonsController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public PersonsController(ISender sender)
+        public PersonsController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,14 +24,14 @@ namespace WS_ClinicService.Controllers
         {
             return Ok(new ListResponse<PersonSnapshot>
             {
-                Data = await _sender.Send(new GetPersonsQuery(), cancellationToken)
+                Data = await _mediator.Send(new GetPersonsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
         public async Task<ActionResult<PersonSnapshot>> CreatePerson([FromBody] CreatePersonRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new CreatePersonCommand(request), cancellationToken);
+            var created = await _mediator.Send(new CreatePersonCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -39,19 +39,19 @@ namespace WS_ClinicService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<PersonSnapshot>> GetPersonById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetPersonByIdQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetPersonByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<PersonSnapshot>> UpdatePerson(Guid id, [FromBody] PersonSnapshot person, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdatePersonCommand(id, person), cancellationToken));
+            return Ok(await _mediator.Send(new UpdatePersonCommand(id, person), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeletePerson(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeletePersonCommand(id), cancellationToken);
+            await _mediator.Send(new DeletePersonCommand(id), cancellationToken);
 
             return NoContent();
         }

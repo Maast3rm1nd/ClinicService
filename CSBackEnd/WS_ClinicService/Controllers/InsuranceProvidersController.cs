@@ -12,11 +12,11 @@ namespace WS_ClinicService.Controllers
     [Authorize]
     public class InsuranceProvidersController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public InsuranceProvidersController(ISender sender)
+        public InsuranceProvidersController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,14 +24,14 @@ namespace WS_ClinicService.Controllers
         {
             return Ok(new ListResponse<InsuranceProviderSnapshot>
             {
-                Data = await _sender.Send(new GetInsuranceProvidersQuery(), cancellationToken)
+                Data = await _mediator.Send(new GetInsuranceProvidersQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
         public async Task<ActionResult<InsuranceProviderSnapshot>> CreateInsuranceProvider([FromBody] CreateInsuranceProviderRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new CreateInsuranceProviderCommand(request), cancellationToken);
+            var created = await _mediator.Send(new CreateInsuranceProviderCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -39,19 +39,19 @@ namespace WS_ClinicService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<InsuranceProviderSnapshot>> GetInsuranceProviderById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetInsuranceProviderByIdQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetInsuranceProviderByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<InsuranceProviderSnapshot>> UpdateInsuranceProvider(Guid id, [FromBody] InsuranceProviderSnapshot provider, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateInsuranceProviderCommand(id, provider), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateInsuranceProviderCommand(id, provider), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteInsuranceProvider(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeleteInsuranceProviderCommand(id), cancellationToken);
+            await _mediator.Send(new DeleteInsuranceProviderCommand(id), cancellationToken);
 
             return NoContent();
         }

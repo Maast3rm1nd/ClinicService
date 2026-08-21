@@ -12,11 +12,11 @@ namespace WS_ClinicService.Controllers
     [Authorize]
     public class SchedulesController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public SchedulesController(ISender sender)
+        public SchedulesController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,14 +24,14 @@ namespace WS_ClinicService.Controllers
         {
             return Ok(new ListResponse<Schedule>
             {
-                Data = await _sender.Send(new GetSchedulesQuery(), cancellationToken)
+                Data = await _mediator.Send(new GetSchedulesQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
         public async Task<ActionResult<Schedule>> CreateSchedule([FromBody] CreateScheduleRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new CreateScheduleCommand(request), cancellationToken);
+            var created = await _mediator.Send(new CreateScheduleCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -39,19 +39,19 @@ namespace WS_ClinicService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<Schedule>> GetScheduleById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetScheduleByIdQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetScheduleByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<Schedule>> UpdateSchedule(Guid id, [FromBody] Schedule schedule, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateScheduleCommand(id, schedule), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateScheduleCommand(id, schedule), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteSchedule(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeleteScheduleCommand(id), cancellationToken);
+            await _mediator.Send(new DeleteScheduleCommand(id), cancellationToken);
 
             return NoContent();
         }

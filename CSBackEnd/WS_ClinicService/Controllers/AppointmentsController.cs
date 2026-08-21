@@ -12,11 +12,11 @@ namespace WS_ClinicService.Controllers
     [Authorize]
     public class AppointmentsController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public AppointmentsController(ISender sender)
+        public AppointmentsController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,14 +24,14 @@ namespace WS_ClinicService.Controllers
         {
             return Ok(new ListResponse<AppointmentSnapshot>
             {
-                Data = await _sender.Send(new GetAppointmentsQuery(), cancellationToken)
+                Data = await _mediator.Send(new GetAppointmentsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
         public async Task<ActionResult<AppointmentSnapshot>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new CreateAppointmentCommand(request), cancellationToken);
+            var created = await _mediator.Send(new CreateAppointmentCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -39,19 +39,19 @@ namespace WS_ClinicService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<AppointmentSnapshot>> GetAppointmentById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetAppointmentByIdQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetAppointmentByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<AppointmentSnapshot>> UpdateAppointment(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateAppointmentCommand(id, request), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateAppointmentCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> CancelAppointment(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new CancelAppointmentCommand(id), cancellationToken);
+            await _mediator.Send(new CancelAppointmentCommand(id), cancellationToken);
 
             return NoContent();
         }

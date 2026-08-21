@@ -12,11 +12,11 @@ namespace WS_ClinicService.Controllers
     [Authorize]
     public class SpecialisationsController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public SpecialisationsController(ISender sender)
+        public SpecialisationsController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,14 +24,14 @@ namespace WS_ClinicService.Controllers
         {
             return Ok(new ListResponse<SpecialisationSnapshot>
             {
-                Data = await _sender.Send(new GetSpecialisationsQuery(), cancellationToken)
+                Data = await _mediator.Send(new GetSpecialisationsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
         public async Task<ActionResult<SpecialisationSnapshot>> CreateSpecialisation([FromBody] CreateSpecialisationRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new CreateSpecialisationCommand(request), cancellationToken);
+            var created = await _mediator.Send(new CreateSpecialisationCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -39,19 +39,19 @@ namespace WS_ClinicService.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<SpecialisationSnapshot>> GetSpecialisationById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetSpecialisationByIdQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetSpecialisationByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<SpecialisationSnapshot>> UpdateSpecialisation(Guid id, [FromBody] SpecialisationSnapshot specialisation, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateSpecialisationCommand(id, specialisation), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateSpecialisationCommand(id, specialisation), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteSpecialisation(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeleteSpecialisationCommand(id), cancellationToken);
+            await _mediator.Send(new DeleteSpecialisationCommand(id), cancellationToken);
 
             return NoContent();
         }

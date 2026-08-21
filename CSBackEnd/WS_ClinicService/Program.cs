@@ -1,14 +1,10 @@
-using System.Text;
 using ClinicServiceDAL;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Scalar.AspNetCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Scalar.AspNetCore;
 using WS_ClinicService.Core.Auth;
 using WS_ClinicService.Core.Extensions;
 using WS_ClinicService.Core.Filters;
@@ -51,6 +47,7 @@ services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 services.Configure<AuthOptions>(configuration.GetSection("Auth"));
 services.AddSingleton<TokenService>();
 
+#if !DEBUG
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -67,6 +64,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 services.AddAuthorization();
+#endif
 
 services.AddOpenApi();
 
@@ -76,15 +74,21 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapOpenApi("/openapi/{documentName}.yaml");
+
+    app.MapGet("/", () => Results.Redirect("/openapi/v1.yaml"))
+        .ExcludeFromDescription();
 }
 
 app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
 
 app.UseHttpsRedirection();
 
+#if !DEBUG
 app.UseAuthentication();
 
 app.UseAuthorization();
+#endif
 
 if (configuration["Database:AutoMigrate"] == "true")
 {

@@ -12,23 +12,23 @@ namespace WS_ClinicService.Controllers
     [Authorize(Roles = "Administrator")]
     public class AdministratorsController : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly IMediator _mediator;
 
-        public AdministratorsController(ISender sender)
+        public AdministratorsController(IMediator mediator)
         {
-            _sender = sender;
+            _mediator = mediator;
         }
 
         [HttpGet("medical-cards/{id:guid}")]
         public async Task<ActionResult<MedicalCardSnapshot>> GetMedicalCard(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new GetAdminMedicalCardQuery(id), cancellationToken));
+            return Ok(await _mediator.Send(new GetAdminMedicalCardQuery(id), cancellationToken));
         }
 
         [HttpPost("appointment-slips")]
         public async Task<ActionResult<AppointmentSnapshot>> AddAppointmentSlip([FromBody] AddAppointmentSlipRequest request, CancellationToken cancellationToken)
         {
-            var created = await _sender.Send(new AddAppointmentSlipCommand(request), cancellationToken);
+            var created = await _mediator.Send(new AddAppointmentSlipCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
         }
@@ -36,13 +36,13 @@ namespace WS_ClinicService.Controllers
         [HttpPut("appointment-slips/{id:guid}")]
         public async Task<ActionResult<AppointmentSnapshot>> EditAppointmentSlip(Guid id, [FromBody] AppointmentSnapshot appointmentSlip, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new UpdateAppointmentSlipCommand(id, appointmentSlip), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateAppointmentSlipCommand(id, appointmentSlip), cancellationToken));
         }
 
         [HttpDelete("appointment-slips/{id:guid}")]
         public async Task<ActionResult<DeleteAppointmentSlipsResponse>> DeleteAppointmentSlip(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await _sender.Send(new DeleteAppointmentSlipCommand(id), cancellationToken));
+            return Ok(await _mediator.Send(new DeleteAppointmentSlipCommand(id), cancellationToken));
         }
     }
 }
