@@ -1,10 +1,10 @@
-using ClinicServiceContext.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Requests;
+using ClinicServiceBase.DTO;
 
 namespace WS_ClinicService.Controllers
 {
@@ -21,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<DiagnosisSnapshot>>> GetDiagnoses(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<DiagnosisSnapshotDto>>> GetDiagnoses(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<DiagnosisSnapshot>
+            return Ok(new ListResponse<DiagnosisSnapshotDto>
             {
                 Data = await _mediator.Send(new GetDiagnosesQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<DiagnosisSnapshot>> CreateDiagnosis([FromBody] CreateDiagnosisRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<DiagnosisSnapshotDto>> CreateDiagnosis([FromBody] CreateDiagnosisRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateDiagnosisCommand(request), cancellationToken);
 
@@ -38,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<DiagnosisSnapshot>> GetDiagnosisById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<DiagnosisSnapshotDto>> GetDiagnosisById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetDiagnosisByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<DiagnosisSnapshot>> UpdateDiagnosis(Guid id, [FromBody] DiagnosisSnapshot diagnosis, CancellationToken cancellationToken)
+        public async Task<ActionResult<DiagnosisSnapshotDto>> UpdateDiagnosis(Guid id, [FromBody] UpdateDiagnosisRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new UpdateDiagnosisCommand(id, diagnosis), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateDiagnosisCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

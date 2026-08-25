@@ -1,10 +1,10 @@
-using ClinicServiceContext.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Requests;
+using ClinicServiceBase.DTO;
 
 namespace WS_ClinicService.Controllers
 {
@@ -21,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<MedicalCardSnapshot>>> GetMedicalCards(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<MedicalCardSnapshotDto>>> GetMedicalCards(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<MedicalCardSnapshot>
+            return Ok(new ListResponse<MedicalCardSnapshotDto>
             {
                 Data = await _mediator.Send(new GetMedicalCardsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<MedicalCardSnapshot>> CreateMedicalCard([FromBody] CreateMedicalCardRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<MedicalCardSnapshotDto>> CreateMedicalCard([FromBody] CreateMedicalCardRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateMedicalCardCommand(request), cancellationToken);
 
@@ -38,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<MedicalCardSnapshot>> GetMedicalCardById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<MedicalCardSnapshotDto>> GetMedicalCardById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetMedicalCardByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<MedicalCardSnapshot>> UpdateMedicalCard(Guid id, [FromBody] MedicalCardSnapshot medicalCard, CancellationToken cancellationToken)
+        public async Task<ActionResult<MedicalCardSnapshotDto>> UpdateMedicalCard(Guid id, [FromBody] UpdateMedicalCardRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new UpdateMedicalCardCommand(id, medicalCard), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateMedicalCardCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

@@ -37,7 +37,7 @@ namespace WS_ClinicService.Controllers
         [HttpPut("appointment-slips/{id:guid}")]
         public async Task<ActionResult<AppointmentSnapshotDto>> EditAppointmentSlip(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new UpdateAppointmentSlipCommand(id, appointmentSlip), cancellationToken));
+            return Ok(await _mediator.Send(new UpdateAppointmentSlipCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("appointment-slips/{id:guid}")]

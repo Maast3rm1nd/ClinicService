@@ -21,7 +21,7 @@ try
 
     LogExt.Info($"Connect to DB [{arguments.Dscs.Split(";")[1]}] on server [{arguments.Dscs.Split(";")[0]}]...");
 
-    DbUp.Engine.UpgradeEngine upgrader;
+    DbUp.Engine.UpgradeEngine? upgrader = null;
 
     if (dbType == DBType.MSSQL)
     {

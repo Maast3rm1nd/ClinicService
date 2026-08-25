@@ -1,10 +1,10 @@
-using ClinicServiceContext.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Requests;
+using ClinicServiceBase.DTO;
 
 namespace WS_ClinicService.Controllers
 {
@@ -21,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<PolicySnapshot>>> GetPolicies(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<PolicySnapshotDto>>> GetPolicies(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<PolicySnapshot>
+            return Ok(new ListResponse<PolicySnapshotDto>
             {
                 Data = await _mediator.Send(new GetPoliciesQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<PolicySnapshot>> CreatePolicy([FromBody] CreatePolicyRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<PolicySnapshotDto>> CreatePolicy([FromBody] CreatePolicyRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreatePolicyCommand(request), cancellationToken);
 
@@ -38,15 +38,15 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<PolicySnapshot>> GetPolicyById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PolicySnapshotDto>> GetPolicyById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetPolicyByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<PolicySnapshot>> UpdatePolicy(Guid id, [FromBody] PolicySnapshot policy, CancellationToken cancellationToken)
+        public async Task<ActionResult<PolicySnapshotDto>> UpdatePolicy(Guid id, [FromBody] UpdatePolicyRequest request, CancellationToken cancellationToken)
         {
-            return Ok(await _mediator.Send(new UpdatePolicyCommand(id, policy), cancellationToken));
+            return Ok(await _mediator.Send(new UpdatePolicyCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
