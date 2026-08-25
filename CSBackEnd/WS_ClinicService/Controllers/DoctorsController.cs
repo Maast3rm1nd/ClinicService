@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Requests;
+using ClinicServiceContext.Entities;
 
 namespace WS_ClinicService.Controllers
 {
@@ -20,16 +21,16 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListResponse<Doctors>>> GetDoctors(CancellationToken cancellationToken)
+        public async Task<ActionResult<ListResponse<Doctor>>> GetDoctors(CancellationToken cancellationToken)
         {
-            return Ok(new ListResponse<Doctors>
+            return Ok(new ListResponse<Doctor>
             {
                 Data = await _mediator.Send(new GetDoctorsQuery(), cancellationToken)
             });
         }
 
         [HttpPost]
-        public async Task<ActionResult<Doctors>> CreateDoctor([FromBody] CreateDoctorRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<Doctor>> CreateDoctor([FromBody] CreateDoctorRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateDoctorCommand(request), cancellationToken);
 
@@ -37,13 +38,13 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Doctors>> GetDoctorById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<Doctor>> GetDoctorById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetDoctorByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<Doctors>> UpdateDoctor(Guid id, [FromBody] Doctors doctor, CancellationToken cancellationToken)
+        public async Task<ActionResult<Doctor>> UpdateDoctor(Guid id, [FromBody] Doctor doctor, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateDoctorCommand(id, doctor), cancellationToken));
         }

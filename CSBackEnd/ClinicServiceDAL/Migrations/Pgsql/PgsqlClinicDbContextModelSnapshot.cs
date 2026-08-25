@@ -250,6 +250,9 @@ namespace ClinicServiceDAL.Migrations.Pgsql
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
 

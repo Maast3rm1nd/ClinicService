@@ -6,9 +6,9 @@ using WS_ClinicService.Contracts.Requests;
 
 namespace WS_ClinicService.Mapping
 {
-    public class ApiMappingProfile : Profile
+    public class ClinicMappingProfile : Profile
     {
-        public ApiMappingProfile()
+        public ClinicMappingProfile()
         {
             CreateMap<CreatePatientRequest, PatientSnapshot>();
             CreateMap<PatientSnapshot, PatientSnapshotDto>();
@@ -49,6 +49,28 @@ namespace WS_ClinicService.Mapping
 
             CreateMap<CreatePersonRequest, PersonSnapshot>();
             CreateMap<PersonSnapshot, PersonSnapshotDto>();
+
+            CreateMap<UpdatePatientRequest, PatientSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateMedicalCardRequest, MedicalCardSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdatePolicyRequest, PolicySnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateInsuranceProviderRequest, InsuranceProviderSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateDoctorRequest, Doctor>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateSpecialisationRequest, SpecialisationSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateDiagnosisRequest, DiagnosisSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateAppointmentRequest, AppointmentSnapshot>()
+                .ForMember(d => d.PremilinaryReason, o => o.MapFrom(s => s.PreliminaryReason))
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateScheduleRequest, Schedule>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdatePersonRequest, PersonSnapshot>()
+                .ForAllMembers(o => o.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

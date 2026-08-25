@@ -249,6 +249,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ShortName")
                         .HasColumnType("nvarchar(max)");
 

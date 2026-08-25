@@ -35,7 +35,7 @@ services.AddControllers(conf =>
 
 services.AddClinicDAL(configuration);
 
-services.AddAutoMapper(cfg => { }, typeof(ApiMappingProfile));
+services.AddAutoMapper(cfg => { }, typeof(ClinicMappingProfile));
 
 services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
