@@ -21,6 +21,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListResponse<MedicalCardSnapshotDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ListResponse<MedicalCardSnapshotDto>>> GetMedicalCards(CancellationToken cancellationToken)
         {
             return Ok(new ListResponse<MedicalCardSnapshotDto>
@@ -30,6 +35,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(MedicalCardSnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MedicalCardSnapshotDto>> CreateMedicalCard([FromBody] CreateMedicalCardRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateMedicalCardCommand(request), cancellationToken);
@@ -38,18 +48,33 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(MedicalCardSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MedicalCardSnapshotDto>> GetMedicalCardById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetMedicalCardByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(MedicalCardSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MedicalCardSnapshotDto>> UpdateMedicalCard(Guid id, [FromBody] UpdateMedicalCardRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateMedicalCardCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteMedicalCard(Guid id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeleteMedicalCardCommand(id), cancellationToken);

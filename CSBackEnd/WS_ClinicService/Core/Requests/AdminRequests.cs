@@ -28,7 +28,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<MedicalCardSnapshot> Handle(GetAdminMedicalCardQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IMedicalCardSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Медицинская карта с id {request.Id} не найдена");
+                ?? throw new RecordNotFoundException($"Medical card with id [{request.Id}] was not found");
 
             return mapper.Map<MedicalCardSnapshot>(entity);
         }
@@ -42,7 +42,7 @@ namespace WS_ClinicService.Core.Requests
             var appointmentRepository = unitOfWork.GetRepository<IAppointmentSnapshotRepository>();
 
             var schedule = await scheduleRepository.GetObjectsById(request.Request.ScheduleId, cancellationToken)
-                ?? throw new RecordNotFoundException($"Расписание с id {request.Request.ScheduleId} не найдено");
+                ?? throw new RecordNotFoundException($"Schedule with id [{request.Request.ScheduleId}] was not found");
 
             var appointment = new Appointment
             {
@@ -72,7 +72,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IAppointmentSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Талон с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Appointment slip with id [{request.Id}] was not found");
 
             entity.EditedBy = request.Request.EditedBy;
 

@@ -21,6 +21,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListResponse<PatientSnapshotDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ListResponse<PatientSnapshotDto>>> GetPatients(CancellationToken cancellationToken)
         {
             return Ok(new ListResponse<PatientSnapshotDto>
@@ -30,6 +35,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(PatientSnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PatientSnapshotDto>> CreatePatient([FromBody] CreatePatientRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreatePatientCommand(request), cancellationToken);
@@ -38,18 +48,33 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(PatientSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PatientSnapshotDto>> GetPatientById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetPatientByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(PatientSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PatientSnapshotDto>> UpdatePatient(Guid id, [FromBody] UpdatePatientRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdatePatientCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeletePatient(Guid id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeletePatientCommand(id), cancellationToken);

@@ -2,8 +2,6 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using ClinicServiceBase.DTO;
-using ClinicServiceContext.Entities;
 using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using InsuranceProvider = ClinicServiceContext.Entities.InsuranceProviderSnapshot;
@@ -34,10 +32,10 @@ namespace WS_ClinicService.Core.Requests
     {
         public async Task<InsuranceProviderSnapshot> Handle(GetInsuranceProviderByIdQuery request, CancellationToken cancellationToken)
         {
-            var entity = await unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Страховая компания с id {request.Id} не найдена");
+            var ip = await unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
+                ?? throw new RecordNotFoundException($"Insurance provider with id [{request.Id}] was not found");
 
-            return mapper.Map<InsuranceProviderSnapshot>(entity);
+            return mapper.Map<InsuranceProviderSnapshot>(ip);
         }
     }
 
@@ -47,13 +45,13 @@ namespace WS_ClinicService.Core.Requests
         {
             var repository = unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>();
 
-            var entity = mapper.Map<InsuranceProvider>(request.Request);
+            var ip = mapper.Map<InsuranceProvider>(request.Request);
 
-            await repository.AddObject(entity);
+            await repository.AddObject(ip);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return mapper.Map<InsuranceProviderSnapshot>(entity);
+            return mapper.Map<InsuranceProviderSnapshot>(ip);
         }
     }
 
@@ -63,28 +61,28 @@ namespace WS_ClinicService.Core.Requests
         {
             var repository = unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>();
 
-            var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Страховая компания с id {request.Id} не найдена");
+            var ip = await repository.GetObjectsById(request.Id, cancellationToken)
+                ?? throw new RecordNotFoundException($"Insurance provider with id [{request.Id}] was not found");
 
             if (!string.IsNullOrWhiteSpace(request.Request.Name))
             {
-                entity.Name = request.Request.Name;
+                ip.Name = request.Request.Name;
             }
 
             if (!string.IsNullOrWhiteSpace(request.Request.LicenseNumber))
             {
-                entity.LicenseNumber = request.Request.LicenseNumber;
+                ip.LicenseNumber = request.Request.LicenseNumber;
             }
 
-            entity.PhoneNumber = request.Request.PhoneNumber ?? entity.PhoneNumber;
+            ip.PhoneNumber = request.Request.PhoneNumber ?? ip.PhoneNumber;
 
-            entity.EditDateTime = DateTimeOffset.UtcNow;
+            ip.EditDateTime = DateTimeOffset.UtcNow;
 
-            await repository.UpdateObject(entity);
+            await repository.UpdateObject(ip);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return mapper.Map<InsuranceProviderSnapshot>(entity);
+            return mapper.Map<InsuranceProviderSnapshot>(ip);
         }
     }
 

@@ -21,6 +21,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListResponse<ScheduleDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ListResponse<ScheduleDto>>> GetSchedules(CancellationToken cancellationToken)
         {
             return Ok(new ListResponse<ScheduleDto>
@@ -30,6 +35,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(ScheduleDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ScheduleDto>> CreateSchedule([FromBody] CreateScheduleRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateScheduleCommand(request), cancellationToken);
@@ -38,18 +48,33 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(ScheduleDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ScheduleDto>> GetScheduleById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetScheduleByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(ScheduleDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ScheduleDto>> UpdateSchedule(Guid id, [FromBody] UpdateScheduleRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateScheduleCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteSchedule(Guid id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeleteScheduleCommand(id), cancellationToken);

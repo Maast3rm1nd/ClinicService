@@ -21,6 +21,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListResponse<AppointmentSnapshotDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ListResponse<AppointmentSnapshotDto>>> GetAppointments(CancellationToken cancellationToken)
         {
             return Ok(new ListResponse<AppointmentSnapshotDto>
@@ -30,6 +35,12 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AppointmentSnapshotDto>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreateAppointmentCommand(request), cancellationToken);
@@ -38,18 +49,34 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AppointmentSnapshotDto>> GetAppointmentById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetAppointmentByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AppointmentSnapshotDto>> UpdateAppointment(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateAppointmentCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CancelAppointment(Guid id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new CancelAppointmentCommand(id), cancellationToken);

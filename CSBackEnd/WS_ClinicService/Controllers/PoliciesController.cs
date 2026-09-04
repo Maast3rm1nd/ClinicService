@@ -21,6 +21,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListResponse<PolicySnapshotDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ListResponse<PolicySnapshotDto>>> GetPolicies(CancellationToken cancellationToken)
         {
             return Ok(new ListResponse<PolicySnapshotDto>
@@ -30,6 +35,11 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(PolicySnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PolicySnapshotDto>> CreatePolicy([FromBody] CreatePolicyRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new CreatePolicyCommand(request), cancellationToken);
@@ -38,18 +48,33 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(PolicySnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PolicySnapshotDto>> GetPolicyById(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetPolicyByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(PolicySnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PolicySnapshotDto>> UpdatePolicy(Guid id, [FromBody] UpdatePolicyRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdatePolicyCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeletePolicy(Guid id, CancellationToken cancellationToken)
         {
             await _mediator.Send(new DeletePolicyCommand(id), cancellationToken);

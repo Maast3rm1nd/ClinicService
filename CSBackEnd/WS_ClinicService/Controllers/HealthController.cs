@@ -10,6 +10,7 @@ namespace WS_ClinicService.Controllers
     public class HealthController : ControllerBase
     {
         [HttpGet]
+        [ProducesResponseType(typeof(HealthResponse), StatusCodes.Status200OK)]
         public IActionResult GetHealth()
         {
             return Ok(new HealthResponse

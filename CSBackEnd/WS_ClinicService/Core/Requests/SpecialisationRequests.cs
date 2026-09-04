@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<SpecialisationSnapshot> Handle(GetSpecialisationByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<ISpecialisationSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Специализация с id {request.Id} не найдена");
+                ?? throw new RecordNotFoundException($"Specialisation with id [{request.Id}] was not found");
 
             return mapper.Map<SpecialisationSnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<ISpecialisationSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Специализация с id {request.Id} не найдена");
+                ?? throw new RecordNotFoundException($"Specialisation with id [{request.Id}] was not found");
 
             if (!string.IsNullOrWhiteSpace(request.Request.Name))
             {

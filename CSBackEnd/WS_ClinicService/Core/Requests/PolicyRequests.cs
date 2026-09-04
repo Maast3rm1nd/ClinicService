@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<PolicySnapshot> Handle(GetPolicyByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IPolicySnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Полис с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Policy with id [{request.Id}] was not found");
 
             return mapper.Map<PolicySnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IPolicySnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Полис с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Policy with id [{request.Id}] was not found");
 
             if (!string.IsNullOrWhiteSpace(request.Request.MedicalPolicyNumber))
             {

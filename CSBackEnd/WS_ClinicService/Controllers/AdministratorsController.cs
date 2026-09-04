@@ -21,12 +21,22 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpGet("medical-cards/{id:guid}")]
+        [ProducesResponseType(typeof(MedicalCardSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<MedicalCardSnapshotDto>> GetMedicalCard(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetAdminMedicalCardQuery(id), cancellationToken));
         }
 
         [HttpPost("appointment-slips")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AppointmentSnapshotDto>> AddAppointmentSlip([FromBody] AddAppointmentSlipRequest request, CancellationToken cancellationToken)
         {
             var created = await _mediator.Send(new AddAppointmentSlipCommand(request), cancellationToken);
@@ -35,12 +45,22 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPut("appointment-slips/{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AppointmentSnapshotDto>> EditAppointmentSlip(Guid id, [FromBody] UpdateAppointmentRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateAppointmentSlipCommand(id, request), cancellationToken));
         }
 
         [HttpDelete("appointment-slips/{id:guid}")]
+        [ProducesResponseType(typeof(DeleteAppointmentSlipsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<DeleteAppointmentSlipsResponse>> DeleteAppointmentSlip(Guid id, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new DeleteAppointmentSlipCommand(id), cancellationToken));

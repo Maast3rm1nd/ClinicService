@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<ScheduleSnapshot> Handle(GetScheduleByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IScheduleRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Расписание с id {request.Id} не найдено");
+                ?? throw new RecordNotFoundException($"Schedule with id [{request.Id}] was not found");
 
             return mapper.Map<ScheduleSnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IScheduleRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Расписание с id {request.Id} не найдено");
+                ?? throw new RecordNotFoundException($"Schedule with id [{request.Id}] was not found");
 
             if (request.Request.Doctor.HasValue)
             {

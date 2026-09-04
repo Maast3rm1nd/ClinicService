@@ -117,6 +117,27 @@ app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
 
 app.UseHttpsRedirection();
 
+#if DEBUG
+if (app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        var isPublicEndpoint = context.Request.Path.StartsWithSegments("/auth")
+            || context.Request.Path.StartsWithSegments("/health")
+            || context.Request.Path.StartsWithSegments("/openapi");
+
+        if (!isPublicEndpoint && !context.Request.Headers.ContainsKey("Authorization"))
+        {
+            var tokenService = context.RequestServices.GetRequiredService<TokenService>();
+            var token = tokenService.CreateToken("debug-admin", "Administrator");
+            context.Request.Headers.Authorization = $"Bearer {token}";
+        }
+
+        await next();
+    });
+}
+#endif
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -142,6 +163,6 @@ using (var scope = app.Services.CreateScope())
     await scope.ServiceProvider.GetRequiredService<AuthBootstrapper>().SeedAsync();
 }
 
-app.MapGroup("v1").MapControllers();
+app.MapControllers();
 
 app.Run();

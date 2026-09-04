@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<MedicalCardSnapshot> Handle(GetMedicalCardByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IMedicalCardSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Медицинская карта с id {request.Id} не найдена");
+                ?? throw new RecordNotFoundException($"Medical card with id [{request.Id}] was not found");
 
             return mapper.Map<MedicalCardSnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IMedicalCardSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Медицинская карта с id {request.Id} не найдена");
+                ?? throw new RecordNotFoundException($"Medical card with id [{request.Id}] was not found");
 
             if (request.Request.Patient.HasValue)
             {

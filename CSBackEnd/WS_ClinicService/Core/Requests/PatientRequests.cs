@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<PatientSnapshot> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IPatientSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Пациент с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Patient with id [{request.Id}] was not found");
 
             return mapper.Map<PatientSnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IPatientSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Пациент с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Patient with id [{request.Id}] was not found");
 
             if (!string.IsNullOrWhiteSpace(request.Request.FullName))
             {

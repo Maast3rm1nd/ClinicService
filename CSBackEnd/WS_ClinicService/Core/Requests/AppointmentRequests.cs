@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<AppointmentSnapshot> Handle(GetAppointmentByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IAppointmentSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Приём с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Appointment with id [{request.Id}] was not found");
 
             return mapper.Map<AppointmentSnapshot>(entity);
         }
@@ -73,7 +73,7 @@ namespace WS_ClinicService.Core.Requests
             if (conflict != null)
             {
                 throw new ConflictException(
-                    $"Врач занят: на {entity.AppointmentDateTime:O} уже существует приём (id {conflict.Id})");
+                    $"Doctor is unavailable: an appointment already exists at [{entity.AppointmentDateTime:O}] (id [{conflict.Id}])");
             }
         }
     }
@@ -85,7 +85,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IAppointmentSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Приём с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Appointment with id [{request.Id}] was not found");
 
             if (request.Request.AppointmentDateTime.HasValue
                 && request.Request.AppointmentDateTime.Value != entity.AppointmentDateTime)
@@ -132,7 +132,7 @@ namespace WS_ClinicService.Core.Requests
             if (conflict != null)
             {
                 throw new ConflictException(
-                    $"Врач занят: на {appointmentDateTime:O} уже существует приём (id {conflict.Id})");
+                    $"Doctor is unavailable: an appointment already exists at [{appointmentDateTime:O}] (id [{conflict.Id}])");
             }
         }
     }

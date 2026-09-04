@@ -35,7 +35,7 @@ namespace WS_ClinicService.Core.Requests
         public async Task<DiagnosisSnapshot> Handle(GetDiagnosisByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IDiagnosisSnapshotRepository>().GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Диагноз с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Diagnosis with id [{request.Id}] was not found");
 
             return mapper.Map<DiagnosisSnapshot>(entity);
         }
@@ -64,7 +64,7 @@ namespace WS_ClinicService.Core.Requests
             var repository = unitOfWork.GetRepository<IDiagnosisSnapshotRepository>();
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Диагноз с id {request.Id} не найден");
+                ?? throw new RecordNotFoundException($"Diagnosis with id [{request.Id}] was not found");
 
             if (!string.IsNullOrWhiteSpace(request.Request.IcdCode))
             {
