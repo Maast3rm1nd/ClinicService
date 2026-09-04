@@ -86,9 +86,9 @@ namespace WS_ClinicService.Core.Requests
                 entity.Specialisations = request.Request.Specialisations;
             }
 
-            if (request.Request.DoctorWorkStatus.HasValue)
+            if (request.Request.EmployeeWorkStatus.HasValue)
             {
-                entity.DoctorWorkStatus = request.Request.DoctorWorkStatus.Value;
+                entity.EmployeeWorkStatus = request.Request.EmployeeWorkStatus.Value;
             }
 
             entity.EditDateTime = DateTimeOffset.UtcNow;

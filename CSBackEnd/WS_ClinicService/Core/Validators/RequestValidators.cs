@@ -49,7 +49,7 @@ namespace WS_ClinicService.Core.Validators
             RuleFor(x => x.FullName).NotEmpty();
             RuleFor(x => x.Login).NotEmpty();
             RuleFor(x => x.Specialisations).NotNull().NotEmpty();
-            RuleFor(x => x.DoctorWorkStatus).IsInEnum();
+            RuleFor(x => x.EmployeeWorkStatus).IsInEnum();
         }
     }
 
@@ -57,7 +57,7 @@ namespace WS_ClinicService.Core.Validators
     {
         public UpdateDoctorRequestValidator()
         {
-            RuleFor(x => x.DoctorWorkStatus).IsInEnum().When(x => x.DoctorWorkStatus.HasValue);
+            RuleFor(x => x.EmployeeWorkStatus).IsInEnum().When(x => x.EmployeeWorkStatus.HasValue);
         }
     }
 

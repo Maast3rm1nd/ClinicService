@@ -7,8 +7,8 @@ namespace ClinicServiceDAL
     {
         public ClinicDbContext CreateDbContext(string[] args)
         {
-            var provider = Environment.GetEnvironmentVariable("CLINIC_DB_PROVIDER") ?? "sqlite";
             var connectionString = Environment.GetEnvironmentVariable("CLINIC_CONNECTION_STRING") ?? "Data Source=clinic.db";
+            var provider = DbProviderExtensions.DetectProvider(connectionString);
 
             var optionsBuilder = new DbContextOptionsBuilder<ClinicDbContext>();
             optionsBuilder.UseClinicDatabase(provider, connectionString);

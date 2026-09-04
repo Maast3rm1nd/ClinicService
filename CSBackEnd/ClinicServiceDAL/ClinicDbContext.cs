@@ -36,6 +36,14 @@ namespace ClinicServiceDAL
         {
             base.OnModelCreating(modelBuilder);
 
+            ConfigureSnapshot(modelBuilder.Entity<AppointmentSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<DiagnosisSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<InsuranceProviderSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<MedicalCardSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<PatientSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<PolicySnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<SpecialisationSnapshot>());
+
             modelBuilder.Entity<MedicalCardSnapshot>()
                 .Property(e => e.RecordNumber)
                 .HasConversion(
@@ -52,6 +60,14 @@ namespace ClinicServiceDAL
                 .HasValue<PersonSnapshot>(PersonType.Person)
                 .HasValue<Doctor>(PersonType.Doctor)
                 .HasValue<Administrator>(PersonType.Administrator);
+
+            ConfigureSnapshot(modelBuilder.Entity<PersonSnapshot>());
+        }
+
+        private static void ConfigureSnapshot<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)
+            where TEntity : SnapshotBase
+        {
+            entity.HasQueryFilter(snapshot => snapshot.IsCurrent && !snapshot.IsDeleted);
         }
     }
 }

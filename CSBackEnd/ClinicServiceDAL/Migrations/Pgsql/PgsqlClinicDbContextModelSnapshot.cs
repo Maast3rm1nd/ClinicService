@@ -366,7 +366,7 @@ namespace ClinicServiceDAL.Migrations.Pgsql
                 {
                     b.HasBaseType("ClinicServiceContext.Entities.PersonSnapshot");
 
-                    b.Property<int>("DoctorWorkStatus")
+                    b.Property<int>("EmployeeWorkStatus")
                         .HasColumnType("integer");
 
                     b.PrimitiveCollection<List<Guid>>("Specialisations")

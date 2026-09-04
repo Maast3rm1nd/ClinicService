@@ -125,7 +125,9 @@ app.UseAuthorization();
 if (configuration["Database:AutoMigrate"] == "true")
 {
     using var scope = app.Services.CreateScope();
-    var provider = (configuration["Database:Provider"] ?? "sqlite").ToLowerInvariant();
+    var connectionString = configuration.GetConnectionString("Default")
+        ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
+    var provider = DbProviderExtensions.DetectProvider(connectionString);
     DbContext migrateContext = provider switch
     {
         "mssql" => scope.ServiceProvider.GetRequiredService<MssqlClinicDbContext>(),

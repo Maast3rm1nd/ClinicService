@@ -12,7 +12,7 @@ namespace ClinicServiceDAL
             var connectionString = configuration.GetConnectionString("Default")
                 ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
-            var provider = configuration["Database:Provider"] ?? "mssql";
+            var provider = DbProviderExtensions.DetectProvider(connectionString);
 
             services.AddDbContext<ClinicDbContext>(options => options.UseClinicDatabase(provider, connectionString));
             services.AddDbContext<SqliteClinicDbContext>(options => options.UseSqlite(connectionString));

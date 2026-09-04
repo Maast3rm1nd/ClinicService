@@ -365,7 +365,7 @@ namespace ClinicServiceDAL.Migrations.Mssql
                 {
                     b.HasBaseType("ClinicServiceContext.Entities.PersonSnapshot");
 
-                    b.Property<int>("DoctorWorkStatus")
+                    b.Property<int>("EmployeeWorkStatus")
                         .HasColumnType("int");
 
                     b.PrimitiveCollection<string>("Specialisations")

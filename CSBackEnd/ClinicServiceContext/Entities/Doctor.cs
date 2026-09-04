@@ -6,6 +6,6 @@ namespace ClinicServiceContext.Entities
     {
         public List<Guid> Specialisations { get; set; }
 
-        public DoctorWorkStatus DoctorWorkStatus { get; set; }
+        public EmployeeWorkStatus EmployeeWorkStatus { get; set; }
     }
 }
