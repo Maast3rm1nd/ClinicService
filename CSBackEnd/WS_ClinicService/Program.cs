@@ -1,10 +1,15 @@
 using ClinicServiceDAL;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Scalar.AspNetCore;
+using System.Threading.RateLimiting;
+using System.Text;
 using WS_ClinicService.Core.Auth;
 using WS_ClinicService.Core.Extensions;
 using WS_ClinicService.Core.Filters;
@@ -43,11 +48,28 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Asse
 
 var jwtOptions = configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 
-services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
-services.Configure<AuthOptions>(configuration.GetSection("Auth"));
-services.AddSingleton<TokenService>();
+if (string.IsNullOrWhiteSpace(jwtOptions.Secret) || Encoding.UTF8.GetByteCount(jwtOptions.Secret) < 32)
+{
+    throw new InvalidOperationException("Jwt:Secret must be configured and contain at least 32 bytes.");
+}
 
-#if !DEBUG
+if (string.IsNullOrWhiteSpace(jwtOptions.Issuer) || string.IsNullOrWhiteSpace(jwtOptions.Audience))
+{
+    throw new InvalidOperationException("Jwt:Issuer and Jwt:Audience must be configured.");
+}
+
+if (jwtOptions.ExpiresMinutes is <= 0 or > 60)
+{
+    throw new InvalidOperationException("Jwt:ExpiresMinutes must be between 1 and 60.");
+}
+
+services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+services.Configure<AuthBootstrapOptions>(configuration.GetSection("Auth:Bootstrap"));
+services.AddSingleton<TokenService>();
+services.AddSingleton<IPasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>, PasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>>();
+services.AddScoped<DatabaseAuthenticationService>();
+services.AddScoped<AuthBootstrapper>();
+
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -64,7 +86,18 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 services.AddAuthorization();
-#endif
+
+services.AddRateLimiter(options =>
+{
+    options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        }));
+});
 
 services.AddOpenApi();
 
@@ -84,11 +117,10 @@ app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
 
 app.UseHttpsRedirection();
 
-#if !DEBUG
 app.UseAuthentication();
 
 app.UseAuthorization();
-#endif
+
 
 if (configuration["Database:AutoMigrate"] == "true")
 {
@@ -101,6 +133,11 @@ if (configuration["Database:AutoMigrate"] == "true")
         _ => scope.ServiceProvider.GetRequiredService<SqliteClinicDbContext>()
     };
     migrateContext.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider.GetRequiredService<AuthBootstrapper>().SeedAsync();
 }
 
 app.MapGroup("v1").MapControllers();

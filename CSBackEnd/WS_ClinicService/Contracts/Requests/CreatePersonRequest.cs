@@ -7,5 +7,7 @@ namespace WS_ClinicService.Contracts.Requests
         public string? ShortName { get; set; }
 
         public string Login { get; set; }
+
+        public string Password { get; set; }
     }
 }

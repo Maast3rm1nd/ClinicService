@@ -2,10 +2,9 @@ using AutoMapper;
 using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
-using ClinicServiceBase.DTO;
-using ClinicServiceContext.Entities;
 using MediatR;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Auth;
 using Person = ClinicServiceContext.Entities.PersonSnapshot;
 using PersonSnapshot = ClinicServiceBase.DTO.PersonSnapshotDto;
 
@@ -41,13 +40,19 @@ namespace WS_ClinicService.Core.Requests
         }
     }
 
-    public class CreatePersonCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<CreatePersonCommand, PersonSnapshot>
+    public class CreatePersonCommandHandler(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        DatabaseAuthenticationService authenticationService) : IRequestHandler<CreatePersonCommand, PersonSnapshot>
     {
         public async Task<PersonSnapshot> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
         {
             var repository = unitOfWork.GetRepository<IPersonSnapshotRepository>();
 
             var entity = mapper.Map<Person>(request.Request);
+            entity.PasswordHash = authenticationService.HashPassword(entity, request.Request.Password);
+            entity.IsCurrent = true;
+            entity.IsDeleted = false;
 
             await repository.AddObject(entity);
 

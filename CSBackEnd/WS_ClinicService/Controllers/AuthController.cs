@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using ClinicServiceContext.Enums;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Auth;
@@ -12,24 +14,30 @@ namespace WS_ClinicService.Controllers
     [AllowAnonymous]
     public class AuthController : ControllerBase
     {
-        private readonly IOptions<AuthOptions> _authOptions;
-
         private readonly IOptions<JwtOptions> _jwtOptions;
+
+        private readonly DatabaseAuthenticationService _authenticationService;
 
         private readonly TokenService _tokenService;
 
-        public AuthController(IOptions<AuthOptions> authOptions, IOptions<JwtOptions> jwtOptions, TokenService tokenService)
+        public AuthController(
+            IOptions<JwtOptions> jwtOptions,
+            DatabaseAuthenticationService authenticationService,
+            TokenService tokenService)
         {
-            _authOptions = authOptions;
             _jwtOptions = jwtOptions;
+            _authenticationService = authenticationService;
             _tokenService = tokenService;
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        [EnableRateLimiting("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
-            var user = _authOptions.Value.Users.FirstOrDefault(u =>
-                u.Login == request.Login && u.Password == request.Password);
+            var user = await _authenticationService.AuthenticateAsync(
+                request.Login,
+                request.Password,
+                cancellationToken);
 
             if (user == null)
             {
@@ -42,10 +50,20 @@ namespace WS_ClinicService.Controllers
 
             return Ok(new TokenResponse
             {
-                AccessToken = _tokenService.CreateToken(user.Login, user.Role),
+                AccessToken = _tokenService.CreateToken(user.Login, GetRole(user.Type)),
                 TokenType = "Bearer",
                 ExpiresIn = _jwtOptions.Value.ExpiresMinutes * 60
             });
+        }
+
+        private static string GetRole(PersonType type)
+        {
+            return type switch
+            {
+                PersonType.Administrator => "Administrator",
+                PersonType.Doctor => "Doctor",
+                _ => throw new Exception($"Unknown person type: {type}"),
+            };
         }
     }
 }

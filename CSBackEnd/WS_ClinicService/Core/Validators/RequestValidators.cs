@@ -182,6 +182,7 @@ namespace WS_ClinicService.Core.Validators
         {
             RuleFor(x => x.FullName).NotEmpty();
             RuleFor(x => x.Login).NotEmpty();
+            RuleFor(x => x.Password).NotEmpty().MinimumLength(12);
         }
     }
 
