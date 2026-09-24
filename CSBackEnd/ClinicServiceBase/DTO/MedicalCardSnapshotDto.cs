@@ -1,9 +1,7 @@
 ﻿namespace ClinicServiceBase.DTO
 {
-    public class MedicalCardSnapshotDto
+    public class MedicalCardSnapshotDto : SnapshotDtoBase
     {
-        public Guid Id { get; set; }
-
         public Guid Patient { get; set; }
 
         public ulong RecordNumber { get; set; }

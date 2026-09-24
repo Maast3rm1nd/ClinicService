@@ -61,6 +61,22 @@ namespace ClinicServiceDAL
             return true;
         }
 
+        public bool CloseCurrentVersion(SnapshotBase current, Guid? changedBy = null)
+        {
+            if (!current.IsCurrent)
+            {
+                return false;
+            }
+
+            var now = DateTimeOffset.UtcNow;
+            current.IsCurrent = false;
+            current.IsDeleted = true;
+            current.ValidTo = now;
+            current.EditDateTime = now;
+            current.ChangedBy = changedBy;
+            return true;
+        }
+
         public async Task<TEntity?> RestoreAsync<TEntity>(
             Guid entityId,
             Guid? changedBy,

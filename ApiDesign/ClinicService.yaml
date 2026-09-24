@@ -47,60 +47,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-    post:
-      tags:
-        - Patients
-      summary: Create patient
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - fullName
-                - birthDate
-              properties:
-                fullName:
-                  type: string
-                shortName:
-                  type: string
-                  nullable: true
-                passportNumber:
-                  type: string
-                  nullable: true
-                birthDate:
-                  type: string
-                  format: date-time
-                phoneNumber:
-                  type: string
-                  nullable: true
-                bloodGroup:
-                  type: string
-                  nullable: true
-                allergies:
-                  type: string
-                  nullable: true
-      responses:
-        '201':
-          description: Patient created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatientSnapshot'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
   /patients/{id}:
     get:
       tags:
@@ -115,52 +61,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PatientSnapshot'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-    put:
-      tags:
-        - Patients
-      summary: Update patient
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatientSnapshot'
-      responses:
-        '200':
-          description: Patient updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatientSnapshot'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-    delete:
-      tags:
-        - Patients
-      summary: Delete patient
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -213,6 +113,7 @@ paths:
                 patient:
                   type: string
                   format: uuid
+
                 policy:
                   type: string
                   format: uuid
@@ -624,7 +525,7 @@ paths:
               required:
                 - id
                 - specialisations
-                - doctorWorkStatus
+                - employeeWorkStatus
               properties:
                 id:
                   type: string
@@ -634,8 +535,8 @@ paths:
                   items:
                     type: string
                     format: uuid
-                doctorWorkStatus:
-                  $ref: '#/components/schemas/DoctorWorkStatus'
+                employeeWorkStatus:
+                  $ref: '#/components/schemas/EmployeeWorkStatus'
       responses:
         '201':
           description: Doctor created
@@ -1621,6 +1522,134 @@ paths:
                     type: string
                     format: date-time
 
+  /patients/{entityId}/restore:
+    post:
+      tags: [Patients]
+      summary: Restore a deleted patient snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Patient restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /medical-cards/{entityId}/restore:
+    post:
+      tags: [MedicalCards]
+      summary: Restore a deleted medical card snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Medical card restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalCardSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /policies/{entityId}/restore:
+    post:
+      tags: [Policies]
+      summary: Restore a deleted policy snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Policy restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /insurance-providers/{entityId}/restore:
+    post:
+      tags: [InsuranceProviders]
+      summary: Restore a deleted insurance provider snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Insurance provider restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /specialisations/{entityId}/restore:
+    post:
+      tags: [Specialisations]
+      summary: Restore a deleted specialisation snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Specialisation restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpecialisationSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /diagnoses/{entityId}/restore:
+    post:
+      tags: [Diagnoses]
+      summary: Restore a deleted diagnosis snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Diagnosis restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /appointments/{entityId}/restore:
+    post:
+      tags: [Appointments]
+      summary: Restore a deleted appointment snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Appointment restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppointmentSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /persons/{entityId}/restore:
+    post:
+      tags: [Persons]
+      summary: Restore a deleted person snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Person restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSnapshot'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   schemas:
     PolicyType:
@@ -1645,7 +1674,7 @@ components:
         - Actual
         - Inactual
 
-    DoctorWorkStatus:
+    EmployeeWorkStatus:
       type: string
       enum:
         - AtWork
@@ -1663,6 +1692,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - fullName
         - birthDate
         - creationDateTime
@@ -1670,6 +1702,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         fullName:
           type: string
         shortName:
@@ -1702,6 +1747,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - patient
         - recordNumber
         - creationDateTime
@@ -1711,6 +1759,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         patient:
           type: string
           format: uuid
@@ -1734,6 +1795,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - medicalPolicyNumber
         - insuranceProvider
         - creationDateTime
@@ -1741,6 +1805,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         medicalPolicyNumber:
           type: string
         medicalPolicyType:
@@ -1759,6 +1836,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - name
         - licenseNumber
         - creationDateTime
@@ -1766,6 +1846,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         name:
           type: string
         licenseNumber:
@@ -1781,12 +1874,28 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - name
         - doctors
       properties:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         name:
           type: string
         doctors:
@@ -1799,6 +1908,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - icdCode
         - doctor
         - creationDateTime
@@ -1808,6 +1920,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         icdCode:
           type: string
         doctor:
@@ -1833,12 +1958,28 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - doctor
         - appointments
       properties:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         doctor:
           type: string
           format: uuid
@@ -1852,6 +1993,9 @@ components:
       type: object
       required:
         - id
+        - entityId
+        - version
+        - validFrom
         - patient
         - medicalCard
         - doctor
@@ -1863,6 +2007,19 @@ components:
         id:
           type: string
           format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
         patient:
           type: string
           format: uuid
@@ -1926,7 +2083,7 @@ components:
       required:
         - id
         - specialisations
-        - doctorWorkStatus
+        - employeeWorkStatus
       properties:
         id:
           type: string
@@ -1936,8 +2093,8 @@ components:
           items:
             type: string
             format: uuid
-        doctorWorkStatus:
-          $ref: '#/components/schemas/DoctorWorkStatus'
+        employeeWorkStatus:
+          $ref: '#/components/schemas/EmployeeWorkStatus'
 
     Error:
       type: object
@@ -1972,6 +2129,15 @@ components:
       name: id
       in: path
       required: true
+      schema:
+        type: string
+        format: uuid
+
+    entityIdParam:
+      name: entityId
+      in: path
+      required: true
+      description: Logical identifier shared by all snapshot versions
       schema:
         type: string
         format: uuid

@@ -93,16 +93,8 @@ namespace ClinicServiceDAL.Repositories
 
             if (entity is SnapshotBase snapshot)
             {
-                snapshot.IsDeleted = true;
-                snapshot.IsCurrent = false;
+                new SnapshotVersionService(Context).CloseCurrentVersion(snapshot);
             }
-
-            if (entity is IEditableEntity editable)
-            {
-                editable.EditDateTime = DateTimeOffset.UtcNow;
-            }
-
-            DbSet.Update(entity);
         }
 
         private async Task UpdateSnapshotVersionAsync(SnapshotBase snapshot, TEntity original)
@@ -127,13 +119,7 @@ namespace ClinicServiceDAL.Repositories
             {
                 if (entity is SnapshotBase snapshot)
                 {
-                    snapshot.IsDeleted = true;
-                    snapshot.IsCurrent = false;
-                }
-
-                if (entity is IEditableEntity editable)
-                {
-                    editable.EditDateTime = DateTimeOffset.UtcNow;
+                    new SnapshotVersionService(Context).CloseCurrentVersion(snapshot);
                 }
             }
         }

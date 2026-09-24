@@ -81,5 +81,13 @@ namespace WS_ClinicService.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("{entityId:guid}/restore")]
+        [ProducesResponseType(typeof(PatientSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PatientSnapshotDto>> RestorePatient(Guid entityId, CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new RestorePatientCommand(entityId), cancellationToken));
+        }
     }
 }

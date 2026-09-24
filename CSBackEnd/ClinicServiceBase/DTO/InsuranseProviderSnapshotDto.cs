@@ -1,9 +1,7 @@
 ﻿namespace ClinicServiceBase.DTO
 {
-    public class InsuranceProviderSnapshotDto
+    public class InsuranceProviderSnapshotDto : SnapshotDtoBase
     {
-        public Guid Id { get; set; }
-
         public string Name { get; set; }
 
         public string LicenseNumber { get; set; }

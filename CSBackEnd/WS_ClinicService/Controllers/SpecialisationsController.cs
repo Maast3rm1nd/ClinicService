@@ -81,5 +81,11 @@ namespace WS_ClinicService.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("{entityId:guid}/restore")]
+        [ProducesResponseType(typeof(SpecialisationSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<SpecialisationSnapshotDto>> RestoreSpecialisation(Guid entityId, CancellationToken cancellationToken)
+            => Ok(await _mediator.Send(new RestoreSpecialisationCommand(entityId), cancellationToken));
     }
 }

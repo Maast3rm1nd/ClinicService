@@ -22,6 +22,8 @@ namespace WS_ClinicService.Core.Requests
 
     public record DeletePatientCommand(Guid Id) : IRequest<Unit>;
 
+    public record RestorePatientCommand(Guid EntityId) : IRequest<PatientSnapshot>;
+
     public class GetPatientsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetPatientsQuery, List<PatientSnapshot>>
     {
         public async Task<List<PatientSnapshot>> Handle(GetPatientsQuery request, CancellationToken cancellationToken)
@@ -29,6 +31,18 @@ namespace WS_ClinicService.Core.Requests
             var items = await unitOfWork.GetRepository<IPatientSnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<PatientSnapshot>>(items);
         }
+
+    public class RestorePatientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, SnapshotVersionService versionService) : IRequestHandler<RestorePatientCommand, PatientSnapshot>
+    {
+        public async Task<PatientSnapshot> Handle(RestorePatientCommand request, CancellationToken cancellationToken)
+        {
+            var entity = await versionService.RestoreAsync<Patient>(request.EntityId, null, cancellationToken)
+                ?? throw new RecordNotFoundException($"Deleted patient with entity id [{request.EntityId}] was not found");
+
+            await unitOfWork.CommitToDBAsync(cancellationToken);
+            return mapper.Map<PatientSnapshot>(entity);
+        }
+    }
     }
 
     public class GetPatientByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetPatientByIdQuery, PatientSnapshot>

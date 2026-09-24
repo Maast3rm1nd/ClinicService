@@ -83,5 +83,11 @@ namespace WS_ClinicService.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("{entityId:guid}/restore")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentSnapshotDto>> RestoreAppointment(Guid entityId, CancellationToken cancellationToken)
+            => Ok(await _mediator.Send(new RestoreAppointmentCommand(entityId), cancellationToken));
     }
 }

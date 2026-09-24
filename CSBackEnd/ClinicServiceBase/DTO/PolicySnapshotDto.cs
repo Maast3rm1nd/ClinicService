@@ -2,10 +2,8 @@
 
 namespace ClinicServiceBase.DTO
 {
-    public class PolicySnapshotDto
+    public class PolicySnapshotDto : SnapshotDtoBase
     {
-        public Guid Id { get; set; }
-
         public string MedicalPolicyNumber { get; set; }
 
         public PolicyType? MedicalPolicyType { get; set; }
