@@ -5,5 +5,7 @@ namespace WS_ClinicService.Contracts.Requests
         public string Login { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
+
+        public string? TwoFactorCode { get; set; }
     }
 }

@@ -68,6 +68,10 @@ services.Configure<AuthBootstrapOptions>(configuration.GetSection("Auth:Bootstra
 services.AddSingleton<TokenService>();
 services.AddSingleton<IPasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>, PasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>>();
 services.AddScoped<DatabaseAuthenticationService>();
+services.AddScoped<RefreshTokenService>();
+services.AddScoped<AccountSecurityService>();
+services.AddScoped<SecurityAuditService>();
+services.AddSingleton<TotpService>();
 services.AddScoped<AuthBootstrapper>();
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,7 +89,12 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-services.AddAuthorization();
+services.AddAuthorization(options =>
+{
+    options.AddPolicy("users.manage", policy => policy.RequireClaim("permission", "users.manage"));
+    options.AddPolicy("security.audit.read", policy => policy.RequireClaim("permission", "security.audit.read"));
+    options.AddPolicy("security.sessions.revoke", policy => policy.RequireClaim("permission", "security.sessions.revoke"));
+});
 
 services.AddRateLimiter(options =>
 {
@@ -129,7 +138,14 @@ if (app.Environment.IsDevelopment())
         if (!isPublicEndpoint && !context.Request.Headers.ContainsKey("Authorization"))
         {
             var tokenService = context.RequestServices.GetRequiredService<TokenService>();
-            var token = tokenService.CreateToken("debug-admin", "Administrator");
+            var token = tokenService.CreateToken(
+                "debug-admin",
+                "Administrator",
+                [
+                    "users.manage",
+                    "security.audit.read",
+                    "security.sessions.revoke"
+                ]);
             context.Request.Headers.Authorization = $"Bearer {token}";
         }
 

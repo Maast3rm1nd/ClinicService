@@ -32,6 +32,12 @@ namespace ClinicServiceDAL
 
         public DbSet<Administrator> Administrators { get; set; }
 
+        public DbSet<AccountSecurityState> AccountSecurityStates { get; set; }
+
+        public DbSet<RefreshSession> RefreshSessions { get; set; }
+
+        public DbSet<SecurityAuditEvent> SecurityAuditEvents { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -62,6 +68,20 @@ namespace ClinicServiceDAL
                 .HasValue<Administrator>(PersonType.Administrator);
 
             ConfigureSnapshot(modelBuilder.Entity<PersonSnapshot>());
+
+            modelBuilder.Entity<AccountSecurityState>()
+                .HasIndex(state => state.PersonId)
+                .IsUnique();
+
+            modelBuilder.Entity<RefreshSession>()
+                .HasIndex(session => session.TokenHash)
+                .IsUnique();
+
+            modelBuilder.Entity<RefreshSession>()
+                .HasIndex(session => new { session.PersonId, session.RevokedAt });
+
+            modelBuilder.Entity<SecurityAuditEvent>()
+                .HasIndex(auditEvent => new { auditEvent.PersonId, auditEvent.CreatedAt });
         }
 
         private static void ConfigureSnapshot<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)

@@ -15,7 +15,7 @@ namespace WS_ClinicService.Core.Auth
             _options = options.Value;
         }
 
-        public string CreateToken(string login, string role)
+        public string CreateToken(string login, string role, IEnumerable<string>? permissions = null)
         {
             var claims = new List<Claim>
             {
@@ -24,6 +24,11 @@ namespace WS_ClinicService.Core.Auth
                 new(ClaimTypes.Role, role),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            if (permissions is not null)
+            {
+                claims.AddRange(permissions.Select(permission => new Claim("permission", permission)));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
