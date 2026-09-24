@@ -4,6 +4,7 @@ using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
 using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
+using ClinicServiceDAL;
 using MediatR;
 using WS_ClinicService.Contracts.Requests;
 using Patient = ClinicServiceContext.Entities.PatientSnapshot;
@@ -57,34 +58,20 @@ namespace WS_ClinicService.Core.Requests
         }
     }
 
-    public class UpdatePatientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<UpdatePatientCommand, PatientSnapshot>
+    public class UpdatePatientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, SnapshotVersionService versionService) : IRequestHandler<UpdatePatientCommand, PatientSnapshot>
     {
         public async Task<PatientSnapshot> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
-            var repository = unitOfWork.GetRepository<IPatientSnapshotRepository>();
-
-            var entity = await repository.GetObjectsById(request.Id, cancellationToken)
-                ?? throw new RecordNotFoundException($"Patient with id [{request.Id}] was not found");
-
-            if (!string.IsNullOrWhiteSpace(request.Request.FullName))
+            var entity = await versionService.CreateVersionAsync<Patient>(request.Id, next =>
             {
-                entity.FullName = request.Request.FullName;
-            }
-
-            entity.ShortName = request.Request.ShortName ?? entity.ShortName;
-            entity.PassportNumber = request.Request.PassportNumber ?? entity.PassportNumber;
-            entity.PhoneNumber = request.Request.PhoneNumber ?? entity.PhoneNumber;
-            entity.BloodGroup = request.Request.BloodGroup ?? entity.BloodGroup;
-            entity.Allergies = request.Request.Allergies ?? entity.Allergies;
-
-            if (request.Request.BirthDate.HasValue)
-            {
-                entity.BirthDate = request.Request.BirthDate.Value;
-            }
-
-            entity.EditDateTime = DateTimeOffset.UtcNow;
-
-            await repository.UpdateObject(entity);
+                if (!string.IsNullOrWhiteSpace(request.Request.FullName)) next.FullName = request.Request.FullName;
+                next.ShortName = request.Request.ShortName ?? next.ShortName;
+                next.PassportNumber = request.Request.PassportNumber ?? next.PassportNumber;
+                next.PhoneNumber = request.Request.PhoneNumber ?? next.PhoneNumber;
+                next.BloodGroup = request.Request.BloodGroup ?? next.BloodGroup;
+                next.Allergies = request.Request.Allergies ?? next.Allergies;
+                if (request.Request.BirthDate.HasValue) next.BirthDate = request.Request.BirthDate.Value;
+            }, null, cancellationToken);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
@@ -92,13 +79,11 @@ namespace WS_ClinicService.Core.Requests
         }
     }
 
-    public class DeletePatientCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeletePatientCommand, Unit>
+    public class DeletePatientCommandHandler(IUnitOfWork unitOfWork, SnapshotVersionService versionService) : IRequestHandler<DeletePatientCommand, Unit>
     {
         public async Task<Unit> Handle(DeletePatientCommand request, CancellationToken cancellationToken)
         {
-            var repository = unitOfWork.GetRepository<IPatientSnapshotRepository>();
-
-            await repository.SoftDeleteById(request.Id);
+            await versionService.DeleteAsync<Patient>(request.Id, null, cancellationToken);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 

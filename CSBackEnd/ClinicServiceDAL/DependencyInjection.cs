@@ -20,6 +20,7 @@ namespace ClinicServiceDAL
             services.AddDbContext<PgsqlClinicDbContext>(options => options.UseNpgsql(connectionString));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<SnapshotVersionService>();
 
             return services;
         }

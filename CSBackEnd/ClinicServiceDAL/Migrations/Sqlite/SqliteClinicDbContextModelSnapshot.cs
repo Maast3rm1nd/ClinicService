@@ -26,6 +26,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<DateTimeOffset>("AppointmentDateTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("TEXT");
 
@@ -39,6 +42,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("EditedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCurrent")
@@ -59,7 +65,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("AppointmentSnapshots");
                 });
@@ -68,6 +89,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ChangedBy")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("CreationDateTime")
@@ -80,6 +104,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("EditedDoctor")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("IcdCode")
@@ -98,7 +125,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("DiagnosisSnapshots");
                 });
@@ -109,10 +151,16 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCurrent")
@@ -132,7 +180,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("InsuranceProviderSnapshots");
                 });
@@ -143,6 +206,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
@@ -150,6 +216,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCurrent")
@@ -167,7 +236,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<decimal>("RecordNumber")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("MedicalCardSnapshots");
                 });
@@ -187,10 +271,16 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<string>("BloodGroup")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
@@ -213,7 +303,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<string>("ShortName")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PatientSnapshots");
                 });
@@ -224,10 +329,16 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
@@ -253,7 +364,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PersonSnapshots");
 
@@ -268,6 +394,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
@@ -275,6 +404,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("InsuranceProvider")
@@ -293,7 +425,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<int>("MedicalPolicyType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PolicySnapshots");
                 });
@@ -325,6 +472,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("TEXT");
 
@@ -332,6 +482,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCurrent")
@@ -344,7 +497,22 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("SpecialisationSnapshots");
                 });

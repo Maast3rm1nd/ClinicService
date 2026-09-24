@@ -31,6 +31,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<DateTimeOffset>("AppointmentDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -44,6 +47,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("EditedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsCurrent")
@@ -64,7 +70,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("AppointmentSnapshots");
                 });
@@ -73,6 +94,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ChangedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreationDateTime")
@@ -85,6 +109,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("EditedDoctor")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EntityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IcdCode")
@@ -103,7 +130,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("DiagnosisSnapshots");
                 });
@@ -114,11 +156,17 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
@@ -137,7 +185,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("InsuranceProviderSnapshots");
                 });
@@ -148,6 +211,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
@@ -156,6 +222,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
@@ -172,7 +241,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<decimal>("RecordNumber")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("MedicalCardSnapshots");
                 });
@@ -192,11 +276,17 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<string>("BloodGroup")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -218,7 +308,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<string>("ShortName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PatientSnapshots");
                 });
@@ -229,11 +334,17 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -258,7 +369,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<byte>("Type")
                         .HasColumnType("tinyint");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PersonSnapshots");
 
@@ -273,6 +399,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
@@ -281,6 +410,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("InsuranceProvider")
                         .HasColumnType("uniqueidentifier");
@@ -298,7 +430,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<int>("MedicalPolicyType")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("PolicySnapshots");
                 });
@@ -330,6 +477,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreationDateTime")
                         .HasColumnType("datetimeoffset");
 
@@ -338,6 +488,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
                     b.Property<DateTimeOffset?>("EditDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
@@ -349,7 +502,22 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
 
                     b.ToTable("SpecialisationSnapshots");
                 });

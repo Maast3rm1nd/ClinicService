@@ -67,6 +67,14 @@ namespace ClinicServiceDAL
         private static void ConfigureSnapshot<TEntity>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> entity)
             where TEntity : SnapshotBase
         {
+            entity.Property(snapshot => snapshot.Version)
+                .IsConcurrencyToken();
+
+            entity.HasIndex(snapshot => new { snapshot.EntityId, snapshot.Version })
+                .IsUnique();
+
+            entity.HasIndex(snapshot => new { snapshot.EntityId, snapshot.IsCurrent });
+
             entity.HasQueryFilter(snapshot => snapshot.IsCurrent && !snapshot.IsDeleted);
         }
     }

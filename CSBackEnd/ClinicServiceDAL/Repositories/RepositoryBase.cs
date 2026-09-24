@@ -47,18 +47,33 @@ namespace ClinicServiceDAL.Repositories
 
         public virtual Task UpdateObject(TEntity obj, TEntity? dto = null)
         {
+            if (obj is SnapshotBase snapshot)
+            {
+                return UpdateSnapshotVersionAsync(snapshot, obj);
+            }
+
             DbSet.Update(obj);
             return Task.CompletedTask;
         }
 
         public virtual Task DeleteObject(TEntity obj)
         {
+            if (obj is SnapshotBase)
+            {
+                throw new InvalidOperationException("Snapshot entities cannot be physically deleted.");
+            }
+
             DbSet.Remove(obj);
             return Task.CompletedTask;
         }
 
         public virtual async Task DeleteObjectById(Guid id)
         {
+            if (typeof(SnapshotBase).IsAssignableFrom(typeof(TEntity)))
+            {
+                throw new InvalidOperationException("Snapshot entities cannot be physically deleted.");
+            }
+
             var entity = await DbSet.SingleOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
 
             if (entity != null)
@@ -88,6 +103,20 @@ namespace ClinicServiceDAL.Repositories
             }
 
             DbSet.Update(entity);
+        }
+
+        private async Task UpdateSnapshotVersionAsync(SnapshotBase snapshot, TEntity original)
+        {
+            var version = await new SnapshotVersionService(Context).ReplaceVersionAsync((dynamic)original);
+            snapshot.Id = version.Id;
+            snapshot.EntityId = version.EntityId;
+            snapshot.Version = version.Version;
+            snapshot.ValidFrom = version.ValidFrom;
+            snapshot.ValidTo = version.ValidTo;
+            snapshot.IsCurrent = version.IsCurrent;
+            snapshot.IsDeleted = version.IsDeleted;
+            snapshot.EditDateTime = version.EditDateTime;
+            snapshot.ChangedBy = version.ChangedBy;
         }
 
         public virtual async Task SoftDeleteByFilter(Expression<Func<TEntity, bool>> filter)
