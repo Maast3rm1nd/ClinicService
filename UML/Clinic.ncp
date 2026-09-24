@@ -7,10 +7,15 @@
       <Entity type="Class">
         <Name>PatientSnapshot</Name>
         <Access>Public</Access>
-        <Location left="322" top="24" />
-        <Size width="313" height="281" />
+        <Location left="127" top="36" />
+        <Size width="313" height="366" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string FullName</Member>
         <Member type="Field">public string? ShortName</Member>
         <Member type="Field">public string? PassportNumber</Member>
@@ -21,16 +26,21 @@
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
         <Name>MedicalCardSnapshot</Name>
         <Access>Public</Access>
-        <Location left="816" top="55" />
-        <Size width="289" height="264" />
+        <Location left="800" top="16" />
+        <Size width="289" height="315" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public Guid Patient</Member>
         <Member type="Field">public ulong RecordNumber</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
@@ -38,16 +48,21 @@
         <Member type="Field">public Guid Policy</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Diagnoses</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
         <Name>PolicySnapshot</Name>
         <Access>Public</Access>
         <Location left="1264" top="106" />
-        <Size width="220" height="247" />
+        <Size width="220" height="315" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string MedicalPolicyNumber</Member>
         <Member type="Field">public PolicyType? MedicalPolicyType</Member>
         <Member type="Field">public Guid InsuranceProvider</Member>
@@ -55,7 +70,7 @@
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Enum">
@@ -71,23 +86,33 @@
       <Entity type="Class">
         <Name>SpecialisationSnapshot</Name>
         <Access>Public</Access>
-        <Location left="501" top="323" />
-        <Size width="220" height="179" />
+        <Location left="490" top="234" />
+        <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string Name</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Doctors</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
         <Name>DiagnosisSnapshot</Name>
         <Access>Public</Access>
         <Location left="1525" top="539" />
-        <Size width="220" height="247" />
+        <Size width="220" height="332" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string IcdCode</Member>
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
@@ -96,7 +121,7 @@
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public DiagnosisStatus Status</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
@@ -113,10 +138,15 @@
       <Entity type="Class">
         <Name>AppointmentSnapshot</Name>
         <Access>Public</Access>
-        <Location left="501" top="786" />
-        <Size width="286" height="366" />
+        <Location left="535" top="798" />
+        <Size width="286" height="383" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public Guid Patient</Member>
         <Member type="Field">public Guid MedicalCard</Member>
         <Member type="Field">public Guid Doctor</Member>
@@ -128,7 +158,7 @@
         <Member type="Field">public AppointmentStatus Status</Member>
         <Member type="Field">public string? PreliminaryReason</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
@@ -172,17 +202,22 @@
       <Entity type="Class">
         <Name>InsuranceProviderSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1708" top="263" />
-        <Size width="278" height="213" />
+        <Location left="1789" top="204" />
+        <Size width="278" height="298" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string Name</Member>
         <Member type="Field">public string LicenseNumber</Member>
         <Member type="Field">public string? PhoneNumber</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Enum">
@@ -197,17 +232,24 @@
       <Entity type="Class">
         <Name>PersonSnapshot</Name>
         <Access>Public</Access>
-        <Location left="487" top="532" />
-        <Size width="162" height="216" />
+        <Location left="345" top="505" />
+        <Size width="162" height="332" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string FullName</Member>
         <Member type="Field">public string? ShortName</Member>
         <Member type="Field">public string Login</Member>
+        <Member type="Field">public string? PasswordHash</Member>
+        <Member type="Field">public PersonType Type</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Member type="Field">public bool IsCurrent</Member>
-        <Member type="Field">public bool isDeleated</Member>
+        <Member type="Field">public bool IsDeleted</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Class">
@@ -218,13 +260,13 @@
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public ICollection&lt;Guid&gt; Specialisations</Member>
-        <Member type="Field">public DoctorWorkStatus DoctorWorkStatus</Member>
+        <Member type="Field">public EmployeeWorkStatus EmployeeWorkStatus</Member>
         <Modifier>None</Modifier>
       </Entity>
       <Entity type="Enum">
         <Name>PersonType</Name>
         <Access>Public</Access>
-        <Location left="128" top="372" />
+        <Location left="45" top="463" />
         <Size width="162" height="134" />
         <Collapsed>False</Collapsed>
         <Value>Doctor</Value>
@@ -233,8 +275,6 @@
     </Entities>
     <Relationships>
       <Relationship type="Association" first="2" second="1">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -245,8 +285,6 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="11" second="2">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -257,13 +295,11 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="5">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1078</X>
-          <Y>337</Y>
+          <X>1030</X>
+          <Y>421</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>1550</X>
@@ -277,6 +313,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="8" second="7">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -287,13 +325,11 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="1" second="5">
-        <Label>
-        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1223</X>
-          <Y>448</Y>
+          <X>1202</X>
+          <Y>437</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>1613</X>
@@ -307,6 +343,8 @@
         <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -321,8 +359,6 @@
         <EndMultiplicity>0..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="0" second="1">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -333,6 +369,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="13" second="8">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -343,11 +381,17 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>735</X>
+          <Y>428</Y>
+        </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>910</X>
-          <Y>578</Y>
+          <X>852</X>
+          <Y>586</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -357,11 +401,13 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>816</X>
-          <Y>863</Y>
+          <X>850</X>
+          <Y>875</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>910</X>
@@ -375,6 +421,8 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="14" second="6">
+        <Label>
+        </Label>
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -385,6 +433,8 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="13" second="14">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
@@ -399,6 +449,8 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="14" second="5">
+        <Label>
+        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
@@ -409,13 +461,11 @@
         <EndMultiplicity>1</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="4" second="14">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>758</X>
-          <Y>445</Y>
+          <X>747</X>
+          <Y>356</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
           <X>910</X>
@@ -429,8 +479,6 @@
         <EndMultiplicity>1..*</EndMultiplicity>
       </Relationship>
       <Relationship type="Association" first="7" second="6">
-        <Label>
-        </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <Direction>Bidirectional</Direction>
