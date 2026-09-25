@@ -13,9 +13,13 @@ using System.Text;
 using WS_ClinicService.Core.Auth;
 using WS_ClinicService.Core.Extensions;
 using WS_ClinicService.Core.Filters;
+using WS_ClinicService.Core.Logging;
+using WS_ClinicService.Core.Middleware;
 using WS_ClinicService.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddProvider(new DailyFileLoggerProvider());
 
 var services = builder.Services;
 var configuration = builder.Configuration;
@@ -111,6 +115,8 @@ services.AddRateLimiter(options =>
 services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

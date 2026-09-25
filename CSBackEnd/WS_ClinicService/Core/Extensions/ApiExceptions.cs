@@ -22,10 +22,10 @@ namespace WS_ClinicService.Core.Extensions
                 _ => (StatusCodes.Status500InternalServerError, string.Empty)
             };
 
-            if (statusCode == StatusCodes.Status500InternalServerError)
-            {
-                logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
-            }
+            logger.Log(
+                statusCode >= StatusCodes.Status500InternalServerError ? LogLevel.Error : LogLevel.Warning,
+                exception,
+                $"API exception handled with status code {statusCode}: {exception.Message}");
 
             context.Result = new ObjectResult(new ErrorResponse
             {
