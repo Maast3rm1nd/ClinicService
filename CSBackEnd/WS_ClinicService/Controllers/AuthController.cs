@@ -11,7 +11,6 @@ namespace WS_ClinicService.Controllers
 {
     [ApiController]
     [Route("auth")]
-    [AllowAnonymous]
     public class AuthController : ControllerBase
     {
         private readonly IOptions<JwtOptions> _jwtOptions;
@@ -43,6 +42,7 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         [EnableRateLimiting("login")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
@@ -90,6 +90,7 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             var rotated = await _refreshTokenService.RotateAsync(request.RefreshToken, GetIpAddress(), Request.Headers.UserAgent, cancellationToken);
@@ -117,6 +118,7 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost("logout")]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout([FromBody] LogoutRequest request, CancellationToken cancellationToken)
         {
             await _refreshTokenService.RevokeAsync(request.RefreshToken, cancellationToken);

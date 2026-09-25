@@ -33,7 +33,9 @@ namespace WS_ClinicService.Core.Auth
                         && !person.IsDeleted,
                     cancellationToken);
 
-            if (user is null || await _securityService.IsLockedAsync(user.Id, cancellationToken))
+            if (user is null
+                || user.PasswordHash == null
+                || await _securityService.IsLockedAsync(user.Id, cancellationToken))
             {
                 return null;
             }
