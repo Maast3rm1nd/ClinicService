@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit policy' : 'New policy' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="dialog-content">
+    <mat-form-field appearance="outline">
+      <mat-label>Policy number</mat-label>
+      <input matInput formControlName="medicalPolicyNumber" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Policy type</mat-label>
+      <mat-select formControlName="medicalPolicyType">
+        @for (type of policyTypes; track type) {
+          <mat-option [value]="type">{{ policyTypeLabels[type] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Insurance provider</mat-label>
+      <mat-select formControlName="insuranceProvider">
+        @for (provider of data.providers; track provider.entityId) {
+          <mat-option [value]="provider.entityId">{{ provider.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="2"></textarea>
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="dialog-error">{{ errorMessage() }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Save</button>
+  </mat-dialog-actions>
+</form>

@@ -11,6 +11,7 @@ namespace WS_ClinicService.Core.Logging
         private readonly string _serviceName;
         private StreamWriter? _writer;
         private DateOnly _currentDate;
+        private string? _currentPath;
         private bool _disposed;
 
         public DailyFileLoggerProvider(string? serviceName = null)
@@ -39,8 +40,8 @@ namespace WS_ClinicService.Core.Logging
                 }
 
                 EnsureWriter();
-                var timestamp = DateTimeOffset.Now;
-                _writer!.WriteLine($"{timestamp:O} [{logLevel}] {categoryName} ({eventId.Id}) {message}");
+                var timestamp = DateTime.Now;
+                _writer!.WriteLine($"{timestamp:dd.MM.yyyy HH:mm:ss} [{GetLevelTag(logLevel)}] {categoryName} ({eventId.Id}) {message}");
                 if (exception is not null)
                 {
                     _writer.WriteLine(exception);
@@ -48,6 +49,17 @@ namespace WS_ClinicService.Core.Logging
                 _writer.Flush();
             }
         }
+
+        private static string GetLevelTag(LogLevel logLevel) => logLevel switch
+        {
+            LogLevel.Trace => "TRC",
+            LogLevel.Debug => "DBG",
+            LogLevel.Information => "INF",
+            LogLevel.Warning => "WRN",
+            LogLevel.Error => "ERR",
+            LogLevel.Critical => "CRT",
+            _ => logLevel.ToString().ToUpperInvariant()
+        };
 
         private void EnsureWriter()
         {
@@ -57,7 +69,7 @@ namespace WS_ClinicService.Core.Logging
                 return;
             }
 
-            var previousPath = _writer is null ? null : GetLogPath(_currentDate);
+            var previousPath = _writer is null ? null : _currentPath;
             _writer?.Dispose();
             if (previousPath is not null && File.Exists(previousPath))
             {
@@ -65,9 +77,10 @@ namespace WS_ClinicService.Core.Logging
             }
 
             _currentDate = today;
-            var path = GetLogPath(today);
-            var isNew = !File.Exists(path) || new FileInfo(path).Length == 0;
-            _writer = new StreamWriter(new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8)
+            var (stream, path, isNew) = OpenWriterStream(today);
+            _currentPath = path;
+
+            _writer = new StreamWriter(stream, Encoding.UTF8)
             {
                 AutoFlush = true
             };
@@ -77,7 +90,42 @@ namespace WS_ClinicService.Core.Logging
             }
         }
 
-        private string GetLogPath(DateOnly date) => Path.Combine(_logDirectory, $"{_serviceName}-{date:yyyy-MM-dd}.log");
+        private (FileStream Stream, string Path, bool IsNew) OpenWriterStream(DateOnly date)
+        {
+            const int maxAttemptsPerFile = 5;
+            const int maxFileIndex = 100;
+
+            for (var index = 0; index <= maxFileIndex; index++)
+            {
+                var path = GetLogPath(date, index);
+                var isNew = !File.Exists(path) || new FileInfo(path).Length == 0;
+                var canFallBack = index < maxFileIndex;
+
+                for (var attempt = 1; attempt <= maxAttemptsPerFile; attempt++)
+                {
+                    try
+                    {
+                        var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                        return (stream, path, isNew);
+                    }
+                    catch (IOException) when (attempt < maxAttemptsPerFile)
+                    {
+                        Thread.Sleep(100 * attempt);
+                    }
+                    catch (IOException) when (canFallBack)
+                    {
+                        // Could not access this file even after retries; fall back to the next incremented file name.
+                        break;
+                    }
+                }
+            }
+
+            throw new IOException($"Unable to access any log file variant for '{GetLogPath(date, 0)}' after {maxFileIndex} attempts.");
+        }
+
+        private string GetLogPath(DateOnly date, int index) => index == 0
+            ? Path.Combine(_logDirectory, $"{_serviceName}-{date:yyyy-MM-dd}.log")
+            : Path.Combine(_logDirectory, $"{_serviceName}-{date:yyyy-MM-dd} ({index}).log");
 
         private void Archive(string path)
         {

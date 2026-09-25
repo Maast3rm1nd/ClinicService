@@ -1,0 +1,87 @@
+<div class="dashboard">
+  <div class="dashboard__toolbar">
+    <div class="dashboard__nav">
+      <button mat-icon-button (click)="previousWeek()" aria-label="Previous week">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-stroked-button (click)="today()">Today</button>
+      <button mat-icon-button (click)="nextWeek()" aria-label="Next week">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <span class="dashboard__range">{{ weekRangeLabel() }}</span>
+    </div>
+
+    <div class="dashboard__actions">
+      <mat-form-field appearance="outline" class="dashboard__doctor-filter">
+        <mat-label>Doctor</mat-label>
+        <mat-select [value]="selectedDoctorId()" (selectionChange)="selectedDoctorId.set($event.value)">
+          <mat-option value="all">All doctors</mat-option>
+          @for (doctor of doctors(); track doctor.id) {
+            <mat-option [value]="doctor.id">{{ doctor.shortName || doctor.fullName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" (click)="openNewAppointment()">
+        <mat-icon>add</mat-icon>
+        New appointment
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="dashboard__loading">
+      <mat-spinner diameter="36" />
+    </div>
+  } @else {
+    <div class="calendar">
+      <div class="calendar__header calendar__row">
+        <div class="calendar__gutter"></div>
+        @for (day of weekDays(); track day.getTime()) {
+          <div class="calendar__day-header">
+            <span class="calendar__day-name">{{ dayLabels[$index] }}</span>
+            <span class="calendar__day-date">{{ day.getDate() }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="calendar__body">
+        <div class="calendar__gutter calendar__gutter--hours">
+          @for (hour of hours; track hour) {
+            <div class="calendar__hour-label" [style.height.px]="hourHeight">{{ hour }}:00</div>
+          }
+        </div>
+
+        @for (day of weekDays(); track day.getTime(); let dayIndex = $index) {
+          <div class="calendar__day-column" [style.height.px]="hourHeight * hours.length">
+            @for (hour of hours; track hour) {
+              <div
+                class="calendar__slot"
+                [style.height.px]="hourHeight"
+                (click)="openNewAppointment(day, hour)"
+              ></div>
+            }
+
+            @for (event of events(); track event.appointment.id) {
+              @if (event.dayIndex === dayIndex) {
+                <div
+                  class="calendar__event"
+                  [class]="'calendar__event--' + event.appointment.status"
+                  [style.top.px]="event.topPx"
+                  [style.height.px]="event.heightPx"
+                  [matTooltip]="event.doctorName + ' — ' + event.patientName + ' (' + statusLabels[event.appointment.status] + ')'"
+                >
+                  <span class="calendar__event-time">
+                    {{ event.appointment.appointmentDateTime | date: 'HH:mm' }}
+                  </span>
+                  <span class="calendar__event-title">{{ event.patientName }}</span>
+                  <span class="calendar__event-doctor">{{ event.doctorName }}</span>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

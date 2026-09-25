@@ -1,0 +1,64 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon inline>local_hospital</mat-icon>
+        Clinic Service
+      </mat-card-title>
+      <mat-card-subtitle>Sign in</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-card-content class="login-card__content">
+        <mat-form-field appearance="outline">
+          <mat-label>Login</mat-label>
+          <input matInput formControlName="login" autocomplete="username" />
+          @if (form.controls.login.invalid && form.controls.login.touched) {
+            <mat-error>Enter your login</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="'Show password'"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <mat-error>Enter your password</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>2FA code (if enabled)</mat-label>
+          <input matInput formControlName="twoFactorCode" autocomplete="one-time-code" />
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <p class="login-card__error">{{ errorMessage() }}</p>
+        }
+      </mat-card-content>
+
+      <mat-card-actions class="login-card__actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Sign in
+          }
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>

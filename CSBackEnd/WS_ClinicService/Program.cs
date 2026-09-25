@@ -114,6 +114,14 @@ services.AddRateLimiter(options =>
 
 services.AddOpenApi();
 
+services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins("http://localhost:4200", "https://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -131,6 +139,8 @@ if (app.Environment.IsDevelopment())
 app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 #if DEBUG
 if (app.Environment.IsDevelopment())

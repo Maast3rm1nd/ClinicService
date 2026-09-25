@@ -1,0 +1,95 @@
+<div class="page">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Create new user</mat-card-title>
+      <mat-card-subtitle>Available to administrators only</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-button-toggle-group [value]="kind()" (change)="setKind($event.value)" class="kind-toggle">
+        <mat-button-toggle value="person">Employee / administrator</mat-button-toggle>
+        <mat-button-toggle value="doctor">Doctor</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      @if (kind() === 'person') {
+        <form [formGroup]="personForm" (ngSubmit)="submit()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Full name</mat-label>
+            <input matInput formControlName="fullName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Short name</mat-label>
+            <input matInput formControlName="shortName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Login</mat-label>
+            <input matInput formControlName="login" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Password (min. 12 characters)</mat-label>
+            <input matInput type="password" formControlName="password" />
+            @if (personForm.controls.password.hasError('minlength')) {
+              <mat-error>Password must be at least 12 characters long</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              <mat-icon>person_add</mat-icon>
+              Create employee
+            </button>
+          </div>
+        </form>
+      } @else {
+        <form [formGroup]="doctorForm" (ngSubmit)="submit()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Full name</mat-label>
+            <input matInput formControlName="fullName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Short name</mat-label>
+            <input matInput formControlName="shortName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Login</mat-label>
+            <input matInput formControlName="login" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Specialisations</mat-label>
+            <mat-select formControlName="specialisations" multiple>
+              @for (item of specialisations(); track item.id) {
+                <mat-option [value]="item.entityId">{{ item.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Work status</mat-label>
+            <mat-select formControlName="employeeWorkStatus">
+              @for (status of workStatuses; track status) {
+                <mat-option [value]="status">{{ workStatusLabels[status] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              <mat-icon>person_add</mat-icon>
+              Create doctor
+            </button>
+          </div>
+          <p class="hint">
+            Note: the doctor creation API does not accept a password — sign-in credentials for the
+            doctor must be configured separately by an administrator after the record is created.
+          </p>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
