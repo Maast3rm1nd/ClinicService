@@ -20,17 +20,6 @@ namespace WS_ClinicService.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("medical-cards/{id:guid}")]
-        [ProducesResponseType(typeof(MedicalCardSnapshotDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MedicalCardSnapshotDto>> GetMedicalCard(Guid id, CancellationToken cancellationToken)
-        {
-            return Ok(await _mediator.Send(new GetAdminMedicalCardQuery(id), cancellationToken));
-        }
-
         [HttpPost("appointment-slips")]
         [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,6 +31,17 @@ namespace WS_ClinicService.Controllers
             var created = await _mediator.Send(new AddAppointmentSlipCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
+        }
+
+        [HttpGet("appointment-slips/{id:guid}")]
+        [ProducesResponseType(typeof(AppointmentSnapshotDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<AppointmentSnapshotDto>> GetAppointmentSlip(Guid id, CancellationToken cancellationToken)
+        {
+            return Ok(await _mediator.Send(new GetAppointmentByIdQuery(id), cancellationToken));
         }
 
         [HttpPut("appointment-slips/{id:guid}")]

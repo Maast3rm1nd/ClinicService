@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Clinic Service API
-  version: 1.1.0
+  version: 1.1.1
 
 servers:
   - url: https://api.clinic.local/v1
@@ -44,6 +44,55 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Patients
+      summary: Create patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - birthDate
+              properties:
+                fullName:
+                  type: string
+                shortName:
+                  type: string
+                passportNumber:
+                  type: string
+                birthDate:
+                  type: string
+                  format: date-time
+                phoneNumber:
+                  type: string
+                bloodGroup:
+                  type: string
+                allergies:
+                  type: string
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -118,6 +167,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Patients
+      summary: Update patient
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientSnapshot'
+      responses:
+        '200':
+          description: Patient updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Patients
+      summary: Delete patient
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -1853,29 +1948,6 @@ paths:
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /admin/medical-cards/{id}:
-    get:
-      tags:
-        - Administrators
-      summary: Get medical card
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      responses:
-        '200':
-          description: Medical card data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MedicalCardSnapshot'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
