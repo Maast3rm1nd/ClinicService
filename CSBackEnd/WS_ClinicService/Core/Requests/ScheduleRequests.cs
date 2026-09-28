@@ -5,13 +5,17 @@ using ClinicServiceBase.DAL.DBRepositories;
 using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using ScheduleEntity = ClinicServiceContext.Entities.Schedule;
 using ScheduleSnapshot = ClinicServiceBase.DTO.ScheduleDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetSchedulesQuery : IRequest<List<ScheduleSnapshot>>;
+
+    public record GetSchedulesByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<ScheduleSnapshot>>;
 
     public record GetScheduleByIdQuery(Guid Id) : IRequest<ScheduleSnapshot>;
 
@@ -27,6 +31,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IScheduleRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<ScheduleSnapshot>>(items);
+        }
+    }
+
+    public class GetSchedulesByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetSchedulesByFilterQuery, List<ScheduleSnapshot>>
+    {
+        public async Task<List<ScheduleSnapshot>> Handle(GetSchedulesByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IScheduleRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<ScheduleSnapshot>>(filtered);
         }
     }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Scalar.AspNetCore;
@@ -52,6 +53,14 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Asse
 
 var jwtOptions = configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 
+#if DEBUG
+if (builder.Environment.IsDevelopment() &&
+    (string.IsNullOrWhiteSpace(jwtOptions.Secret) || Encoding.UTF8.GetByteCount(jwtOptions.Secret) < 32))
+{
+    jwtOptions.Secret = "local-dev-debug-jwt-secret-min-32-bytes";
+}
+#endif
+
 if (string.IsNullOrWhiteSpace(jwtOptions.Secret) || Encoding.UTF8.GetByteCount(jwtOptions.Secret) < 32)
 {
     throw new InvalidOperationException("Jwt:Secret must be configured and contain at least 32 bytes.");
@@ -67,7 +76,7 @@ if (jwtOptions.ExpiresMinutes is <= 0 or > 60)
     throw new InvalidOperationException("Jwt:ExpiresMinutes must be between 1 and 60.");
 }
 
-services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+services.AddSingleton(Options.Create(jwtOptions));
 services.Configure<AuthBootstrapOptions>(configuration.GetSection("Auth:Bootstrap"));
 services.AddSingleton<TokenService>();
 services.AddSingleton<IPasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>, PasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>>();

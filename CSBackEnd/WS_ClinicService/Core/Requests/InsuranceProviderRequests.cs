@@ -3,13 +3,17 @@ using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using InsuranceProvider = ClinicServiceContext.Entities.InsuranceProviderSnapshot;
 using InsuranceProviderSnapshot = ClinicServiceBase.DTO.InsuranceProviderSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetInsuranceProvidersQuery : IRequest<List<InsuranceProviderSnapshot>>;
+
+    public record GetInsuranceProvidersByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<InsuranceProviderSnapshot>>;
 
     public record GetInsuranceProviderByIdQuery(Guid Id) : IRequest<InsuranceProviderSnapshot>;
 
@@ -25,6 +29,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<InsuranceProviderSnapshot>>(items);
+        }
+    }
+
+    public class GetInsuranceProvidersByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetInsuranceProvidersByFilterQuery, List<InsuranceProviderSnapshot>>
+    {
+        public async Task<List<InsuranceProviderSnapshot>> Handle(GetInsuranceProvidersByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IInsuranceProviderSnapshotRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<InsuranceProviderSnapshot>>(filtered);
         }
     }
 

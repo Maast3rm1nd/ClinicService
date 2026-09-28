@@ -5,13 +5,17 @@ using ClinicServiceBase.DAL.DBRepositories;
 using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using Diagnosis = ClinicServiceContext.Entities.DiagnosisSnapshot;
 using DiagnosisSnapshot = ClinicServiceBase.DTO.DiagnosisSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetDiagnosesQuery : IRequest<List<DiagnosisSnapshot>>;
+
+    public record GetDiagnosesByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<DiagnosisSnapshot>>;
 
     public record GetDiagnosisByIdQuery(Guid Id) : IRequest<DiagnosisSnapshot>;
 
@@ -27,6 +31,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IDiagnosisSnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<DiagnosisSnapshot>>(items);
+        }
+    }
+
+    public class GetDiagnosesByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetDiagnosesByFilterQuery, List<DiagnosisSnapshot>>
+    {
+        public async Task<List<DiagnosisSnapshot>> Handle(GetDiagnosesByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IDiagnosisSnapshotRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<DiagnosisSnapshot>>(filtered);
         }
     }
 

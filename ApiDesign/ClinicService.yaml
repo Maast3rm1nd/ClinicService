@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Clinic Service API
-  version: 1.0.0
+  version: 1.1.0
 
 servers:
   - url: https://api.clinic.local/v1
@@ -37,6 +37,63 @@ paths:
                   data:
                     type: array
                     items:
+                      $ref: '#/components/schemas/PatientSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /patients/filter:
+    post:
+      tags:
+        - Patients
+      summary: Get patients by filter
+      parameters: 
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema: 
+            type: integer
+        
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema: 
+            type: string
+        
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+      
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema: 
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Patients by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: 
+                    type: array
+                    items: 
                       $ref: '#/components/schemas/PatientSnapshot'
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -139,6 +196,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /medical-cards/filter:
+    post:
+      tags:
+        - MedicalCards
+      summary: Get medical cards by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Medical cards by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MedicalCardSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -281,6 +395,63 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /policies/filter:
+    post:
+      tags:
+        - Policies
+      summary: Get policies by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Policies by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PolicySnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /policies/{id}:
     get:
       tags:
@@ -414,6 +585,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /insurance-providers/filter:
+    post:
+      tags:
+        - InsuranceProviders
+      summary: Get insurance providers by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Insurance providers by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InsuranceProviderSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -557,6 +785,63 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /doctors/filter:
+    post:
+      tags:
+        - Doctors
+      summary: Get doctors by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Doctors by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Doctors'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /doctors/{id}:
     get:
       tags:
@@ -689,6 +974,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /specialisations/filter:
+    post:
+      tags:
+        - Specialisations
+      summary: Get specialisations by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Specialisations by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SpecialisationSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -829,6 +1171,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /diagnoses/filter:
+    post:
+      tags:
+        - Diagnoses
+      summary: Get diagnoses by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Diagnoses by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DiagnosisSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -988,6 +1387,63 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /appointments/filter:
+    post:
+      tags:
+        - Appointments
+      summary: Get appointments by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Appointments by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AppointmentSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /appointments/{id}:
     get:
       tags:
@@ -1141,6 +1597,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /schedules/filter:
+    post:
+      tags:
+        - Schedules
+      summary: Get schedules by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Schedules by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 

@@ -6,13 +6,17 @@ using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using ClinicServiceContext.Enums;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using DoctorEntity = ClinicServiceContext.Entities.Doctor;
 using DoctorSnapshot = ClinicServiceBase.DTO.DoctorsDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetDoctorsQuery : IRequest<List<DoctorSnapshot>>;
+
+    public record GetDoctorsByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<DoctorSnapshot>>;
 
     public record GetDoctorByIdQuery(Guid Id) : IRequest<DoctorSnapshot>;
 
@@ -28,6 +32,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IDoctorsRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<DoctorSnapshot>>(items);
+        }
+    }
+
+    public class GetDoctorsByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetDoctorsByFilterQuery, List<DoctorSnapshot>>
+    {
+        public async Task<List<DoctorSnapshot>> Handle(GetDoctorsByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IDoctorsRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<DoctorSnapshot>>(filtered);
         }
     }
 

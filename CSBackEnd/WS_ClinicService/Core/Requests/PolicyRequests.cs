@@ -5,13 +5,17 @@ using ClinicServiceBase.DAL.DBRepositories;
 using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using Policy = ClinicServiceContext.Entities.PolicySnapshot;
 using PolicySnapshot = ClinicServiceBase.DTO.PolicySnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetPoliciesQuery : IRequest<List<PolicySnapshot>>;
+
+    public record GetPoliciesByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<PolicySnapshot>>;
 
     public record GetPolicyByIdQuery(Guid Id) : IRequest<PolicySnapshot>;
 
@@ -27,6 +31,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IPolicySnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<PolicySnapshot>>(items);
+        }
+    }
+
+    public class GetPoliciesByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetPoliciesByFilterQuery, List<PolicySnapshot>>
+    {
+        public async Task<List<PolicySnapshot>> Handle(GetPoliciesByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IPolicySnapshotRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<PolicySnapshot>>(filtered);
         }
     }
 

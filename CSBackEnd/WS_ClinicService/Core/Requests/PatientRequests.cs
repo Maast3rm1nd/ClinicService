@@ -6,13 +6,17 @@ using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using ClinicServiceDAL;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using Patient = ClinicServiceContext.Entities.PatientSnapshot;
 using PatientSnapshot = ClinicServiceBase.DTO.PatientSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetPatientsQuery : IRequest<List<PatientSnapshot>>;
+
+    public record GetPatientsByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<PatientSnapshot>>;
 
     public record GetPatientByIdQuery(Guid Id) : IRequest<PatientSnapshot>;
 
@@ -31,6 +35,17 @@ namespace WS_ClinicService.Core.Requests
             var items = await unitOfWork.GetRepository<IPatientSnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<PatientSnapshot>>(items);
         }
+    }
+
+    public class GetPatientsByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetPatientsByFilterQuery, List<PatientSnapshot>>
+    {
+        public async Task<List<PatientSnapshot>> Handle(GetPatientsByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IPatientSnapshotRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<PatientSnapshot>>(filtered);
+        }
+    }
 
     public class RestorePatientCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, SnapshotVersionService versionService) : IRequestHandler<RestorePatientCommand, PatientSnapshot>
     {
@@ -42,7 +57,6 @@ namespace WS_ClinicService.Core.Requests
             await unitOfWork.CommitToDBAsync(cancellationToken);
             return mapper.Map<PatientSnapshot>(entity);
         }
-    }
     }
 
     public class GetPatientByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetPatientByIdQuery, PatientSnapshot>

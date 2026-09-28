@@ -5,13 +5,17 @@ using ClinicServiceBase.DAL.DBRepositories;
 using ClinicServiceBase.DTO;
 using ClinicServiceContext.Entities;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Core.Filtering;
 using Appointment = ClinicServiceContext.Entities.AppointmentSnapshot;
 using AppointmentSnapshot = ClinicServiceBase.DTO.AppointmentSnapshotDto;
 
 namespace WS_ClinicService.Core.Requests
 {
     public record GetAppointmentsQuery : IRequest<List<AppointmentSnapshot>>;
+
+    public record GetAppointmentsByFilterQuery(JArray Filter, int? TakeCount, string? SortBy, bool SortDesc) : IRequest<List<AppointmentSnapshot>>;
 
     public record GetAppointmentByIdQuery(Guid Id) : IRequest<AppointmentSnapshot>;
 
@@ -27,6 +31,16 @@ namespace WS_ClinicService.Core.Requests
         {
             var items = await unitOfWork.GetRepository<IAppointmentSnapshotRepository>().GetAllObjects(cancellationToken);
             return mapper.Map<List<AppointmentSnapshot>>(items);
+        }
+    }
+
+    public class GetAppointmentsByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetAppointmentsByFilterQuery, List<AppointmentSnapshot>>
+    {
+        public async Task<List<AppointmentSnapshot>> Handle(GetAppointmentsByFilterQuery request, CancellationToken cancellationToken)
+        {
+            var items = await unitOfWork.GetRepository<IAppointmentSnapshotRepository>().GetAllObjects(cancellationToken);
+            var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
+            return mapper.Map<List<AppointmentSnapshot>>(filtered);
         }
     }
 

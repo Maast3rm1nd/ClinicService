@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Requests;
@@ -45,6 +46,24 @@ namespace WS_ClinicService.Controllers
             var created = await _mediator.Send(new CreatePatientCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
+        }
+
+        [HttpPost("filter")]
+        [ProducesResponseType(typeof(FilterResponse<PatientSnapshotDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<FilterResponse<PatientSnapshotDto>>> GetPatientsByFilter(
+            [FromBody] JArray filter,
+            [FromQuery] int? takeCount,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool sortDesc,
+            CancellationToken cancellationToken)
+        {
+            var items = await _mediator.Send(new GetPatientsByFilterQuery(filter, takeCount, sortBy, sortDesc), cancellationToken);
+
+            return Ok(new FilterResponse<PatientSnapshotDto> { Items = items });
         }
 
         [HttpGet("{id:guid}")]
