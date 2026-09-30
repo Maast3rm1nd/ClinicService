@@ -11,9 +11,11 @@ namespace WS_ClinicService.Core.Auth
             return Base32Encode(RandomNumberGenerator.GetBytes(20));
         }
 
-        public bool Verify(string secret, string code, DateTimeOffset now)
+        public bool Verify(string secret, string? code, DateTimeOffset now)
         {
-            if (code.Length != 6 || !int.TryParse(code, NumberStyles.None, CultureInfo.InvariantCulture, out _))
+            if (string.IsNullOrEmpty(code)
+                || code.Length != 6
+                || !int.TryParse(code, NumberStyles.None, CultureInfo.InvariantCulture, out _))
             {
                 return false;
             }
