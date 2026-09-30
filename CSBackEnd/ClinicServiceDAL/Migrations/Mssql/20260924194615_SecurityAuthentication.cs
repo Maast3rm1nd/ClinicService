@@ -69,6 +69,39 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     table.PrimaryKey("PK_SecurityAuditEvents", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PasswordSetupTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenHash = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UsedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PasswordSetupTokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrustedTwoFactorDevices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TokenHash = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastUsedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RevokedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrustedTwoFactorDevices", x => x.Id);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AccountSecurityStates_PersonId",
                 table: "AccountSecurityStates",
@@ -90,6 +123,23 @@ namespace ClinicServiceDAL.Migrations.Mssql
                 name: "IX_SecurityAuditEvents_PersonId_CreatedAt",
                 table: "SecurityAuditEvents",
                 columns: new[] { "PersonId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordSetupTokens_TokenHash",
+                table: "PasswordSetupTokens",
+                column: "TokenHash",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrustedTwoFactorDevices_PersonId_ExpiresAt",
+                table: "TrustedTwoFactorDevices",
+                columns: new[] { "PersonId", "ExpiresAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrustedTwoFactorDevices_TokenHash",
+                table: "TrustedTwoFactorDevices",
+                column: "TokenHash",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -103,6 +153,12 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
             migrationBuilder.DropTable(
                 name: "SecurityAuditEvents");
+
+            migrationBuilder.DropTable(
+                name: "PasswordSetupTokens");
+
+            migrationBuilder.DropTable(
+                name: "TrustedTwoFactorDevices");
         }
     }
 }

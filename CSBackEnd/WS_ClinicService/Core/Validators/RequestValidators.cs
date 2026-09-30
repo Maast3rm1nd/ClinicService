@@ -205,6 +205,17 @@ namespace WS_ClinicService.Core.Validators
         }
     }
 
+    public class TwoFactorCodeRequestValidator : AbstractValidator<TwoFactorCodeRequest>
+    {
+        public TwoFactorCodeRequestValidator()
+        {
+            RuleFor(x => x.Code)
+                .NotEmpty()
+                .Length(6)
+                .Matches("^[0-9]{6}$");
+        }
+    }
+
     public class AddAppointmentSlipRequestValidator : AbstractValidator<AddAppointmentSlipRequest>
     {
         public AddAppointmentSlipRequestValidator()

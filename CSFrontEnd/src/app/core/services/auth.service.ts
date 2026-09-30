@@ -12,6 +12,10 @@ import {
   TwoFactorSetupResponse,
   TwoFactorStatusResponse,
 } from '../models/auth.model';
+import {
+  PasswordSetupValidationResponse,
+  SetPasswordRequest,
+} from '../models/password-setup.model';
 import { decodeJwtPayload, readClaim, readClaimArray } from './jwt.util';
 import { TokenStorageService } from './token-storage.service';
 
@@ -32,17 +36,21 @@ export class AuthService {
   readonly isAdministrator = computed(() => this.currentUserSignal()?.role === 'Administrator');
 
   login(request: LoginRequest): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.baseUrl}/login`, request, { withCredentials: true }).pipe(
-      tap((tokens) => {
-        this.clearTwoFactorPromptState();
-        this.applyTokens(tokens);
-      }),
-    );
+    return this.http
+      .post<TokenResponse>(`${this.baseUrl}/login`, request, { withCredentials: true })
+      .pipe(
+        tap((tokens) => {
+          this.clearTwoFactorPromptState();
+          this.applyTokens(tokens);
+        }),
+      );
   }
 
   hasSeenTwoFactorPrompt(): boolean {
-    return typeof sessionStorage !== 'undefined'
-      && sessionStorage.getItem(AuthService.twoFactorPromptStorageKey) === 'true';
+    return (
+      typeof sessionStorage !== 'undefined' &&
+      sessionStorage.getItem(AuthService.twoFactorPromptStorageKey) === 'true'
+    );
   }
 
   markTwoFactorPromptSeen(): void {
@@ -71,11 +79,22 @@ export class AuthService {
     return this.http.post<void>(`${this.baseUrl}/2fa/disable`, { code }, { withCredentials: true });
   }
 
+  setPassword(request: SetPasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/password-setup/complete`, request);
+  }
+
+  validatePasswordSetup(token: string): Observable<PasswordSetupValidationResponse> {
+    return this.http.post<PasswordSetupValidationResponse>(
+      `${this.baseUrl}/password-setup/validate`,
+      { token },
+    );
+  }
+
   refresh(): Observable<TokenResponse> {
     const body: RefreshTokenRequest = { refreshToken: this.tokenStorage.refreshToken ?? '' };
-    return this.http.post<TokenResponse>(`${this.baseUrl}/refresh`, body).pipe(
-      tap((tokens) => this.applyTokens(tokens)),
-    );
+    return this.http
+      .post<TokenResponse>(`${this.baseUrl}/refresh`, body)
+      .pipe(tap((tokens) => this.applyTokens(tokens)));
   }
 
   logout(): void {

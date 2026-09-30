@@ -1,0 +1,41 @@
+<div class="page-header">
+  <div>
+    <h1>Medical cards</h1>
+    <p>Patient medical records</p>
+  </div>
+  <span class="card-count">{{ cards().length }} cards</span>
+</div>
+
+@if (loading()) {
+  <div class="loading"><mat-spinner diameter="36" /></div>
+} @else {
+  <table mat-table [dataSource]="cards()" class="full-width mat-elevation-z1">
+    <ng-container matColumnDef="recordNumber">
+      <th mat-header-cell *matHeaderCellDef>Record number</th>
+      <td mat-cell *matCellDef="let card">{{ card.recordNumber }}</td>
+    </ng-container>
+    <ng-container matColumnDef="patient">
+      <th mat-header-cell *matHeaderCellDef>Patient</th>
+      <td mat-cell *matCellDef="let card">{{ patientName(card) }}</td>
+    </ng-container>
+    <ng-container matColumnDef="policy">
+      <th mat-header-cell *matHeaderCellDef>Policy</th>
+      <td mat-cell *matCellDef="let card">{{ card.policy || '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="diagnoses">
+      <th mat-header-cell *matHeaderCellDef>Diagnoses</th>
+      <td mat-cell *matCellDef="let card">{{ card.diagnoses?.join(', ') || '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="creationDateTime">
+      <th mat-header-cell *matHeaderCellDef>Created</th>
+      <td mat-cell *matCellDef="let card">{{ card.creationDateTime | date: 'mediumDate' }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+        No medical cards found.
+      </td>
+    </tr>
+  </table>
+}

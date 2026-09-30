@@ -20,8 +20,8 @@ export class DoctorsService {
     return this.http.get<Doctor>(`${this.baseUrl}/${id}`);
   }
 
-  create(request: CreateDoctorRequest): Observable<CreatedAccountResponse<Doctor>> {
-    return this.http.post<CreatedAccountResponse<Doctor>>(this.baseUrl, request);
+  create(request: CreateDoctorRequest): Observable<CreatedAccountResponse> {
+    return this.http.post<CreatedAccountResponse>(this.baseUrl, request);
   }
 
   update(id: string, request: UpdateDoctorRequest): Observable<Doctor> {

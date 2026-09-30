@@ -20,8 +20,8 @@ export class PersonsService {
     return this.http.get<Person>(`${this.baseUrl}/${id}`);
   }
 
-  create(request: CreatePersonRequest): Observable<CreatedAccountResponse<Person>> {
-    return this.http.post<CreatedAccountResponse<Person>>(this.baseUrl, request);
+  create(request: CreatePersonRequest): Observable<CreatedAccountResponse> {
+    return this.http.post<CreatedAccountResponse>(this.baseUrl, request);
   }
 
   update(id: string, request: UpdatePersonRequest): Observable<Person> {

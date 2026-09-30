@@ -1,0 +1,39 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.edit-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.edit-form mat-form-field {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .edit-form {
+    flex-direction: column;
+  }
+}

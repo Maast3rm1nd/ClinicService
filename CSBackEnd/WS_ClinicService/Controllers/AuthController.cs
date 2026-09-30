@@ -277,7 +277,7 @@ namespace WS_ClinicService.Controllers
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = Request.IsHttps,
+                    Secure = true,
                     SameSite = SameSiteMode.Strict,
                     Path = "/auth",
                     MaxAge = TimeSpan.FromDays(30),
@@ -292,7 +292,7 @@ namespace WS_ClinicService.Controllers
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = Request.IsHttps,
+                    Secure = true,
                     SameSite = SameSiteMode.Strict,
                     Path = "/auth"
                 });

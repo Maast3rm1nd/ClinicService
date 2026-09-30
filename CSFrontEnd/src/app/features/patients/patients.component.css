@@ -1,0 +1,39 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.page-header p,
+.secondary {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.patient-count {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.secondary {
+  font-size: 0.85rem;
+}
+
+.empty-cell {
+  text-align: center;
+  padding: 2rem;
+}

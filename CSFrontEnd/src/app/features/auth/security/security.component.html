@@ -1,0 +1,94 @@
+<div class="security-page">
+  <div class="page-header">
+    <div>
+      <h1>Account security</h1>
+      <p>Manage two-factor authentication for your account.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading"><mat-spinner diameter="36" /></div>
+  } @else {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Authenticator app</mat-card-title>
+        <mat-card-subtitle>
+          @if (enabled()) {
+            Two-factor authentication is enabled.
+          } @else {
+            Two-factor authentication is not enabled.
+          }
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (enabled()) {
+          <p>
+            Use your authenticator app to generate a six-digit code, then confirm to disable this
+            feature.
+          </p>
+          <form [formGroup]="codeForm" (ngSubmit)="disable()" class="code-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Authenticator code</mat-label>
+              <input
+                matInput
+                formControlName="code"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+              />
+              @if (codeForm.controls.code.hasError('pattern')) {
+                <mat-error>Enter a six-digit code.</mat-error>
+              }
+            </mat-form-field>
+            <button mat-stroked-button color="warn" type="submit" [disabled]="busy()">
+              <mat-icon>delete</mat-icon>
+              Disable 2FA
+            </button>
+          </form>
+        } @else if (!secret()) {
+          <p>Use any TOTP-compatible authenticator app to scan a QR code and confirm setup.</p>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="startSetup()"
+            [disabled]="busy()"
+          >
+            <mat-icon>qr_code_2</mat-icon>
+            Set up authenticator
+          </button>
+        } @else {
+          <div class="setup">
+            @if (qrCode(); as image) {
+              <img [src]="image" alt="Authenticator setup QR code" />
+            }
+            <div class="setup-details">
+              <p>
+                Scan this QR code with your authenticator app. You can also enter the key manually:
+              </p>
+              <code>{{ secret() }}</code>
+              <form [formGroup]="codeForm" (ngSubmit)="confirmSetup()" class="code-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>Verification code</mat-label>
+                  <input
+                    matInput
+                    formControlName="code"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                  />
+                  @if (codeForm.controls.code.hasError('pattern')) {
+                    <mat-error>Enter a six-digit code.</mat-error>
+                  }
+                </mat-form-field>
+                <mat-checkbox formControlName="rememberDevice"> Remember this device </mat-checkbox>
+                <button mat-flat-button color="primary" type="submit" [disabled]="busy()">
+                  <mat-icon>verified_user</mat-icon>
+                  Confirm and enable
+                </button>
+              </form>
+            </div>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

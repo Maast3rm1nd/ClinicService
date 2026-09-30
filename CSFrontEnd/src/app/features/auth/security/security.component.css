@@ -1,0 +1,69 @@
+.security-page {
+  max-width: 760px;
+}
+
+.page-header {
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.page-header p,
+mat-card-content p {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.setup {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.setup img {
+  width: 220px;
+  max-width: 40%;
+}
+
+.setup-details {
+  flex: 1;
+}
+
+.setup-details code {
+  display: inline-block;
+  padding: 0.65rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.code-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+mat-form-field {
+  width: 100%;
+  max-width: 320px;
+}
+
+@media (max-width: 600px) {
+  .setup {
+    flex-direction: column;
+  }
+
+  .setup img {
+    max-width: 100%;
+  }
+}
