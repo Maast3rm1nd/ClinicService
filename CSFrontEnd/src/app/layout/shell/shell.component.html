@@ -9,17 +9,31 @@
         <mat-icon matListItemIcon>calendar_month</mat-icon>
         <span matListItemTitle>Schedule</span>
       </a>
-      <a mat-list-item routerLink="/doctors" routerLinkActive="active">
-        <mat-icon matListItemIcon>stethoscope</mat-icon>
-        <span matListItemTitle>Doctors</span>
+      @if (auth.isAdministrator()) {
+        <a mat-list-item routerLink="/doctors" routerLinkActive="active">
+          <mat-icon matListItemIcon>stethoscope</mat-icon>
+          <span matListItemTitle>Doctors</span>
+        </a>
+        <a mat-list-item routerLink="/policies" routerLinkActive="active">
+          <mat-icon matListItemIcon>badge</mat-icon>
+          <span matListItemTitle>Policies</span>
+        </a>
+        <a mat-list-item routerLink="/insurance-providers" routerLinkActive="active">
+          <mat-icon matListItemIcon>domain</mat-icon>
+          <span matListItemTitle>Insurance providers</span>
+        </a>
+        <a mat-list-item routerLink="/specialisations" routerLinkActive="active">
+          <mat-icon matListItemIcon>medical_services</mat-icon>
+          <span matListItemTitle>Specialisations</span>
+        </a>
+      }
+      <a mat-list-item routerLink="/medical-cards" routerLinkActive="active">
+        <mat-icon matListItemIcon>folder_shared</mat-icon>
+        <span matListItemTitle>Medical Cards</span>
       </a>
-      <a mat-list-item routerLink="/policies" routerLinkActive="active">
-        <mat-icon matListItemIcon>badge</mat-icon>
-        <span matListItemTitle>Policies</span>
-      </a>
-      <a mat-list-item routerLink="/insurance-providers" routerLinkActive="active">
-        <mat-icon matListItemIcon>domain</mat-icon>
-        <span matListItemTitle>Insurance providers</span>
+      <a mat-list-item routerLink="/patients" routerLinkActive="active">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>Patients</span>
       </a>
       @if (auth.isAdministrator()) {
         <a mat-list-item routerLink="/register" routerLinkActive="active">
@@ -27,6 +41,10 @@
           <span matListItemTitle>New user</span>
         </a>
       }
+      <a mat-list-item routerLink="/security" routerLinkActive="active">
+        <mat-icon matListItemIcon>security</mat-icon>
+        <span matListItemTitle>Account security</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
 

@@ -1,3 +1,5 @@
+using ClinicServiceContext.Enums;
+
 namespace WS_ClinicService.Contracts.Requests
 {
     public class CreatePersonRequest
@@ -8,6 +10,7 @@ namespace WS_ClinicService.Contracts.Requests
 
         public string Login { get; set; }
 
-        public string Password { get; set; }
+        public PersonType Type { get; set; }
+
     }
 }

@@ -844,33 +844,24 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - id
-                - specialisations
-                - employeeWorkStatus
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                specialisations:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                employeeWorkStatus:
-                  $ref: '#/components/schemas/EmployeeWorkStatus'
+              $ref: '#/components/schemas/CreateDoctorRequest'
       responses:
         '201':
-          description: Doctor created
+          description: Doctor created with a one-time password setup invitation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Doctors'
+                $ref: '#/components/schemas/CreatedDoctorAccount'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Login is already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           description: Validation error
           content:
@@ -1850,35 +1841,30 @@ paths:
     post:
       tags:
         - Persons
-      summary: Create person
+      summary: Create administrator
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - fullName
-                - login
-              properties:
-                fullName:
-                  type: string
-                shortName:
-                  type: string
-                  nullable: true
-                login:
-                  type: string
+              $ref: '#/components/schemas/CreatePersonRequest'
       responses:
         '201':
-          description: Person created
+          description: Administrator created with a one-time password setup invitation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PersonSnapshot'
+                $ref: '#/components/schemas/CreatedAdministratorAccount'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Login is already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           description: Validation error
           content:
@@ -2055,11 +2041,90 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /auth/password-setup/validate:
+    post:
+      tags:
+        - Auth
+      summary: Validate a password setup invitation
+      description: Checks that the single-use invitation is valid and unexpired without consuming it. Rate limited.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidatePasswordSetupRequest'
+      responses:
+        '200':
+          description: Invitation is valid
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordSetupValidationResponse'
+        '409':
+          description: Invitation is invalid, expired, or already used
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          description: Too many password setup requests
+
+  /auth/password-setup/complete:
+    post:
+      tags:
+        - Auth
+      summary: Set the account password using an invitation
+      description: Sets the password and consumes the invitation. Password must contain at least 12 characters. Rate limited.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompletePasswordSetupRequest'
+      responses:
+        '204':
+          description: Password set and invitation consumed
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store
+        '409':
+          description: Invitation is invalid, expired, or already used
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          description: Too many password setup requests
+
   /auth/login:
     post:
       tags:
         - Auth
       summary: Login
+      description: >
+        When TOTP is enabled, a valid TOTP code is required unless the request
+        includes a valid, unexpired trusted-device cookie issued after TOTP enrollment.
+      security: []
+      parameters:
+        - name: clinic_trusted_device
+          in: cookie
+          required: false
+          description: HttpOnly trusted-device cookie, valid for 30 days after enrollment.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -2080,13 +2145,17 @@ paths:
                   description: TOTP code when two-factor authentication is enabled
       responses:
         '200':
-          description: Successful login
+          description: Successful login. A valid trusted-device cookie allows login without a TOTP code.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Invalid credentials or missing/invalid TOTP code for an untrusted device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '500':
@@ -2134,7 +2203,8 @@ paths:
     post:
       tags:
         - Auth
-      summary: Generate a TOTP secret
+      summary: Generate a TOTP secret for enrollment
+      description: Generates a secret only when two-factor authentication is not already enabled.
       responses:
         '200':
           description: TOTP secret generated
@@ -2144,12 +2214,34 @@ paths:
                 $ref: '#/components/schemas/TwoFactorSetupResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Two-factor authentication is already enabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/2fa/status:
+    get:
+      tags:
+        - Auth
+      summary: Get current user's TOTP status
+      responses:
+        '200':
+          description: Two-factor authentication status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFactorStatusResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /auth/2fa/confirm:
     post:
       tags:
         - Auth
       summary: Enable TOTP two-factor authentication
+      description: Optionally trusts this browser for 30 days when rememberDevice is true.
       requestBody:
         required: true
         content:
@@ -2158,7 +2250,14 @@ paths:
               $ref: '#/components/schemas/TwoFactorCodeRequest'
       responses:
         '204':
-          $ref: '#/components/responses/NoContent'
+          description: TOTP enabled
+          headers:
+            Set-Cookie:
+              description: >
+                When rememberDevice is true, sets the HttpOnly clinic_trusted_device cookie
+                for 30 days. Otherwise, clears any existing trusted-device cookie.
+              schema:
+                type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
         '422':
@@ -2177,7 +2276,12 @@ paths:
               $ref: '#/components/schemas/TwoFactorCodeRequest'
       responses:
         '204':
-          $ref: '#/components/responses/NoContent'
+          description: TOTP disabled and all trusted devices revoked
+          headers:
+            Set-Cookie:
+              description: Clears the HttpOnly clinic_trusted_device cookie.
+              schema:
+                type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -2736,6 +2840,7 @@ components:
         - id
         - fullName
         - login
+        - type
         - creationDateTime
       properties:
         id:
@@ -2748,6 +2853,8 @@ components:
           nullable: true
         login:
           type: string
+        type:
+          $ref: '#/components/schemas/PersonType'
         creationDateTime:
           type: string
           format: date-time
@@ -2760,12 +2867,21 @@ components:
       type: object
       required:
         - id
+        - fullName
+        - login
         - specialisations
         - employeeWorkStatus
       properties:
         id:
           type: string
           format: uuid
+        fullName:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        login:
+          type: string
         specialisations:
           type: array
           items:
@@ -2773,6 +2889,118 @@ components:
             format: uuid
         employeeWorkStatus:
           $ref: '#/components/schemas/EmployeeWorkStatus'
+
+    CreateDoctorRequest:
+      type: object
+      required:
+        - id
+        - fullName
+        - login
+        - specialisations
+        - employeeWorkStatus
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Must be a non-empty UUID.
+        fullName:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        login:
+          type: string
+          maxLength: 450
+        specialisations:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        employeeWorkStatus:
+          $ref: '#/components/schemas/EmployeeWorkStatus'
+
+    CreatePersonRequest:
+      type: object
+      required:
+        - fullName
+        - login
+        - type
+      properties:
+        fullName:
+          type: string
+        shortName:
+          type: string
+          nullable: true
+        login:
+          type: string
+          maxLength: 450
+        type:
+          type: string
+          enum:
+            - Administrator
+          description: Only Administrator accounts can be created through this endpoint.
+
+    CreatedDoctorAccount:
+      type: object
+      required:
+        - account
+        - setupToken
+        - setupTokenExpiresAt
+      properties:
+        account:
+          $ref: '#/components/schemas/Doctors'
+        setupToken:
+          type: string
+          description: Secret one-time token. Store securely and deliver to the user.
+        setupTokenExpiresAt:
+          type: string
+          format: date-time
+
+    CreatedAdministratorAccount:
+      type: object
+      required:
+        - account
+        - setupToken
+        - setupTokenExpiresAt
+      properties:
+        account:
+          $ref: '#/components/schemas/PersonSnapshot'
+        setupToken:
+          type: string
+          description: Secret one-time token. Store securely and deliver to the user.
+        setupTokenExpiresAt:
+          type: string
+          format: date-time
+
+    ValidatePasswordSetupRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+
+    PasswordSetupValidationResponse:
+      type: object
+      required:
+        - login
+      properties:
+        login:
+          type: string
+
+    CompletePasswordSetupRequest:
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          minLength: 12
+          format: password
 
     Error:
       type: object
@@ -2834,6 +3062,10 @@ components:
         code:
           type: string
           pattern: '^\\d{6}$'
+        rememberDevice:
+          type: boolean
+          default: false
+          description: Trust this browser for 30 days (used when enabling TOTP).
 
     TwoFactorSetupResponse:
       type: object
@@ -2842,6 +3074,14 @@ components:
       properties:
         secret:
           type: string
+
+    TwoFactorStatusResponse:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
 
 
   parameters:

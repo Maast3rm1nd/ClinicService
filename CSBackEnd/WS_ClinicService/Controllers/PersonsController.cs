@@ -10,7 +10,7 @@ namespace WS_ClinicService.Controllers
 {
     [ApiController]
     [Route("persons")]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class PersonsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -35,13 +35,17 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(PersonSnapshotDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreatedAccountResponse<PersonSnapshotDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PersonSnapshotDto>> CreatePerson([FromBody] CreatePersonRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreatedAccountResponse<PersonSnapshotDto>>> CreatePerson(
+            [FromBody] CreatePersonRequest request,
+            CancellationToken cancellationToken)
         {
+            Response.Headers.CacheControl = "no-store";
             var created = await _mediator.Send(new CreatePersonCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
@@ -61,6 +65,7 @@ namespace WS_ClinicService.Controllers
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(PersonSnapshotDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

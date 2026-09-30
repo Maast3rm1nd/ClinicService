@@ -21,6 +21,14 @@ export interface LogoutRequest {
   refreshToken: string;
 }
 
+export interface TwoFactorStatusResponse {
+  enabled: boolean;
+}
+
+export interface TwoFactorSetupResponse {
+  secret: string;
+}
+
 export interface CurrentUser {
   login: string;
   role: 'Administrator' | 'Doctor' | string;

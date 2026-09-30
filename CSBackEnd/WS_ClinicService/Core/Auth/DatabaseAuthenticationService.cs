@@ -57,6 +57,20 @@ namespace WS_ClinicService.Core.Auth
             return _passwordHasher.HashPassword(user, password);
         }
 
+        public Task<bool> LoginExistsAsync(
+            string login,
+            Guid? exceptPersonId,
+            CancellationToken cancellationToken)
+        {
+            return _dbContext.PersonSnapshots
+                .IgnoreQueryFilters()
+                .AnyAsync(person => person.Login == login
+                    && person.IsCurrent
+                    && !person.IsDeleted
+                    && (exceptPersonId == null || person.Id != exceptPersonId),
+                    cancellationToken);
+        }
+
         public Task<PersonSnapshot?> GetCurrentUserAsync(Guid personId, CancellationToken cancellationToken)
         {
             return _dbContext.PersonSnapshots

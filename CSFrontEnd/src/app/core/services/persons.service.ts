@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ListResponse } from '../models/api-response.model';
 import { CreatePersonRequest, Person, UpdatePersonRequest } from '../models/person.model';
+import { CreatedAccountResponse } from '../models/password-setup.model';
 
 @Injectable({ providedIn: 'root' })
 export class PersonsService {
@@ -19,8 +20,8 @@ export class PersonsService {
     return this.http.get<Person>(`${this.baseUrl}/${id}`);
   }
 
-  create(request: CreatePersonRequest): Observable<Person> {
-    return this.http.post<Person>(this.baseUrl, request);
+  create(request: CreatePersonRequest): Observable<CreatedAccountResponse<Person>> {
+    return this.http.post<CreatedAccountResponse<Person>>(this.baseUrl, request);
   }
 
   update(id: string, request: UpdatePersonRequest): Observable<Person> {

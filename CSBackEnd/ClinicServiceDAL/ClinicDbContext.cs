@@ -36,6 +36,10 @@ namespace ClinicServiceDAL
 
         public DbSet<RefreshSession> RefreshSessions { get; set; }
 
+        public DbSet<PasswordSetupToken> PasswordSetupTokens { get; set; }
+
+        public DbSet<TrustedTwoFactorDevice> TrustedTwoFactorDevices { get; set; }
+
         public DbSet<SecurityAuditEvent> SecurityAuditEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,6 +73,20 @@ namespace ClinicServiceDAL
 
             ConfigureSnapshot(modelBuilder.Entity<PersonSnapshot>());
 
+            var activeLoginFilter = Database.ProviderName switch
+            {
+                "Microsoft.EntityFrameworkCore.Sqlite" => "\"IsCurrent\" = 1 AND \"IsDeleted\" = 0",
+                "Microsoft.EntityFrameworkCore.SqlServer" => "[IsCurrent] = 1 AND [IsDeleted] = 0",
+                "Npgsql.EntityFrameworkCore.PostgreSQL" => "\"IsCurrent\" = TRUE AND \"IsDeleted\" = FALSE",
+                _ => throw new InvalidOperationException($"Unsupported database provider: {Database.ProviderName}")
+            };
+
+            modelBuilder.Entity<PersonSnapshot>()
+                .HasIndex(person => person.Login)
+                .HasDatabaseName("IX_PersonSnapshots_Login_Active")
+                .IsUnique()
+                .HasFilter(activeLoginFilter);
+
             modelBuilder.Entity<AccountSecurityState>()
                 .HasIndex(state => state.PersonId)
                 .IsUnique();
@@ -79,6 +97,17 @@ namespace ClinicServiceDAL
 
             modelBuilder.Entity<RefreshSession>()
                 .HasIndex(session => new { session.PersonId, session.RevokedAt });
+
+            modelBuilder.Entity<PasswordSetupToken>()
+                .HasIndex(token => token.TokenHash)
+                .IsUnique();
+
+            modelBuilder.Entity<TrustedTwoFactorDevice>()
+                .HasIndex(device => device.TokenHash)
+                .IsUnique();
+
+            modelBuilder.Entity<TrustedTwoFactorDevice>()
+                .HasIndex(device => new { device.PersonId, device.ExpiresAt });
 
             modelBuilder.Entity<SecurityAuditEvent>()
                 .HasIndex(auditEvent => new { auditEvent.PersonId, auditEvent.CreatedAt });

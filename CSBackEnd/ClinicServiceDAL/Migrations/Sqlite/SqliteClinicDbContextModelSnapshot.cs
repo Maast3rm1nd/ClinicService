@@ -15,7 +15,7 @@ namespace ClinicServiceDAL.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
             modelBuilder.Entity("ClinicServiceContext.Entities.AccountSecurityState", b =>
                 {
@@ -300,6 +300,36 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.ToTable("MedicalCardSnapshots");
                 });
 
+            modelBuilder.Entity("ClinicServiceContext.Entities.PasswordSetupToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("PasswordSetupTokens");
+                });
+
             modelBuilder.Entity("ClinicServiceContext.Entities.PatientSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -419,6 +449,11 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Login")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PersonSnapshots_Login_Active")
+                        .HasFilter("\"IsCurrent\" = 1 AND \"IsDeleted\" = 0");
 
                     b.HasIndex("EntityId", "IsCurrent");
 
@@ -635,6 +670,41 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("SpecialisationSnapshots");
+                });
+
+            modelBuilder.Entity("ClinicServiceContext.Entities.TrustedTwoFactorDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("LastUsedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("PersonId", "ExpiresAt");
+
+                    b.ToTable("TrustedTwoFactorDevices");
                 });
 
             modelBuilder.Entity("ClinicServiceContext.Entities.Administrator", b =>

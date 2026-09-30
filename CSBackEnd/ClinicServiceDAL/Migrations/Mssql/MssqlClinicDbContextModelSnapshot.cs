@@ -17,7 +17,7 @@ namespace ClinicServiceDAL.Migrations.Mssql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -305,6 +305,36 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.ToTable("MedicalCardSnapshots");
                 });
 
+            modelBuilder.Entity("ClinicServiceContext.Entities.PasswordSetupToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("PasswordSetupTokens");
+                });
+
             modelBuilder.Entity("ClinicServiceContext.Entities.PatientSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -402,7 +432,7 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -424,6 +454,11 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Login")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PersonSnapshots_Login_Active")
+                        .HasFilter("[IsCurrent] = 1 AND [IsDeleted] = 0");
 
                     b.HasIndex("EntityId", "IsCurrent");
 
@@ -640,6 +675,41 @@ namespace ClinicServiceDAL.Migrations.Mssql
                         .IsUnique();
 
                     b.ToTable("SpecialisationSnapshots");
+                });
+
+            modelBuilder.Entity("ClinicServiceContext.Entities.TrustedTwoFactorDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastUsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("PersonId", "ExpiresAt");
+
+                    b.ToTable("TrustedTwoFactorDevices");
                 });
 
             modelBuilder.Entity("ClinicServiceContext.Entities.Administrator", b =>

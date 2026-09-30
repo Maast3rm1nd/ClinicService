@@ -21,7 +21,7 @@ export interface CreatePersonRequest {
   fullName: string;
   shortName?: string | null;
   login: string;
-  password: string;
+  type: PersonType.Administrator;
 }
 
 export interface UpdatePersonRequest {

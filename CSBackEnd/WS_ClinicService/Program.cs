@@ -81,8 +81,10 @@ services.Configure<AuthBootstrapOptions>(configuration.GetSection("Auth:Bootstra
 services.AddSingleton<TokenService>();
 services.AddSingleton<IPasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>, PasswordHasher<ClinicServiceContext.Entities.PersonSnapshot>>();
 services.AddScoped<DatabaseAuthenticationService>();
+services.AddScoped<PasswordSetupService>();
 services.AddScoped<RefreshTokenService>();
 services.AddScoped<AccountSecurityService>();
+services.AddScoped<TrustedTwoFactorDeviceService>();
 services.AddScoped<SecurityAuditService>();
 services.AddSingleton<TotpService>();
 services.AddScoped<AuthBootstrapper>();
@@ -119,6 +121,14 @@ services.AddRateLimiter(options =>
             Window = TimeSpan.FromMinutes(1),
             QueueLimit = 0
         }));
+    options.AddPolicy("password-setup", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(15),
+            QueueLimit = 0
+        }));
 });
 
 services.AddOpenApi();
@@ -128,7 +138,8 @@ services.AddCors(options =>
     options.AddPolicy("Frontend", policy => policy
         .WithOrigins("http://localhost:4200", "https://localhost:4200")
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -150,6 +161,8 @@ app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
 app.UseHttpsRedirection();
 
 app.UseCors("Frontend");
+
+app.UseRateLimiter();
 
 #if DEBUG
 if (app.Environment.IsDevelopment())

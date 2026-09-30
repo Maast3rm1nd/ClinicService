@@ -47,7 +47,7 @@ namespace WS_ClinicService.Core.Validators
         {
             RuleFor(x => x.Id).NotEqual(Guid.Empty);
             RuleFor(x => x.FullName).NotEmpty();
-            RuleFor(x => x.Login).NotEmpty();
+            RuleFor(x => x.Login).NotEmpty().MaximumLength(450);
             RuleFor(x => x.Specialisations).NotNull().NotEmpty();
             RuleFor(x => x.EmployeeWorkStatus).IsInEnum();
         }
@@ -57,6 +57,7 @@ namespace WS_ClinicService.Core.Validators
     {
         public UpdateDoctorRequestValidator()
         {
+            RuleFor(x => x.Login).MaximumLength(450).When(x => x.Login is not null);
             RuleFor(x => x.EmployeeWorkStatus).IsInEnum().When(x => x.EmployeeWorkStatus.HasValue);
         }
     }
@@ -75,6 +76,7 @@ namespace WS_ClinicService.Core.Validators
         {
             RuleFor(x => x.FullName).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.FullName));
             RuleFor(x => x.Login).NotEmpty().When(x => !string.IsNullOrWhiteSpace(x.Login));
+            RuleFor(x => x.Login).MaximumLength(450).When(x => x.Login is not null);
         }
     }
 
@@ -181,7 +183,24 @@ namespace WS_ClinicService.Core.Validators
         public CreatePersonRequestValidator()
         {
             RuleFor(x => x.FullName).NotEmpty();
-            RuleFor(x => x.Login).NotEmpty();
+            RuleFor(x => x.Login).NotEmpty().MaximumLength(450);
+            RuleFor(x => x.Type).Equal(ClinicServiceContext.Enums.PersonType.Administrator);
+        }
+    }
+
+    public class ValidatePasswordSetupRequestValidator : AbstractValidator<ValidatePasswordSetupRequest>
+    {
+        public ValidatePasswordSetupRequestValidator()
+        {
+            RuleFor(x => x.Token).NotEmpty();
+        }
+    }
+
+    public class CompletePasswordSetupRequestValidator : AbstractValidator<CompletePasswordSetupRequest>
+    {
+        public CompletePasswordSetupRequestValidator()
+        {
+            RuleFor(x => x.Token).NotEmpty();
             RuleFor(x => x.Password).NotEmpty().MinimumLength(12);
         }
     }

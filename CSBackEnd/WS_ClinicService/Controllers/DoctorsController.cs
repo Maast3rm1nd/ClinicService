@@ -11,7 +11,7 @@ namespace WS_ClinicService.Controllers
 {
     [ApiController]
     [Route("doctors")]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class DoctorsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -36,13 +36,17 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(DoctorsDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreatedAccountResponse<DoctorsDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<DoctorsDto>> CreateDoctor([FromBody] CreateDoctorRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreatedAccountResponse<DoctorsDto>>> CreateDoctor(
+            [FromBody] CreateDoctorRequest request,
+            CancellationToken cancellationToken)
         {
+            Response.Headers.CacheControl = "no-store";
             var created = await _mediator.Send(new CreateDoctorCommand(request), cancellationToken);
 
             return StatusCode(StatusCodes.Status201Created, created);
@@ -80,6 +84,7 @@ namespace WS_ClinicService.Controllers
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(DoctorsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

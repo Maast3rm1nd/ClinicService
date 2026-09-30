@@ -4,7 +4,9 @@ using ClinicServiceBase.DAL.Common;
 using ClinicServiceBase.DAL.DBRepositories;
 using MediatR;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Auth;
+using ClinicServiceContext.Entities;
 using Person = ClinicServiceContext.Entities.PersonSnapshot;
 using PersonSnapshot = ClinicServiceBase.DTO.PersonSnapshotDto;
 
@@ -14,7 +16,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record GetPersonByIdQuery(Guid Id) : IRequest<PersonSnapshot>;
 
-    public record CreatePersonCommand(CreatePersonRequest Request) : IRequest<PersonSnapshot>;
+    public record CreatePersonCommand(CreatePersonRequest Request) : IRequest<CreatedAccountResponse<PersonSnapshot>>;
 
     public record UpdatePersonCommand(Guid Id, UpdatePersonRequest Request) : IRequest<PersonSnapshot>;
 
@@ -43,26 +45,41 @@ namespace WS_ClinicService.Core.Requests
     public class CreatePersonCommandHandler(
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        DatabaseAuthenticationService authenticationService) : IRequestHandler<CreatePersonCommand, PersonSnapshot>
+        DatabaseAuthenticationService authenticationService,
+        PasswordSetupService passwordSetupService) :
+        IRequestHandler<CreatePersonCommand, CreatedAccountResponse<PersonSnapshot>>
     {
-        public async Task<PersonSnapshot> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
+        public async Task<CreatedAccountResponse<PersonSnapshot>> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
         {
             var repository = unitOfWork.GetRepository<IPersonSnapshotRepository>();
 
-            var entity = mapper.Map<Person>(request.Request);
-            entity.PasswordHash = authenticationService.HashPassword(entity, request.Request.Password);
+            if (await authenticationService.LoginExistsAsync(request.Request.Login, null, cancellationToken))
+            {
+                throw new ConflictException("Login is already in use.");
+            }
+
+            var entity = mapper.Map<Administrator>(request.Request);
             entity.IsCurrent = true;
             entity.IsDeleted = false;
 
             await repository.AddObject(entity);
+            var invitation = passwordSetupService.CreateInvitation(entity.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return mapper.Map<PersonSnapshot>(entity);
+            return new CreatedAccountResponse<PersonSnapshot>
+            {
+                Account = mapper.Map<PersonSnapshot>(entity),
+                SetupToken = invitation.Token,
+                SetupTokenExpiresAt = invitation.ExpiresAt
+            };
         }
     }
 
-    public class UpdatePersonCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<UpdatePersonCommand, PersonSnapshot>
+    public class UpdatePersonCommandHandler(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        DatabaseAuthenticationService authenticationService) : IRequestHandler<UpdatePersonCommand, PersonSnapshot>
     {
         public async Task<PersonSnapshot> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
         {
@@ -70,6 +87,13 @@ namespace WS_ClinicService.Core.Requests
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Person with id [{request.Id}] was not found");
+
+            if (!string.IsNullOrWhiteSpace(request.Request.Login)
+                && request.Request.Login != entity.Login
+                && await authenticationService.LoginExistsAsync(request.Request.Login, entity.Id, cancellationToken))
+            {
+                throw new ConflictException("Login is already in use.");
+            }
 
             if (!string.IsNullOrWhiteSpace(request.Request.FullName))
             {

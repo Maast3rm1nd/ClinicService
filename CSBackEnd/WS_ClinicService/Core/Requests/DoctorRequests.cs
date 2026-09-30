@@ -7,7 +7,9 @@ using ClinicServiceContext.Entities;
 using ClinicServiceContext.Enums;
 using MediatR;
 using Newtonsoft.Json.Linq;
+using WS_ClinicService.Core.Auth;
 using WS_ClinicService.Contracts.Requests;
+using WS_ClinicService.Contracts.Responses;
 using WS_ClinicService.Core.Filtering;
 using DoctorEntity = ClinicServiceContext.Entities.Doctor;
 using DoctorSnapshot = ClinicServiceBase.DTO.DoctorsDto;
@@ -20,7 +22,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record GetDoctorByIdQuery(Guid Id) : IRequest<DoctorSnapshot>;
 
-    public record CreateDoctorCommand(CreateDoctorRequest Request) : IRequest<DoctorSnapshot>;
+    public record CreateDoctorCommand(CreateDoctorRequest Request) : IRequest<CreatedAccountResponse<DoctorSnapshot>>;
 
     public record UpdateDoctorCommand(Guid Id, UpdateDoctorRequest Request) : IRequest<DoctorSnapshot>;
 
@@ -56,25 +58,46 @@ namespace WS_ClinicService.Core.Requests
         }
     }
 
-    public class CreateDoctorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<CreateDoctorCommand, DoctorSnapshot>
+    public class CreateDoctorCommandHandler(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        DatabaseAuthenticationService authenticationService,
+        PasswordSetupService passwordSetupService) :
+        IRequestHandler<CreateDoctorCommand, CreatedAccountResponse<DoctorSnapshot>>
     {
-        public async Task<DoctorSnapshot> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
+        public async Task<CreatedAccountResponse<DoctorSnapshot>> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
         {
             var repository = unitOfWork.GetRepository<IDoctorsRepository>();
+
+            if (await authenticationService.LoginExistsAsync(request.Request.Login, null, cancellationToken))
+            {
+                throw new ConflictException("Login is already in use.");
+            }
 
             var entity = mapper.Map<DoctorEntity>(request.Request);
 
             entity.Type = PersonType.Doctor;
+            entity.IsCurrent = true;
+            entity.IsDeleted = false;
 
             await repository.AddObject(entity);
+            var invitation = passwordSetupService.CreateInvitation(entity.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return mapper.Map<DoctorSnapshot>(entity);
+            return new CreatedAccountResponse<DoctorSnapshot>
+            {
+                Account = mapper.Map<DoctorSnapshot>(entity),
+                SetupToken = invitation.Token,
+                SetupTokenExpiresAt = invitation.ExpiresAt
+            };
         }
     }
 
-    public class UpdateDoctorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<UpdateDoctorCommand, DoctorSnapshot>
+    public class UpdateDoctorCommandHandler(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        DatabaseAuthenticationService authenticationService) : IRequestHandler<UpdateDoctorCommand, DoctorSnapshot>
     {
         public async Task<DoctorSnapshot> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
@@ -82,6 +105,13 @@ namespace WS_ClinicService.Core.Requests
 
             var entity = await repository.GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Doctor with id [{request.Id}] was not found");
+
+            if (!string.IsNullOrWhiteSpace(request.Request.Login)
+                && request.Request.Login != entity.Login
+                && await authenticationService.LoginExistsAsync(request.Request.Login, entity.Id, cancellationToken))
+            {
+                throw new ConflictException("Login is already in use.");
+            }
 
             if (!string.IsNullOrWhiteSpace(request.Request.FullName))
             {

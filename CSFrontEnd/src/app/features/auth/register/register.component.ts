@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EmployeeWorkStatus, employeeWorkStatusLabels } from '../../../core/models/enums';
+import { EmployeeWorkStatus, employeeWorkStatusLabels, PersonType } from '../../../core/models/enums';
 import { PersonsService } from '../../../core/services/persons.service';
 import { DoctorsService } from '../../../core/services/doctors.service';
 import { SpecialisationsService } from '../../../core/services/specialisations.service';
@@ -41,11 +40,12 @@ export class RegisterComponent {
   private readonly personsService = inject(PersonsService);
   private readonly doctorsService = inject(DoctorsService);
   private readonly specialisationsService = inject(SpecialisationsService);
-  private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly kind = signal<AccountKind>('person');
   readonly saving = signal(false);
+  readonly invitationLink = signal<string | null>(null);
+  readonly createdLogin = signal<string | null>(null);
   readonly specialisations = signal<Specialisation[]>([]);
   readonly workStatuses = Object.values(EmployeeWorkStatus);
   readonly workStatusLabels = employeeWorkStatusLabels;
@@ -54,7 +54,6 @@ export class RegisterComponent {
     fullName: ['', Validators.required],
     shortName: [''],
     login: ['', Validators.required],
-    password: ['', [Validators.required, Validators.minLength(12)]],
   });
 
   readonly doctorForm = this.fb.nonNullable.group({
@@ -89,12 +88,12 @@ export class RegisterComponent {
       return;
     }
 
-    const { fullName, shortName, login, password } = this.personForm.getRawValue();
+    const { fullName, shortName, login } = this.personForm.getRawValue();
     this.saving.set(true);
     this.personsService
-      .create({ fullName, shortName: shortName || null, login, password })
+      .create({ fullName, shortName: shortName || null, login, type: PersonType.Administrator })
       .subscribe({
-        next: () => this.onSuccess('Employee created'),
+        next: (result) => this.onSuccess(login, result.setupToken),
         error: (error: HttpErrorResponse) => this.onError(error),
       });
   }
@@ -105,7 +104,8 @@ export class RegisterComponent {
       return;
     }
 
-    const { fullName, shortName, login, specialisations, employeeWorkStatus } = this.doctorForm.getRawValue();
+    const { fullName, shortName, login, specialisations, employeeWorkStatus } =
+      this.doctorForm.getRawValue();
     this.saving.set(true);
     this.doctorsService
       .create({
@@ -117,20 +117,38 @@ export class RegisterComponent {
         employeeWorkStatus,
       })
       .subscribe({
-        next: () => this.onSuccess('Doctor created'),
+        next: (result) => this.onSuccess(login, result.setupToken),
         error: (error: HttpErrorResponse) => this.onError(error),
       });
   }
 
-  private onSuccess(message: string): void {
+  private onSuccess(login: string, token: string): void {
     this.saving.set(false);
-    this.snackBar.open(message, 'OK', { duration: 3000 });
-    this.router.navigateByUrl('/doctors');
+    this.createdLogin.set(login);
+    this.invitationLink.set(
+      `${window.location.origin}/set-password#token=${encodeURIComponent(token)}`,
+    );
   }
 
   private onError(error: HttpErrorResponse): void {
     this.saving.set(false);
-    const message = error.error?.message ?? 'Failed to create user';
+    const message = error.error?.message ?? 'Failed to create account';
     this.snackBar.open(message, 'OK', { duration: 4000 });
+  }
+
+  async copyInvitationLink(): Promise<void> {
+    const link = this.invitationLink();
+    if (!link) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(link);
+      this.snackBar.open('Setup link copied', 'OK', { duration: 3000 });
+    } catch {
+      this.snackBar.open('Copy failed. Select and copy the link manually.', 'OK', {
+        duration: 4000,
+      });
+    }
   }
 }

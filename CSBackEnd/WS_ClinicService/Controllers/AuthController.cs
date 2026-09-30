@@ -22,6 +22,8 @@ namespace WS_ClinicService.Controllers
         private readonly AccountSecurityService _securityService;
         private readonly SecurityAuditService _auditService;
         private readonly TotpService _totpService;
+        private readonly PasswordSetupService _passwordSetupService;
+        private readonly TrustedTwoFactorDeviceService _trustedDeviceService;
 
         public AuthController(
             IOptions<JwtOptions> jwtOptions,
@@ -30,7 +32,9 @@ namespace WS_ClinicService.Controllers
             RefreshTokenService refreshTokenService,
             AccountSecurityService securityService,
             SecurityAuditService auditService,
-            TotpService totpService)
+            TotpService totpService,
+            PasswordSetupService passwordSetupService,
+            TrustedTwoFactorDeviceService trustedDeviceService)
         {
             _jwtOptions = jwtOptions;
             _authenticationService = authenticationService;
@@ -39,6 +43,37 @@ namespace WS_ClinicService.Controllers
             _securityService = securityService;
             _auditService = auditService;
             _totpService = totpService;
+            _passwordSetupService = passwordSetupService;
+            _trustedDeviceService = trustedDeviceService;
+        }
+
+        [HttpPost("password-setup/validate")]
+        [AllowAnonymous]
+        [EnableRateLimiting("password-setup")]
+        [ProducesResponseType(typeof(PasswordSetupValidationResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> ValidatePasswordSetup(
+            [FromBody] ValidatePasswordSetupRequest request,
+            CancellationToken cancellationToken)
+        {
+            Response.Headers.CacheControl = "no-store";
+            var login = await _passwordSetupService.ValidateAsync(request.Token, cancellationToken);
+            return Ok(new PasswordSetupValidationResponse { Login = login });
+        }
+
+        [HttpPost("password-setup/complete")]
+        [AllowAnonymous]
+        [EnableRateLimiting("password-setup")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> CompletePasswordSetup(
+            [FromBody] CompletePasswordSetupRequest request,
+            CancellationToken cancellationToken)
+        {
+            Response.Headers.CacheControl = "no-store";
+            await _passwordSetupService.CompleteAsync(request.Token, request.Password, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("login")]
@@ -65,7 +100,11 @@ namespace WS_ClinicService.Controllers
             }
 
             var securityState = await _securityService.GetOrCreateAsync(user.Id, cancellationToken);
+            var deviceToken = Request.Cookies[TrustedTwoFactorDeviceService.CookieName];
+            var trustedDevice = securityState.TwoFactorEnabled
+                && await _trustedDeviceService.IsTrustedAsync(user.Id, deviceToken, cancellationToken);
             if (securityState.TwoFactorEnabled
+                && !trustedDevice
                 && (string.IsNullOrWhiteSpace(request.TwoFactorCode)
                     || securityState.TwoFactorSecret is null
                     || !_totpService.Verify(securityState.TwoFactorSecret, request.TwoFactorCode, DateTimeOffset.UtcNow)))
@@ -128,8 +167,11 @@ namespace WS_ClinicService.Controllers
 
         [HttpPost("2fa/setup")]
         [Authorize]
+        [ProducesResponseType(typeof(TwoFactorSetupResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> SetupTwoFactor(CancellationToken cancellationToken)
         {
+            Response.Headers.CacheControl = "no-store";
             var user = await _authenticationService.GetCurrentUserAsync(User.Identity?.Name, cancellationToken);
             if (user is null)
             {
@@ -137,10 +179,33 @@ namespace WS_ClinicService.Controllers
             }
 
             var state = await _securityService.GetOrCreateAsync(user.Id, cancellationToken);
+            if (state.TwoFactorEnabled)
+            {
+                return Conflict(new ErrorResponse
+                {
+                    Code = StatusCodes.Status409Conflict,
+                    Message = "Two-factor authentication is already enabled."
+                });
+            }
+
             state.TwoFactorSecret = _totpService.CreateSecret();
-            state.TwoFactorEnabled = false;
             await _securityService.SaveAsync(state, cancellationToken);
-            return Ok(new { secret = state.TwoFactorSecret });
+            return Ok(new TwoFactorSetupResponse { Secret = state.TwoFactorSecret });
+        }
+
+        [HttpGet("2fa/status")]
+        [Authorize]
+        [ProducesResponseType(typeof(TwoFactorStatusResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTwoFactorStatus(CancellationToken cancellationToken)
+        {
+            var user = await _authenticationService.GetCurrentUserAsync(User.Identity?.Name, cancellationToken);
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            var enabled = await _securityService.IsTwoFactorEnabledAsync(user.Id, cancellationToken);
+            return Ok(new TwoFactorStatusResponse { Enabled = enabled });
         }
 
         [HttpPost("2fa/confirm")]
@@ -159,9 +224,21 @@ namespace WS_ClinicService.Controllers
                 return UnprocessableEntity(new ErrorResponse { Code = StatusCodes.Status422UnprocessableEntity, Message = "Invalid two-factor code" });
             }
 
+            await _trustedDeviceService.RevokeAllAsync(user.Id, cancellationToken);
             state.TwoFactorEnabled = true;
             state.TwoFactorConfirmedAt = DateTimeOffset.UtcNow;
             await _securityService.SaveAsync(state, cancellationToken);
+
+            if (request.RememberDevice)
+            {
+                var token = await _trustedDeviceService.TrustAsync(user.Id, cancellationToken);
+                SetTrustedDeviceCookie(token);
+            }
+            else
+            {
+                ClearTrustedDeviceCookie();
+            }
+
             await _auditService.WriteAsync("2fa.enabled", true, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
             return NoContent();
         }
@@ -185,9 +262,40 @@ namespace WS_ClinicService.Controllers
             state.TwoFactorEnabled = false;
             state.TwoFactorSecret = null;
             state.TwoFactorConfirmedAt = null;
+            await _trustedDeviceService.RevokeAllAsync(user.Id, cancellationToken);
             await _securityService.SaveAsync(state, cancellationToken);
+            ClearTrustedDeviceCookie();
             await _auditService.WriteAsync("2fa.disabled", true, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
             return NoContent();
+        }
+
+        private void SetTrustedDeviceCookie(string token)
+        {
+            Response.Cookies.Append(
+                TrustedTwoFactorDeviceService.CookieName,
+                token,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/auth",
+                    MaxAge = TimeSpan.FromDays(30),
+                    IsEssential = true
+                });
+        }
+
+        private void ClearTrustedDeviceCookie()
+        {
+            Response.Cookies.Delete(
+                TrustedTwoFactorDeviceService.CookieName,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/auth"
+                });
         }
 
         private static string GetRole(PersonType type)

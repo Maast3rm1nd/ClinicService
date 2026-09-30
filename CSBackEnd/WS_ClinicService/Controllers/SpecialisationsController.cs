@@ -11,7 +11,7 @@ namespace WS_ClinicService.Controllers
 {
     [ApiController]
     [Route("specialisations")]
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     public class SpecialisationsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -26,3 +26,9 @@ mat-form-field {
   font-size: 0.85rem;
   color: rgba(0, 0, 0, 0.6);
 }
+
+.invitation-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

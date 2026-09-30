@@ -47,7 +47,7 @@ namespace WS_ClinicService.Mapping
                 .ForMember(d => d.Appointments, o => o.MapFrom(s => s.Appointments ?? new List<Guid>()));
             CreateMap<Schedule, ScheduleDto>();
 
-            CreateMap<CreatePersonRequest, PersonSnapshot>();
+            CreateMap<CreatePersonRequest, Administrator>();
             CreateMap<PersonSnapshot, PersonSnapshotDto>();
 
             CreateMap<UpdatePatientRequest, PatientSnapshot>()

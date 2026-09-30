@@ -37,6 +37,14 @@ namespace WS_ClinicService.Core.Auth
             return state?.LockedUntil > DateTimeOffset.UtcNow;
         }
 
+        public Task<bool> IsTwoFactorEnabledAsync(Guid personId, CancellationToken cancellationToken)
+        {
+            return _dbContext.AccountSecurityStates
+                .Where(state => state.PersonId == personId)
+                .Select(state => state.TwoFactorEnabled)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
+
         public async Task RegisterFailureAsync(Guid personId, CancellationToken cancellationToken)
         {
             var state = await GetOrCreateAsync(personId, cancellationToken);
