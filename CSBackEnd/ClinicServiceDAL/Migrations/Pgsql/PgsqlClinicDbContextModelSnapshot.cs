@@ -44,6 +44,9 @@ namespace ClinicServiceDAL.Migrations.Pgsql
                     b.Property<DateTimeOffset?>("LockedUntil")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset?>("PasswordChangedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -135,6 +138,68 @@ namespace ClinicServiceDAL.Migrations.Pgsql
                     b.ToTable("AppointmentSnapshots");
                 });
 
+            modelBuilder.Entity("ClinicServiceContext.Entities.CardNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("Appointment")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreationDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateNote")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.PrimitiveCollection<Guid[]>("Diagnoses")
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid>("Doctor")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MedicalCard")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PatientsComplaints")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("CardNotes");
+                });
+
             modelBuilder.Entity("ClinicServiceContext.Entities.DiagnosisSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -171,6 +236,9 @@ namespace ClinicServiceDAL.Migrations.Pgsql
 
                     b.Property<Guid>("MedicalCard")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

@@ -5,6 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,6 +15,7 @@ import { Doctor } from '../../core/models/doctor.model';
 import { Specialisation } from '../../core/models/specialisation.model';
 import { employeeWorkStatusLabels } from '../../core/models/enums';
 import { DoctorDialogComponent } from './doctor-dialog/doctor-dialog.component';
+import { TwoFactorSecretDialogComponent } from './two-factor-secret-dialog/two-factor-secret-dialog.component';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -26,6 +28,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatSlideToggleModule,
     MatProgressSpinnerModule,
   ],
   templateUrl: './doctors.component.html',
@@ -36,7 +39,7 @@ export class DoctorsComponent {
   readonly doctors = signal<Doctor[]>([]);
   readonly specialisations = signal<Specialisation[]>([]);
   readonly workStatusLabels = employeeWorkStatusLabels;
-  readonly displayedColumns = ['fullName', 'login', 'specialisations', 'status', 'actions'];
+  readonly displayedColumns = ['fullName', 'login', 'specialisations', 'status', 'twoFactor', 'actions'];
 
   constructor(
     private readonly doctorsService: DoctorsService,
@@ -69,6 +72,29 @@ export class DoctorsComponent {
           this.doctors.update((list) => list.map((d) => (d.id === updated.id ? updated : d)));
         }
       });
+  }
+
+  toggleTwoFactor(doctor: Doctor, change: MatSlideToggleChange): void {
+    const enabled = change.checked;
+    this.doctorsService.setTwoFactor(doctor.id, enabled).subscribe({
+      next: (result) => {
+        this.doctors.update((list) =>
+          list.map((d) => (d.id === doctor.id ? { ...d, twoFactorEnabled: result.enabled } : d)),
+        );
+        if (result.secret) {
+          this.dialog.open(TwoFactorSecretDialogComponent, {
+            width: '440px',
+            data: { doctorName: doctor.fullName, login: doctor.login, secret: result.secret },
+          });
+        } else {
+          this.snackBar.open('Two-factor authentication disabled', 'OK', { duration: 3000 });
+        }
+      },
+      error: () => {
+        change.source.checked = !enabled;
+        this.snackBar.open('Failed to change two-factor authentication', 'OK', { duration: 3000 });
+      },
+    });
   }
 
   remove(doctor: Doctor): void {

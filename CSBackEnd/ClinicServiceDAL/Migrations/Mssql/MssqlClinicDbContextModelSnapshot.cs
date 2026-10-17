@@ -43,6 +43,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.Property<DateTimeOffset?>("LockedUntil")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
                     b.Property<DateTimeOffset?>("PasswordChangedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -134,6 +137,68 @@ namespace ClinicServiceDAL.Migrations.Mssql
                     b.ToTable("AppointmentSnapshots");
                 });
 
+            modelBuilder.Entity("ClinicServiceContext.Entities.CardNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Appointment")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreationDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("DateNote")
+                        .HasColumnType("datetimeoffset");
+
+                    b.PrimitiveCollection<string>("Diagnoses")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Doctor")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MedicalCard")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PatientsComplaints")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("CardNotes");
+                });
+
             modelBuilder.Entity("ClinicServiceContext.Entities.DiagnosisSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -170,6 +235,9 @@ namespace ClinicServiceDAL.Migrations.Mssql
 
                     b.Property<Guid>("MedicalCard")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

@@ -15,13 +15,14 @@ namespace WS_ClinicService.Core.Auth
             _options = options.Value;
         }
 
-        public string CreateToken(string login, string role, IEnumerable<string>? permissions = null)
+        public string CreateToken(string login, string role, Guid personId, IEnumerable<string>? permissions = null)
         {
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Name, login),
                 new(JwtRegisteredClaimNames.Sub, login),
                 new(ClaimTypes.Role, role),
+                new("uid", personId.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

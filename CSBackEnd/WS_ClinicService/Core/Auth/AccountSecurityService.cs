@@ -30,6 +30,27 @@ namespace WS_ClinicService.Core.Auth
             return state;
         }
 
+        /// <summary>Queues a security state that forces the person to choose a new password at the next login (not saved).</summary>
+        public void RequirePasswordChange(Guid personId)
+        {
+            _dbContext.AccountSecurityStates.Add(new AccountSecurityState
+            {
+                PersonId = personId,
+                MustChangePassword = true
+            });
+        }
+
+        public async Task<HashSet<Guid>> GetTwoFactorEnabledIdsAsync(IEnumerable<Guid> personIds, CancellationToken cancellationToken)
+        {
+            var ids = personIds.ToList();
+            var enabled = await _dbContext.AccountSecurityStates
+                .AsNoTracking()
+                .Where(state => state.TwoFactorEnabled && ids.Contains(state.PersonId))
+                .Select(state => state.PersonId)
+                .ToListAsync(cancellationToken);
+            return enabled.ToHashSet();
+        }
+
         public async Task<bool> IsLockedAsync(Guid personId, CancellationToken cancellationToken)
         {
             var state = await _dbContext.AccountSecurityStates

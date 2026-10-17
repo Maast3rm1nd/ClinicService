@@ -22,6 +22,8 @@ namespace ClinicServiceDAL
 
         public DbSet<DiagnosisSnapshot> DiagnosisSnapshots { get; set; }
 
+        public DbSet<CardNote> CardNotes { get; set; }
+
         public DbSet<AppointmentSnapshot> AppointmentSnapshots { get; set; }
 
         public DbSet<Schedule> Schedules { get; set; }
@@ -48,6 +50,7 @@ namespace ClinicServiceDAL
 
             ConfigureSnapshot(modelBuilder.Entity<AppointmentSnapshot>());
             ConfigureSnapshot(modelBuilder.Entity<DiagnosisSnapshot>());
+            ConfigureSnapshot(modelBuilder.Entity<CardNote>());
             ConfigureSnapshot(modelBuilder.Entity<InsuranceProviderSnapshot>());
             ConfigureSnapshot(modelBuilder.Entity<MedicalCardSnapshot>());
             ConfigureSnapshot(modelBuilder.Entity<PatientSnapshot>());
@@ -61,6 +64,7 @@ namespace ClinicServiceDAL
                     v => (ulong)v);
 
             modelBuilder.Entity<MedicalCardSnapshot>().PrimitiveCollection(e => e.Diagnoses);
+            modelBuilder.Entity<CardNote>().PrimitiveCollection(e => e.Diagnoses);
             modelBuilder.Entity<SpecialisationSnapshot>().PrimitiveCollection(e => e.Doctors);
             modelBuilder.Entity<Schedule>().PrimitiveCollection(e => e.Appointments);
             modelBuilder.Entity<Doctor>().PrimitiveCollection(e => e.Specialisations);

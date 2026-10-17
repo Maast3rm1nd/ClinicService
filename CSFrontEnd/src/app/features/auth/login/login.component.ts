@@ -9,7 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { APP_VERSION } from '../../../core/app-version';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChangePasswordNavigationState } from '../change-password/change-password.component';
 
 @Component({
   selector: 'app-login',
@@ -38,6 +40,7 @@ export class LoginComponent {
     twoFactorCode: [''],
   });
 
+  readonly appVersion = APP_VERSION;
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly hidePassword = signal(true);
@@ -62,6 +65,15 @@ export class LoginComponent {
         },
         error: (error: HttpErrorResponse) => {
           this.loading.set(false);
+          if (error.status === 428) {
+            const state: ChangePasswordNavigationState = {
+              login,
+              currentPassword: password,
+              twoFactorCode: twoFactorCode || null,
+            };
+            void this.router.navigateByUrl('/change-password', { state });
+            return;
+          }
           this.errorMessage.set(
             error.status === 401
               ? 'Invalid login, password, or two-factor code'

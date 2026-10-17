@@ -1,0 +1,120 @@
+<div class="page">
+  <a mat-button routerLink="/medical-cards">
+    <mat-icon>arrow_back</mat-icon>
+    Medical cards
+  </a>
+
+  @if (loading()) {
+    <div class="loading"><mat-spinner diameter="36" /></div>
+  } @else if (card(); as medicalCard) {
+    <div class="page-header">
+      <div>
+        <h1>{{ patient()?.fullName ?? medicalCard.patient }}</h1>
+        <p>Medical card № {{ medicalCard.recordNumber }}</p>
+      </div>
+      @if (auth.isDoctor() && !adding()) {
+        <button mat-flat-button color="primary" type="button" (click)="adding.set(true)">
+          <mat-icon>note_add</mat-icon>
+          New note
+        </button>
+      }
+    </div>
+
+    @if (adding()) {
+      <mat-card class="note-form">
+        <mat-card-header>
+          <mat-card-title>New appointment note</mat-card-title>
+        </mat-card-header>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <mat-card-content class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Appointment date</mat-label>
+              <input matInput type="datetime-local" formControlName="dateNote" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Patient complaints</mat-label>
+              <textarea
+                matInput
+                rows="4"
+                maxlength="4000"
+                formControlName="patientsComplaints"
+              ></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Existing diagnoses</mat-label>
+              <mat-select formControlName="diagnoses" multiple>
+                @for (item of diagnoses(); track item.entityId) {
+                  <mat-option [value]="item.entityId">{{ diagnosisLabel(item) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <div class="new-diagnoses" formArrayName="newDiagnoses">
+              <span class="new-diagnoses__title">New diagnoses</span>
+              @for (row of newDiagnoses.controls; track row; let i = $index) {
+                <div class="new-diagnoses__row" [formGroupName]="i">
+                  <mat-form-field appearance="outline" class="new-diagnoses__code">
+                    <mat-label>ICD code</mat-label>
+                    <input matInput formControlName="icdCode" placeholder="J06.9" maxlength="50" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="new-diagnoses__name">
+                    <mat-label>Name</mat-label>
+                    <input
+                      matInput
+                      formControlName="name"
+                      placeholder="Acute upper respiratory infection"
+                      maxlength="300"
+                    />
+                  </mat-form-field>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="removeDiagnosisRow(i)"
+                    aria-label="Remove diagnosis"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+              <button mat-button type="button" (click)="addDiagnosisRow()">
+                <mat-icon>add</mat-icon>
+                Add diagnosis
+              </button>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-button type="button" (click)="adding.set(false)">Cancel</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              Save note
+            </button>
+          </mat-card-actions>
+        </form>
+      </mat-card>
+    }
+
+    @for (note of sortedNotes(); track note.id) {
+      <mat-card class="note">
+        <mat-card-header>
+          <mat-card-title>{{ note.dateNote | date: 'dd.MM.yyyy HH:mm' }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p><strong>Complaints:</strong> {{ note.patientsComplaints || '—' }}</p>
+          <p>
+            <strong>Diagnoses:</strong>
+            @for (id of note.diagnoses ?? []; track id; let last = $last) {
+              {{ diagnosisText(id) }}{{ last ? '' : '; ' }}
+            } @empty {
+              —
+            }
+          </p>
+        </mat-card-content>
+      </mat-card>
+    } @empty {
+      <p>No notes in this medical card yet.</p>
+    }
+  } @else {
+    <p>Medical card not found.</p>
+  }
+</div>

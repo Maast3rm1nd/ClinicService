@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  ChangePasswordRequest,
   CurrentUser,
   LoginRequest,
   LogoutRequest,
@@ -34,6 +35,7 @@ export class AuthService {
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly isAuthenticated = computed(() => this.currentUserSignal() !== null);
   readonly isAdministrator = computed(() => this.currentUserSignal()?.role === 'Administrator');
+  readonly isDoctor = computed(() => this.currentUserSignal()?.role === 'Doctor');
 
   login(request: LoginRequest): Observable<TokenResponse> {
     return this.http
@@ -44,6 +46,10 @@ export class AuthService {
           this.applyTokens(tokens);
         }),
       );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/change-password`, request, { withCredentials: true });
   }
 
   hasSeenTwoFactorPrompt(): boolean {
@@ -142,6 +148,7 @@ export class AuthService {
     }
 
     const login = readClaim(payload, 'name') ?? readClaim(payload, 'sub');
+    const id = readClaim(payload, 'uid') ?? '';
     const role = readClaim(payload, 'role') ?? '';
     const permissions = readClaimArray(payload, 'permission');
 
@@ -149,6 +156,6 @@ export class AuthService {
       return null;
     }
 
-    return { login, role, permissions };
+    return { id, login, role, permissions };
   }
 }

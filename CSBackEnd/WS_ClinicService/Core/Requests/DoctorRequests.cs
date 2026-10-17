@@ -22,39 +22,56 @@ namespace WS_ClinicService.Core.Requests
 
     public record GetDoctorByIdQuery(Guid Id) : IRequest<DoctorSnapshot>;
 
-    public record CreateDoctorCommand(CreateDoctorRequest Request) : IRequest<CreatedAccountResponse<DoctorSnapshot>>;
+    public record CreateDoctorCommand(CreateDoctorRequest Request) : IRequest<DoctorSnapshot>;
 
     public record UpdateDoctorCommand(Guid Id, UpdateDoctorRequest Request) : IRequest<DoctorSnapshot>;
 
     public record DeleteDoctorCommand(Guid Id) : IRequest<Unit>;
 
-    public class GetDoctorsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetDoctorsQuery, List<DoctorSnapshot>>
+    public record SetDoctorTwoFactorCommand(Guid Id, bool Enabled) : IRequest<AdminTwoFactorResponse>;
+
+    public static class DoctorTwoFactorExtensions
+    {
+        public static async Task<List<DoctorSnapshot>> WithTwoFactorStatusAsync(
+            this List<DoctorSnapshot> doctors,
+            AccountSecurityService securityService,
+            CancellationToken cancellationToken)
+        {
+            var enabled = await securityService.GetTwoFactorEnabledIdsAsync(doctors.Select(d => d.Id), cancellationToken);
+            doctors.ForEach(d => d.TwoFactorEnabled = enabled.Contains(d.Id));
+            return doctors;
+        }
+    }
+
+    public class GetDoctorsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, AccountSecurityService securityService) : IRequestHandler<GetDoctorsQuery, List<DoctorSnapshot>>
     {
         public async Task<List<DoctorSnapshot>> Handle(GetDoctorsQuery request, CancellationToken cancellationToken)
         {
             var items = await unitOfWork.GetRepository<IDoctorsRepository>().GetAllObjects(cancellationToken);
-            return mapper.Map<List<DoctorSnapshot>>(items);
+            return await mapper.Map<List<DoctorSnapshot>>(items).WithTwoFactorStatusAsync(securityService, cancellationToken);
         }
     }
 
-    public class GetDoctorsByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetDoctorsByFilterQuery, List<DoctorSnapshot>>
+    public class GetDoctorsByFilterQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, AccountSecurityService securityService) : IRequestHandler<GetDoctorsByFilterQuery, List<DoctorSnapshot>>
     {
         public async Task<List<DoctorSnapshot>> Handle(GetDoctorsByFilterQuery request, CancellationToken cancellationToken)
         {
             var items = await unitOfWork.GetRepository<IDoctorsRepository>().GetAllObjects(cancellationToken);
             var filtered = FilterQueryProcessor.Apply(items, request.Filter, request.SortBy, request.SortDesc, request.TakeCount);
-            return mapper.Map<List<DoctorSnapshot>>(filtered);
+            return await mapper.Map<List<DoctorSnapshot>>(filtered).WithTwoFactorStatusAsync(securityService, cancellationToken);
         }
     }
 
-    public class GetDoctorByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<GetDoctorByIdQuery, DoctorSnapshot>
+    public class GetDoctorByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, AccountSecurityService securityService) : IRequestHandler<GetDoctorByIdQuery, DoctorSnapshot>
     {
         public async Task<DoctorSnapshot> Handle(GetDoctorByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await unitOfWork.GetRepository<IDoctorsRepository>().GetObjectsById(request.Id, cancellationToken)
                 ?? throw new RecordNotFoundException($"Doctor with id [{request.Id}] was not found");
 
-            return mapper.Map<DoctorSnapshot>(entity);
+            var dto = mapper.Map<DoctorSnapshot>(entity);
+            dto.TwoFactorEnabled = await securityService.IsTwoFactorEnabledAsync(dto.Id, cancellationToken);
+            return dto;
         }
     }
 
@@ -62,10 +79,10 @@ namespace WS_ClinicService.Core.Requests
         IUnitOfWork unitOfWork,
         IMapper mapper,
         DatabaseAuthenticationService authenticationService,
-        PasswordSetupService passwordSetupService) :
-        IRequestHandler<CreateDoctorCommand, CreatedAccountResponse<DoctorSnapshot>>
+        AccountSecurityService securityService) :
+        IRequestHandler<CreateDoctorCommand, DoctorSnapshot>
     {
-        public async Task<CreatedAccountResponse<DoctorSnapshot>> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
+        public async Task<DoctorSnapshot> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
         {
             var repository = unitOfWork.GetRepository<IDoctorsRepository>();
 
@@ -79,25 +96,22 @@ namespace WS_ClinicService.Core.Requests
             entity.Type = PersonType.Doctor;
             entity.IsCurrent = true;
             entity.IsDeleted = false;
+            entity.PasswordHash = authenticationService.HashPassword(entity, request.Request.Password);
 
             await repository.AddObject(entity);
-            var invitation = passwordSetupService.CreateInvitation(entity.Id);
+            securityService.RequirePasswordChange(entity.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return new CreatedAccountResponse<DoctorSnapshot>
-            {
-                Account = mapper.Map<DoctorSnapshot>(entity),
-                SetupToken = invitation.Token,
-                SetupTokenExpiresAt = invitation.ExpiresAt
-            };
+            return mapper.Map<DoctorSnapshot>(entity);
         }
     }
 
     public class UpdateDoctorCommandHandler(
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        DatabaseAuthenticationService authenticationService) : IRequestHandler<UpdateDoctorCommand, DoctorSnapshot>
+        DatabaseAuthenticationService authenticationService,
+        AccountSecurityService securityService) : IRequestHandler<UpdateDoctorCommand, DoctorSnapshot>
     {
         public async Task<DoctorSnapshot> Handle(UpdateDoctorCommand request, CancellationToken cancellationToken)
         {
@@ -141,7 +155,52 @@ namespace WS_ClinicService.Core.Requests
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return mapper.Map<DoctorSnapshot>(entity);
+            var dto = mapper.Map<DoctorSnapshot>(entity);
+            dto.TwoFactorEnabled = await securityService.IsTwoFactorEnabledAsync(dto.Id, cancellationToken);
+            return dto;
+        }
+    }
+
+    public class SetDoctorTwoFactorCommandHandler(
+        IUnitOfWork unitOfWork,
+        AccountSecurityService securityService,
+        TotpService totpService,
+        TrustedTwoFactorDeviceService trustedDeviceService) :
+        IRequestHandler<SetDoctorTwoFactorCommand, AdminTwoFactorResponse>
+    {
+        public async Task<AdminTwoFactorResponse> Handle(SetDoctorTwoFactorCommand request, CancellationToken cancellationToken)
+        {
+            var doctor = await unitOfWork.GetRepository<IDoctorsRepository>().GetObjectsById(request.Id, cancellationToken)
+                ?? throw new RecordNotFoundException($"Doctor with id [{request.Id}] was not found");
+
+            var state = await securityService.GetOrCreateAsync(doctor.Id, cancellationToken);
+
+            if (request.Enabled)
+            {
+                if (state.TwoFactorEnabled)
+                {
+                    throw new ConflictException("Two-factor authentication is already enabled.");
+                }
+
+                state.TwoFactorSecret = totpService.CreateSecret();
+                state.TwoFactorEnabled = true;
+                state.TwoFactorConfirmedAt = DateTimeOffset.UtcNow;
+            }
+            else
+            {
+                state.TwoFactorSecret = null;
+                state.TwoFactorEnabled = false;
+                state.TwoFactorConfirmedAt = null;
+            }
+
+            await trustedDeviceService.RevokeAllAsync(doctor.Id, cancellationToken);
+            await securityService.SaveAsync(state, cancellationToken);
+
+            return new AdminTwoFactorResponse
+            {
+                Enabled = state.TwoFactorEnabled,
+                Secret = request.Enabled ? state.TwoFactorSecret : null
+            };
         }
     }
 

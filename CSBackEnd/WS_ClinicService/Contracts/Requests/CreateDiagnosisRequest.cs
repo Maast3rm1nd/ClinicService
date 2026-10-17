@@ -6,6 +6,8 @@ namespace WS_ClinicService.Contracts.Requests
     {
         public string IcdCode { get; set; }
 
+        public string? Name { get; set; }
+
         public Guid Doctor { get; set; }
 
         public Guid MedicalCard { get; set; }

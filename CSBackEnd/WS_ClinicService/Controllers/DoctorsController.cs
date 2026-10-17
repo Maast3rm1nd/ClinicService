@@ -36,13 +36,13 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(CreatedAccountResponse<DoctorsDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(DoctorsDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CreatedAccountResponse<DoctorsDto>>> CreateDoctor(
+        public async Task<ActionResult<DoctorsDto>> CreateDoctor(
             [FromBody] CreateDoctorRequest request,
             CancellationToken cancellationToken)
         {
@@ -91,6 +91,19 @@ namespace WS_ClinicService.Controllers
         public async Task<ActionResult<DoctorsDto>> UpdateDoctor(Guid id, [FromBody] UpdateDoctorRequest request, CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new UpdateDoctorCommand(id, request), cancellationToken));
+        }
+
+        [HttpPut("{id:guid}/two-factor")]
+        [ProducesResponseType(typeof(AdminTwoFactorResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<AdminTwoFactorResponse>> SetDoctorTwoFactor(Guid id, [FromBody] SetDoctorTwoFactorRequest request, CancellationToken cancellationToken)
+        {
+            Response.Headers.CacheControl = "no-store";
+            return Ok(await _mediator.Send(new SetDoctorTwoFactorCommand(id, request.Enabled), cancellationToken));
         }
 
         [HttpDelete("{id:guid}")]

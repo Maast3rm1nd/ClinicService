@@ -54,7 +54,7 @@
       <Entity type="Class">
         <Name>PolicySnapshot</Name>
         <Access>Public</Access>
-        <Location left="1336" top="84" />
+        <Location left="1588" top="237" />
         <Size width="220" height="315" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -86,7 +86,7 @@
       <Entity type="Class">
         <Name>SpecialisationSnapshot</Name>
         <Access>Public</Access>
-        <Location left="490" top="234" />
+        <Location left="481" top="314" />
         <Size width="220" height="247" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -104,8 +104,8 @@
       <Entity type="Class">
         <Name>DiagnosisSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1525" top="539" />
-        <Size width="220" height="332" />
+        <Location left="2075" top="971" />
+        <Size width="220" height="354" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid EntityId</Member>
@@ -114,6 +114,7 @@
         <Member type="Field">public DateTimeOffset? ValidTo</Member>
         <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public string IcdCode</Member>
+        <Member type="Field">public string? Name</Member>
         <Member type="Field">public Guid Doctor</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
         <Member type="Field">public Guid EditedDoctor</Member>
@@ -127,7 +128,7 @@
       <Entity type="Class">
         <Name>Schedule</Name>
         <Access>Public</Access>
-        <Location left="1180" top="851" />
+        <Location left="1416" top="971" />
         <Size width="220" height="160" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -138,7 +139,7 @@
       <Entity type="Class">
         <Name>AppointmentSnapshot</Name>
         <Access>Public</Access>
-        <Location left="535" top="798" />
+        <Location left="802" top="1126" />
         <Size width="286" height="383" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -164,7 +165,7 @@
       <Entity type="Class">
         <Name>Administrators</Name>
         <Access>Public</Access>
-        <Location left="73" top="681" />
+        <Location left="29" top="829" />
         <Size width="210" height="264" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -180,19 +181,20 @@
       <Entity type="Enum">
         <Name>AppointmentStatus</Name>
         <Access>Public</Access>
-        <Location left="842" top="1097" />
-        <Size width="235" height="146" />
+        <Location left="1233" top="1373" />
+        <Size width="235" height="168" />
         <Collapsed>False</Collapsed>
         <Value>Pending</Value>
         <Value>Confirmed</Value>
         <Value>Cancelled</Value>
         <Value>Completed</Value>
         <Value>Rescheduled</Value>
+        <Value>InProgress</Value>
       </Entity>
       <Entity type="Enum">
         <Name>EmployeeWorkStatus</Name>
         <Access>Public</Access>
-        <Location left="1180" top="1075" />
+        <Location left="1581" top="1360" />
         <Size width="249" height="124" />
         <Collapsed>False</Collapsed>
         <Value>AtWork</Value>
@@ -202,7 +204,7 @@
       <Entity type="Class">
         <Name>InsuranceProviderSnapshot</Name>
         <Access>Public</Access>
-        <Location left="1789" top="204" />
+        <Location left="1988" top="59" />
         <Size width="278" height="298" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -223,7 +225,7 @@
       <Entity type="Enum">
         <Name>DiagnosisStatus</Name>
         <Access>Public</Access>
-        <Location left="1630" top="958" />
+        <Location left="1907" top="1406" />
         <Size width="249" height="124" />
         <Collapsed>False</Collapsed>
         <Value>Actual</Value>
@@ -232,7 +234,7 @@
       <Entity type="Class">
         <Name>PersonSnapshot</Name>
         <Access>Public</Access>
-        <Location left="345" top="505" />
+        <Location left="425" top="591" />
         <Size width="162" height="332" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -255,7 +257,7 @@
       <Entity type="Class">
         <Name>Doctors</Name>
         <Access>Public</Access>
-        <Location left="935" top="505" />
+        <Location left="1384" top="624" />
         <Size width="339" height="252" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -276,8 +278,8 @@
       <Entity type="Class">
         <Name>AccountSecurityState</Name>
         <Access>Public</Access>
-        <Location left="2100" top="16" />
-        <Size width="330" height="340" />
+        <Location left="2323" top="10" />
+        <Size width="330" height="362" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
         <Member type="Field">public Guid PersonId</Member>
@@ -286,6 +288,7 @@
         <Member type="Field">public bool TwoFactorEnabled</Member>
         <Member type="Field">public string? TwoFactorSecret</Member>
         <Member type="Field">public DateTimeOffset? TwoFactorConfirmedAt</Member>
+        <Member type="Field">public bool MustChangePassword</Member>
         <Member type="Field">public DateTimeOffset? PasswordChangedAt</Member>
         <Member type="Field">public DateTimeOffset? LastLoginAt</Member>
         <Member type="Field">public DateTimeOffset CreationDateTime</Member>
@@ -295,7 +298,7 @@
       <Entity type="Class">
         <Name>RefreshSession</Name>
         <Access>Public</Access>
-        <Location left="2100" top="390" />
+        <Location left="2323" top="395" />
         <Size width="330" height="322" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -312,7 +315,7 @@
       <Entity type="Class">
         <Name>SecurityAuditEvent</Name>
         <Access>Public</Access>
-        <Location left="2100" top="746" />
+        <Location left="2337" top="747" />
         <Size width="330" height="298" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -328,7 +331,7 @@
       <Entity type="Class">
         <Name>PasswordSetupToken</Name>
         <Access>Public</Access>
-        <Location left="2100" top="1078" />
+        <Location left="2383" top="1258" />
         <Size width="330" height="250" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -342,7 +345,7 @@
       <Entity type="Class">
         <Name>TrustedTwoFactorDevice</Name>
         <Access>Public</Access>
-        <Location left="31" top="1000" />
+        <Location left="29" top="1267" />
         <Size width="350" height="250" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
@@ -357,13 +360,23 @@
       <Entity type="Class">
         <Name>CardNote</Name>
         <Access>Public</Access>
-        <Location left="1102" top="39" />
-        <Size width="210" height="252" />
+        <Location left="1272" top="10" />
+        <Size width="219" height="315" />
         <Collapsed>False</Collapsed>
         <Member type="Field">public Guid Id</Member>
+        <Member type="Field">public Guid EntityId</Member>
+        <Member type="Field">public int Version</Member>
+        <Member type="Field">public DateTimeOffset ValidFrom</Member>
+        <Member type="Field">public DateTimeOffset? ValidTo</Member>
+        <Member type="Field">public Guid? ChangedBy</Member>
         <Member type="Field">public Guid MedicalCard</Member>
+        <Member type="Field">public Guid Doctor</Member>
+        <Member type="Field">public Guid? Appointment</Member>
         <Member type="Field">public DateTimeOffset DateNote</Member>
         <Member type="Field">public string? PatientsComplaints</Member>
+        <Member type="Field">public ICollection&lt;Guid&gt; Diagnoses</Member>
+        <Member type="Field">public DateTimeOffset CreationDateTime</Member>
+        <Member type="Field">public DateTimeOffset? EditDateTime</Member>
         <Modifier>None</Modifier>
       </Entity>
     </Entities>
@@ -372,8 +385,8 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
-          <X>1070</X>
-          <Y>344</Y>
+          <X>1120</X>
+          <Y>341</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -396,12 +409,12 @@
         <StartOrientation>Vertical</StartOrientation>
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>1014</X>
-          <Y>414</Y>
+          <X>971</X>
+          <Y>592</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1550</X>
-          <Y>514</Y>
+          <X>2098</X>
+          <Y>605</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -427,11 +440,11 @@
         <EndOrientation>Vertical</EndOrientation>
         <BendPoint relativeToStartShape="True">
           <X>1158</X>
-          <Y>431</Y>
+          <Y>420</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>1613</X>
-          <Y>511</Y>
+          <X>2163</X>
+          <Y>943</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -446,8 +459,8 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
-          <X>1155</X>
-          <Y>973</Y>
+          <X>1391</X>
+          <Y>1093</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -471,6 +484,10 @@
         </Label>
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>270</X>
+          <Y>1021</Y>
+        </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
         <StartRole>id</StartRole>
@@ -484,12 +501,12 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>735</X>
-          <Y>428</Y>
+          <X>726</X>
+          <Y>508</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>852</X>
-          <Y>586</Y>
+          <X>1301</X>
+          <Y>705</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -504,12 +521,12 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>850</X>
-          <Y>875</Y>
+          <X>1117</X>
+          <Y>1203</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>910</X>
-          <Y>699</Y>
+          <X>1359</X>
+          <Y>818</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -536,8 +553,8 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="False">
-          <X>910</X>
-          <Y>639</Y>
+          <X>1359</X>
+          <Y>758</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -562,12 +579,12 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>747</X>
-          <Y>356</Y>
+          <X>738</X>
+          <Y>436</Y>
         </BendPoint>
         <BendPoint relativeToStartShape="False">
-          <X>910</X>
-          <Y>540</Y>
+          <X>1359</X>
+          <Y>659</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -590,8 +607,8 @@
         <StartOrientation>Horizontal</StartOrientation>
         <EndOrientation>Horizontal</EndOrientation>
         <BendPoint relativeToStartShape="True">
-          <X>532</X>
-          <Y>708</Y>
+          <X>612</X>
+          <Y>794</Y>
         </BendPoint>
         <Direction>Bidirectional</Direction>
         <AssociationType>Association</AssociationType>
@@ -599,6 +616,74 @@
         <EndRole>Person</EndRole>
         <StartMultiplicity>0..*</StartMultiplicity>
         <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="21" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1073</X>
+          <Y>67</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>CardNotes</StartRole>
+        <EndRole>MedicalCard</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="21" second="5">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1517</X>
+          <Y>521</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>2251</X>
+          <Y>741</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>CardNotes</StartRole>
+        <EndRole>Diagnoses</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="21" second="14">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1247</X>
+          <Y>230</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1357</X>
+          <Y>741</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>CardNotes</StartRole>
+        <EndRole>Doctor</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="21" second="7">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1247</X>
+          <Y>111</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1118</X>
+          <Y>1286</Y>
+        </BendPoint>
+        <Direction>Bidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>CardNotes</StartRole>
+        <EndRole>Appointment</EndRole>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>0..1</EndMultiplicity>
       </Relationship>
     </Relationships>
   </ProjectItem>

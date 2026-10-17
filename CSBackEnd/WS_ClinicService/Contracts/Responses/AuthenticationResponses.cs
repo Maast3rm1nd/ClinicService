@@ -1,14 +1,5 @@
 namespace WS_ClinicService.Contracts.Responses
 {
-    public sealed class CreatedAccountResponse<T>
-    {
-        public T Account { get; set; } = default!;
-
-        public string SetupToken { get; set; } = string.Empty;
-
-        public DateTimeOffset SetupTokenExpiresAt { get; set; }
-    }
-
     public sealed class PasswordSetupValidationResponse
     {
         public string Login { get; set; } = string.Empty;
@@ -17,6 +8,14 @@ namespace WS_ClinicService.Contracts.Responses
     public sealed class TwoFactorSetupResponse
     {
         public string Secret { get; set; } = string.Empty;
+    }
+
+    public sealed class AdminTwoFactorResponse
+    {
+        public bool Enabled { get; set; }
+
+        /// <summary>Shared TOTP secret, returned only at the moment the administrator enables 2FA.</summary>
+        public string? Secret { get; set; }
     }
 
     public sealed class TwoFactorStatusResponse

@@ -6,6 +6,8 @@ namespace ClinicServiceBase.DTO
     {
         public string IcdCode { get; set; }
 
+        public string? Name { get; set; }
+
         public Guid Doctor { get; set; }
 
         public Guid? EditedDoctor { get; set; }

@@ -1,0 +1,52 @@
+.page {
+  max-width: 820px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.note-form,
+.note {
+  margin-bottom: 1rem;
+}
+
+.new-diagnoses__title {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.new-diagnoses__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.new-diagnoses__code {
+  flex: 0 0 160px;
+}
+
+.new-diagnoses__name {
+  flex: 1;
+}

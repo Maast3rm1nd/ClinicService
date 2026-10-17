@@ -37,6 +37,10 @@ namespace WS_ClinicService.Mapping
                 .ForMember(d => d.Status, o => o.MapFrom(s => s.Status ?? DiagnosisStatus.Actual));
             CreateMap<DiagnosisSnapshot, DiagnosisSnapshotDto>();
 
+            CreateMap<CreateCardNoteRequest, CardNote>()
+                .ForMember(d => d.Diagnoses, o => o.Ignore());
+            CreateMap<CardNote, CardNoteDto>();
+
             CreateMap<CreateAppointmentRequest, AppointmentSnapshot>()
                 .ForMember(d => d.PremilinaryReason, o => o.MapFrom(s => s.PreliminaryReason))
                 .ForMember(d => d.Status, o => o.MapFrom(_ => AppointmentStatus.Pending));

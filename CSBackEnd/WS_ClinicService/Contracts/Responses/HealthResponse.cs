@@ -4,6 +4,8 @@ namespace WS_ClinicService.Contracts.Responses
     {
         public string Status { get; set; }
 
+        public string Version { get; set; }
+
         public DateTimeOffset Timestamp { get; set; }
     }
 }

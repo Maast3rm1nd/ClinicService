@@ -16,6 +16,8 @@ namespace ClinicServiceContext.Entities
 
         public DateTimeOffset? TwoFactorConfirmedAt { get; set; }
 
+        public bool MustChangePassword { get; set; }
+
         public DateTimeOffset? PasswordChangedAt { get; set; }
 
         public DateTimeOffset? LastLoginAt { get; set; }

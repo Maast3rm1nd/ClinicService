@@ -44,10 +44,18 @@
 
 .calendar__row {
   display: grid;
-  grid-template-columns: 64px repeat(7, 1fr);
+  grid-template-columns: 64px repeat(7, minmax(0, 1fr));
+}
+
+.calendar__scroll {
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .calendar__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   border-bottom: 1px solid #e0e0e0;
   background: #fafafa;
 }
@@ -77,10 +85,8 @@
 
 .calendar__body {
   display: grid;
-  grid-template-columns: 64px repeat(7, 1fr);
+  grid-template-columns: 64px repeat(7, minmax(0, 1fr));
   position: relative;
-  max-height: 70vh;
-  overflow-y: auto;
 }
 
 .calendar__gutter--hours {
@@ -115,52 +121,68 @@
   position: absolute;
   left: 2px;
   right: 2px;
+  box-sizing: border-box;
   border-radius: 6px;
   padding: 2px 6px;
   font-size: 0.72rem;
-  line-height: 1.2;
+  line-height: 1.25;
   overflow: hidden;
   color: white;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
+.calendar__event-main {
+  display: flex;
+  gap: 0.35rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
 .calendar__event-time {
+  flex: none;
   font-weight: 600;
 }
 
 .calendar__event-title {
+  min-width: 0;
   font-weight: 500;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .calendar__event-doctor {
+  font-size: 0.68rem;
   opacity: 0.85;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.calendar__event--pending {
+.calendar__event--Pending {
   background: #f9a825;
+  color: rgba(0, 0, 0, 0.87);
 }
 
-.calendar__event--confirmed {
+.calendar__event--Confirmed {
   background: #1976d2;
 }
 
-.calendar__event--completed {
+.calendar__event--Completed {
   background: #388e3c;
 }
 
-.calendar__event--rescheduled {
+.calendar__event--Rescheduled {
   background: #7b1fa2;
 }
 
-.calendar__event--cancelled {
+.calendar__event--InProgress {
+  background: #00897b;
+}
+
+.calendar__event--Cancelled {
   background: #9e9e9e;
 }

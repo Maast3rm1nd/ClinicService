@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WS_ClinicService.Contracts.Responses;
+using WS_ClinicService.Core;
 
 namespace WS_ClinicService.Controllers
 {
@@ -16,6 +17,7 @@ namespace WS_ClinicService.Controllers
             return Ok(new HealthResponse
             {
                 Status = "ok",
+                Version = ApplicationVersion.Current,
                 Timestamp = DateTimeOffset.UtcNow
             });
         }

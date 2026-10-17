@@ -13,6 +13,7 @@ namespace WS_ClinicService.Core.Requests
     public record RestoreInsuranceProviderCommand(Guid EntityId) : IRequest<InsuranceProviderSnapshotDto>;
     public record RestoreSpecialisationCommand(Guid EntityId) : IRequest<SpecialisationSnapshotDto>;
     public record RestoreDiagnosisCommand(Guid EntityId) : IRequest<DiagnosisSnapshotDto>;
+    public record RestoreCardNoteCommand(Guid EntityId) : IRequest<CardNoteDto>;
     public record RestoreAppointmentCommand(Guid EntityId) : IRequest<AppointmentSnapshotDto>;
     public record RestorePersonCommand(Guid EntityId) : IRequest<PersonSnapshotDto>;
 
@@ -64,6 +65,16 @@ namespace WS_ClinicService.Core.Requests
             var entity = await versionService.RestoreAsync<DiagnosisSnapshot>(request.EntityId, null, cancellationToken) ?? throw new RecordNotFoundException($"Deleted diagnosis with entity id [{request.EntityId}] was not found");
             await unitOfWork.CommitToDBAsync(cancellationToken);
             return mapper.Map<DiagnosisSnapshotDto>(entity);
+        }
+    }
+
+    public class RestoreCardNoteCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, SnapshotVersionService versionService) : IRequestHandler<RestoreCardNoteCommand, CardNoteDto>
+    {
+        public async Task<CardNoteDto> Handle(RestoreCardNoteCommand request, CancellationToken cancellationToken)
+        {
+            var entity = await versionService.RestoreAsync<CardNote>(request.EntityId, null, cancellationToken) ?? throw new RecordNotFoundException($"Deleted card note with entity id [{request.EntityId}] was not found");
+            await unitOfWork.CommitToDBAsync(cancellationToken);
+            return mapper.Map<CardNoteDto>(entity);
         }
     }
 

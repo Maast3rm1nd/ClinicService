@@ -14,6 +14,18 @@ export const authGuard: CanActivateFn = () => {
   return router.parseUrl('/login');
 };
 
+/** Restricts navigation to routes that only Doctors may access. */
+export const doctorGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isDoctor()) {
+    return true;
+  }
+
+  return router.parseUrl(authService.isAuthenticated() ? '/' : '/login');
+};
+
 /** Restricts navigation to routes that only Administrators may access. */
 export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);

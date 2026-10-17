@@ -1,0 +1,9 @@
+.page {
+  max-width: 720px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}

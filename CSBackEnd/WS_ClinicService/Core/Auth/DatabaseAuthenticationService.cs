@@ -1,3 +1,4 @@
+using ClinicServiceBase.Common.Exceptions;
 using ClinicServiceContext.Entities;
 using ClinicServiceDAL;
 using Microsoft.AspNetCore.Identity;
@@ -55,6 +56,34 @@ namespace WS_ClinicService.Core.Auth
         public string HashPassword(PersonSnapshot user, string password)
         {
             return _passwordHasher.HashPassword(user, password);
+        }
+
+        public const int MinPasswordLength = 12;
+
+        /// <summary>Replaces the password of a user who must change it and clears the "must change" flag.</summary>
+        public async Task ChangePasswordAsync(
+            PersonSnapshot user,
+            string newPassword,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < MinPasswordLength)
+            {
+                throw new UnprocessableEntityException($"Password must contain at least {MinPasswordLength} characters.");
+            }
+
+            if (user.PasswordHash is not null
+                && _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, newPassword) is not PasswordVerificationResult.Failed)
+            {
+                throw new UnprocessableEntityException("New password must differ from the current one.");
+            }
+
+            var now = DateTimeOffset.UtcNow;
+            user.PasswordHash = _passwordHasher.HashPassword(user, newPassword);
+
+            var state = await _securityService.GetOrCreateAsync(user.Id, cancellationToken);
+            state.MustChangePassword = false;
+            state.PasswordChangedAt = now;
+            await _securityService.SaveAsync(state, cancellationToken);
         }
 
         public Task<bool> LoginExistsAsync(

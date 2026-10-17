@@ -48,6 +48,7 @@ namespace WS_ClinicService.Core.Validators
             RuleFor(x => x.Id).NotEqual(Guid.Empty);
             RuleFor(x => x.FullName).NotEmpty();
             RuleFor(x => x.Login).NotEmpty().MaximumLength(450);
+            RuleFor(x => x.Password).NotEmpty().MinimumLength(12);
             RuleFor(x => x.Specialisations).NotNull().NotEmpty();
             RuleFor(x => x.EmployeeWorkStatus).IsInEnum();
         }
@@ -88,10 +89,37 @@ namespace WS_ClinicService.Core.Validators
         }
     }
 
+    public class CreateCardNoteRequestValidator : AbstractValidator<CreateCardNoteRequest>
+    {
+        public CreateCardNoteRequestValidator()
+        {
+            RuleFor(x => x.MedicalCard).NotEqual(Guid.Empty);
+            RuleFor(x => x.Doctor).NotEqual(Guid.Empty);
+            RuleFor(x => x.DateNote).NotEqual(default(DateTimeOffset));
+            RuleFor(x => x.PatientsComplaints).MaximumLength(4000);
+            RuleForEach(x => x.NewDiagnoses).ChildRules(diagnosis =>
+            {
+                diagnosis.RuleFor(d => d.IcdCode).NotEmpty().MaximumLength(50);
+                diagnosis.RuleFor(d => d.Name).MaximumLength(300);
+                diagnosis.RuleFor(d => d.Status).IsInEnum().When(d => d.Status.HasValue);
+            });
+        }
+    }
+
+    public class UpdateCardNoteRequestValidator : AbstractValidator<UpdateCardNoteRequest>
+    {
+        public UpdateCardNoteRequestValidator()
+        {
+            RuleFor(x => x.DateNote).NotEqual(default(DateTimeOffset)).When(x => x.DateNote.HasValue);
+            RuleFor(x => x.PatientsComplaints).MaximumLength(4000);
+        }
+    }
+
     public class UpdateDiagnosisRequestValidator : AbstractValidator<UpdateDiagnosisRequest>
     {
         public UpdateDiagnosisRequestValidator()
         {
+            RuleFor(x => x.Name).MaximumLength(300);
             RuleFor(x => x.Status).IsInEnum().When(x => x.Status.HasValue);
         }
     }
@@ -143,6 +171,7 @@ namespace WS_ClinicService.Core.Validators
         public CreateDiagnosisRequestValidator()
         {
             RuleFor(x => x.IcdCode).NotEmpty();
+            RuleFor(x => x.Name).MaximumLength(300);
             RuleFor(x => x.Doctor).NotEqual(Guid.Empty);
             RuleFor(x => x.MedicalCard).NotEqual(Guid.Empty);
             RuleFor(x => x.Status).IsInEnum().When(x => x.Status.HasValue);
@@ -184,6 +213,7 @@ namespace WS_ClinicService.Core.Validators
         {
             RuleFor(x => x.FullName).NotEmpty();
             RuleFor(x => x.Login).NotEmpty().MaximumLength(450);
+            RuleFor(x => x.Password).NotEmpty().MinimumLength(12);
             RuleFor(x => x.Type).Equal(ClinicServiceContext.Enums.PersonType.Administrator);
         }
     }
@@ -202,6 +232,17 @@ namespace WS_ClinicService.Core.Validators
         {
             RuleFor(x => x.Token).NotEmpty();
             RuleFor(x => x.Password).NotEmpty().MinimumLength(12);
+        }
+    }
+
+    public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRequest>
+    {
+        public ChangePasswordRequestValidator()
+        {
+            RuleFor(x => x.Login).NotEmpty();
+            RuleFor(x => x.CurrentPassword).NotEmpty();
+            RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(12);
+            RuleFor(x => x.ConfirmPassword).Equal(x => x.NewPassword).WithMessage("Passwords do not match.");
         }
     }
 

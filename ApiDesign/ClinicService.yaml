@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Clinic Service API
-  version: 1.1.1
+  version: 0.1.0
 
 servers:
   - url: https://api.clinic.local/v1
@@ -14,6 +14,7 @@ tags:
   - name: Doctors
   - name: Specialisations
   - name: Diagnoses
+  - name: CardNotes
   - name: Appointments
   - name: Schedules
   - name: Administrators
@@ -847,11 +848,11 @@ paths:
               $ref: '#/components/schemas/CreateDoctorRequest'
       responses:
         '201':
-          description: Doctor created with a one-time password setup invitation
+          description: Doctor created. The doctor must change the initial password at the first login.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedDoctorAccount'
+                $ref: '#/components/schemas/Doctors'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -994,6 +995,57 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /doctors/{id}/two-factor:
+    put:
+      tags:
+        - Doctors
+      summary: Enable or disable two-factor authentication for a doctor
+      description: >
+        Enabling generates a new TOTP secret, returned once in the response so the administrator
+        can pass it to the doctor. Disabling clears the secret and revokes trusted devices.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - enabled
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Two-factor authentication state updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - enabled
+                properties:
+                  enabled:
+                    type: boolean
+                  secret:
+                    type: string
+                    nullable: true
+                    description: TOTP secret, present only when two-factor authentication was just enabled.
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Two-factor authentication is already enabled
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -1232,6 +1284,11 @@ paths:
               properties:
                 icdCode:
                   type: string
+                name:
+                  type: string
+                  maxLength: 300
+                  nullable: true
+                  description: Diagnosis name, shown together with the code as "code - name"
                 doctor:
                   type: string
                   format: uuid
@@ -1372,6 +1429,195 @@ paths:
       tags:
         - Diagnoses
       summary: Delete diagnosis
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /card-notes:
+    get:
+      tags:
+        - CardNotes
+      summary: Get card notes list
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CardNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - CardNotes
+      summary: Add a note to a medical card
+      description: >
+        Creates a note about an appointment. The note can refer to diagnoses that already exist in the
+        medical card (diagnoses) and/or create new ones (newDiagnoses). A new diagnosis whose ICD code
+        already exists in the card is reused instead of duplicated. New diagnoses are also added to the
+        diagnoses list of the medical card.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardNoteRequest'
+      responses:
+        '201':
+          description: Card note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Validation error, or a diagnosis does not belong to the medical card
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /card-notes/filter:
+    post:
+      tags:
+        - CardNotes
+      summary: Get card notes by filter
+      parameters:
+        - name: takeCount
+          in: query
+          required: false
+          description: records count
+          schema:
+            type: integer
+
+        - name: sortBy
+          in: query
+          required: false
+          description: sort records by field
+          schema:
+            type: string
+
+        - name: sortDesc
+          in: query
+          required: false
+          description: sort records by descending
+          schema:
+            type: boolean
+
+      requestBody:
+        description: JArray filter
+        content:
+          application/json:
+           schema:
+            type: array
+            items:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Card notes by filter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CardNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /card-notes/{id}:
+    get:
+      tags:
+        - CardNotes
+      summary: Get card note by ID
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          description: Card note data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - CardNotes
+      summary: Update card note
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCardNoteRequest'
+      responses:
+        '200':
+          description: Card note updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - CardNotes
+      summary: Delete card note
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
@@ -1850,11 +2096,11 @@ paths:
               $ref: '#/components/schemas/CreatePersonRequest'
       responses:
         '201':
-          description: Administrator created with a one-time password setup invitation
+          description: Administrator created. The administrator must change the initial password at the first login.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedAdministratorAccount'
+                $ref: '#/components/schemas/PersonSnapshot'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -2156,10 +2402,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '428':
+          description: >
+            Credentials (and TOTP code, if required) are valid, but the password was set by an
+            administrator and must be changed first. No tokens are issued; call /auth/change-password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /auth/change-password:
+    post:
+      tags:
+        - Auth
+      summary: Replace the initial password after the first login
+      description: >
+        Allowed only for accounts whose password was set by an administrator and has not been
+        changed yet. Requires the current credentials (and TOTP code when two-factor
+        authentication is enabled).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - currentPassword
+                - newPassword
+                - confirmPassword
+              properties:
+                login:
+                  type: string
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+                  minLength: 12
+                confirmPassword:
+                  type: string
+                  description: Must equal newPassword.
+                twoFactorCode:
+                  type: string
+                  pattern: '^\\d{6}$'
+      responses:
+        '204':
+          description: Password changed; the user can now log in
+        '401':
+          description: Invalid credentials or TOTP code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Password change is not required for this account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
 
   /auth/refresh:
     post:
@@ -2300,6 +2607,10 @@ paths:
                 properties:
                   status:
                     type: string
+                  version:
+                    type: string
+                    description: Version of the API service
+                    example: 0.1.0
                   timestamp:
                     type: string
                     format: date-time
@@ -2400,6 +2711,22 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /card-notes/{entityId}/restore:
+    post:
+      tags: [CardNotes]
+      summary: Restore a deleted card note snapshot
+      parameters:
+        - $ref: '#/components/parameters/entityIdParam'
+      responses:
+        '200':
+          description: Card note restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardNote'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /appointments/{entityId}/restore:
     post:
       tags: [Appointments]
@@ -2449,6 +2776,7 @@ components:
         - Cancelled
         - Completed
         - Rescheduled
+        - InProgress
 
     DiagnosisStatus:
       type: string
@@ -2686,6 +3014,142 @@ components:
             type: string
             format: uuid
 
+    CardNote:
+      type: object
+      description: >
+        A note about an appointment in the medical card of a patient. Versioned like other snapshots.
+        Reference fields (medicalCard, diagnoses) hold entityId values.
+      required:
+        - id
+        - entityId
+        - version
+        - validFrom
+        - medicalCard
+        - doctor
+        - dateNote
+        - creationDateTime
+      properties:
+        id:
+          type: string
+          format: uuid
+        entityId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          format: int32
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+        medicalCard:
+          type: string
+          format: uuid
+        doctor:
+          type: string
+          format: uuid
+        appointment:
+          type: string
+          format: uuid
+          nullable: true
+        dateNote:
+          type: string
+          format: date-time
+          description: Date and time of the appointment
+        patientsComplaints:
+          type: string
+          nullable: true
+        diagnoses:
+          type: array
+          nullable: true
+          items:
+            type: string
+            format: uuid
+        creationDateTime:
+          type: string
+          format: date-time
+        editDateTime:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateCardNoteRequest:
+      type: object
+      required:
+        - medicalCard
+        - doctor
+        - dateNote
+      properties:
+        medicalCard:
+          type: string
+          format: uuid
+          description: entityId of the medical card
+        doctor:
+          type: string
+          format: uuid
+        appointment:
+          type: string
+          format: uuid
+          nullable: true
+        dateNote:
+          type: string
+          format: date-time
+        patientsComplaints:
+          type: string
+          maxLength: 4000
+          nullable: true
+        diagnoses:
+          type: array
+          nullable: true
+          description: entityId values of diagnoses that already exist in the medical card
+          items:
+            type: string
+            format: uuid
+        newDiagnoses:
+          type: array
+          nullable: true
+          description: Diagnoses to create in the medical card together with the note
+          items:
+            type: object
+            required:
+              - icdCode
+            properties:
+              icdCode:
+                type: string
+                maxLength: 50
+              name:
+                type: string
+                maxLength: 300
+                nullable: true
+              status:
+                $ref: '#/components/schemas/DiagnosisStatus'
+
+    UpdateCardNoteRequest:
+      type: object
+      properties:
+        dateNote:
+          type: string
+          format: date-time
+          nullable: true
+        patientsComplaints:
+          type: string
+          maxLength: 4000
+          nullable: true
+        editedBy:
+          type: string
+          format: uuid
+          nullable: true
+        diagnoses:
+          type: array
+          nullable: true
+          description: Replaces the list of diagnoses (entityId values)
+          items:
+            type: string
+            format: uuid
+
     DiagnosisSnapshot:
       type: object
       required:
@@ -2717,6 +3181,9 @@ components:
           nullable: true
         icdCode:
           type: string
+        name:
+          type: string
+          nullable: true
         doctor:
           type: string
           format: uuid
@@ -2889,6 +3356,9 @@ components:
             format: uuid
         employeeWorkStatus:
           $ref: '#/components/schemas/EmployeeWorkStatus'
+        twoFactorEnabled:
+          type: boolean
+          description: Whether two-factor authentication is enabled for the doctor's account.
 
     CreateDoctorRequest:
       type: object
@@ -2896,6 +3366,7 @@ components:
         - id
         - fullName
         - login
+        - password
         - specialisations
         - employeeWorkStatus
       properties:
@@ -2911,6 +3382,11 @@ components:
         login:
           type: string
           maxLength: 450
+        password:
+          type: string
+          minLength: 12
+          writeOnly: true
+          description: Initial password. The user is forced to replace it at the first login.
         specialisations:
           type: array
           minItems: 1
@@ -2925,6 +3401,7 @@ components:
       required:
         - fullName
         - login
+        - password
         - type
       properties:
         fullName:
@@ -2935,43 +3412,16 @@ components:
         login:
           type: string
           maxLength: 450
+        password:
+          type: string
+          minLength: 12
+          writeOnly: true
+          description: Initial password. The user is forced to replace it at the first login.
         type:
           type: string
           enum:
             - Administrator
           description: Only Administrator accounts can be created through this endpoint.
-
-    CreatedDoctorAccount:
-      type: object
-      required:
-        - account
-        - setupToken
-        - setupTokenExpiresAt
-      properties:
-        account:
-          $ref: '#/components/schemas/Doctors'
-        setupToken:
-          type: string
-          description: Secret one-time token. Store securely and deliver to the user.
-        setupTokenExpiresAt:
-          type: string
-          format: date-time
-
-    CreatedAdministratorAccount:
-      type: object
-      required:
-        - account
-        - setupToken
-        - setupTokenExpiresAt
-      properties:
-        account:
-          $ref: '#/components/schemas/PersonSnapshot'
-        setupToken:
-          type: string
-          description: Secret one-time token. Store securely and deliver to the user.
-        setupTokenExpiresAt:
-          type: string
-          format: date-time
 
     ValidatePasswordSetupRequest:
       type: object

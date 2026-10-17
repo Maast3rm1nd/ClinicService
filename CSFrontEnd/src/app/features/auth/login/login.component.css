@@ -32,3 +32,10 @@
 mat-form-field {
   width: 100%;
 }
+
+.login-card__version {
+  margin: 0 1rem 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}

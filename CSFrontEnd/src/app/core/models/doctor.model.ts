@@ -7,6 +7,7 @@ export interface Doctor {
   login: string;
   specialisations: string[];
   employeeWorkStatus: EmployeeWorkStatus;
+  twoFactorEnabled: boolean;
 }
 
 export interface CreateDoctorRequest {
@@ -14,8 +15,14 @@ export interface CreateDoctorRequest {
   fullName: string;
   shortName?: string | null;
   login: string;
+  password: string;
   specialisations: string[];
   employeeWorkStatus: EmployeeWorkStatus;
+}
+
+export interface AdminTwoFactorResponse {
+  enabled: boolean;
+  secret?: string | null;
 }
 
 export interface UpdateDoctorRequest {

@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using Scalar.AspNetCore;
 using System.Threading.RateLimiting;
 using System.Text;
+using WS_ClinicService.Core;
 using WS_ClinicService.Core.Auth;
 using WS_ClinicService.Core.Extensions;
 using WS_ClinicService.Core.Filters;
@@ -131,7 +132,11 @@ services.AddRateLimiter(options =>
         }));
 });
 
-services.AddOpenApi();
+services.AddOpenApi(options => options.AddDocumentTransformer((document, _, _) =>
+{
+    document.Info.Version = ApplicationVersion.Current;
+    return Task.CompletedTask;
+}));
 
 services.AddCors(options =>
 {
@@ -146,17 +151,19 @@ var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapOpenApi("/openapi/{documentName}.yaml");
+app.MapOpenApi("/openapi/{documentName}.yaml");
 
-    app.MapGet("/", () => Results.Redirect("/openapi/v1.yaml"))
-        .ExcludeFromDescription();
+app.MapGet("/", () => Results.Redirect("/openapi/v1.yaml"))
+    .ExcludeFromDescription();
 }
 
-app.MapScalarApiReference(options => options.WithTitle("Clinic Service API"));
+app.MapScalarApiReference(options => options.WithTitle($"Clinic Service API v{ApplicationVersion.Current}"));
+
+app.Logger.LogInformation("Clinic Service API v{Version}", ApplicationVersion.Current);
 
 app.UseHttpsRedirection();
 
@@ -179,6 +186,7 @@ if (app.Environment.IsDevelopment())
             var token = tokenService.CreateToken(
                 "debug-admin",
                 "Administrator",
+                Guid.Empty,
                 [
                     "users.manage",
                     "security.audit.read",

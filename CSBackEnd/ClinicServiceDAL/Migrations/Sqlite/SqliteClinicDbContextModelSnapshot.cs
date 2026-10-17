@@ -38,6 +38,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.Property<DateTimeOffset?>("LockedUntil")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTimeOffset?>("PasswordChangedAt")
                         .HasColumnType("TEXT");
 
@@ -129,6 +132,68 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                     b.ToTable("AppointmentSnapshots");
                 });
 
+            modelBuilder.Entity("ClinicServiceContext.Entities.CardNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("Appointment")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ChangedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreationDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("DateNote")
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("Diagnoses")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Doctor")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("EditDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("MedicalCard")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PatientsComplaints")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "IsCurrent");
+
+                    b.HasIndex("EntityId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("CardNotes");
+                });
+
             modelBuilder.Entity("ClinicServiceContext.Entities.DiagnosisSnapshot", b =>
                 {
                     b.Property<Guid>("Id")
@@ -164,6 +229,9 @@ namespace ClinicServiceDAL.Migrations.Sqlite
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid>("MedicalCard")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")

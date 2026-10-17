@@ -15,5 +15,7 @@ namespace ClinicServiceBase.DTO
         public List<Guid> Specialisations { get; set; }
 
         public EmployeeWorkStatus EmployeeWorkStatus { get; set; }
+
+        public bool TwoFactorEnabled { get; set; }
     }
 }

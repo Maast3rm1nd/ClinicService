@@ -1,0 +1,48 @@
+<div class="page">
+  <h1>Current appointment</h1>
+
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="36" />
+    </div>
+  } @else if (appointment(); as item) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ patientName() }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ item.appointmentDateTime | date: 'EEEE, d MMMM y, HH:mm' }} ·
+          {{ statusLabels[item.status] }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+          <strong>Preliminary reason:</strong>
+          {{ item.preliminaryReason || '—' }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a
+          mat-stroked-button
+          [routerLink]="['/medical-cards', item.medicalCard]"
+          [queryParams]="{ appointment: item.id }"
+        >
+          <mat-icon>folder_shared</mat-icon>
+          Open medical card
+        </a>
+        @if (item.status === AppointmentStatus.InProgress) {
+          <button mat-flat-button color="primary" type="button" (click)="complete()" [disabled]="saving()">
+            <mat-icon>check</mat-icon>
+            Complete appointment
+          </button>
+        } @else {
+          <button mat-flat-button color="primary" type="button" (click)="start()" [disabled]="saving()">
+            <mat-icon>play_arrow</mat-icon>
+            Start appointment
+          </button>
+        }
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <p>You have no current or upcoming appointments.</p>
+  }
+</div>

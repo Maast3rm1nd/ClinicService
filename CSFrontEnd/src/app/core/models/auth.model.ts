@@ -29,7 +29,16 @@ export interface TwoFactorSetupResponse {
   secret: string;
 }
 
+export interface ChangePasswordRequest {
+  login: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  twoFactorCode?: string | null;
+}
+
 export interface CurrentUser {
+  id: string;
   login: string;
   role: 'Administrator' | 'Doctor' | string;
   permissions: string[];

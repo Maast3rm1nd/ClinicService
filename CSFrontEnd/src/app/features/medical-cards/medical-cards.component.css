@@ -28,3 +28,11 @@
   text-align: center;
   padding: 2rem;
 }
+
+.card-row {
+  cursor: pointer;
+}
+
+.card-row:hover {
+  background: rgba(0, 0, 0, 0.04);
+}

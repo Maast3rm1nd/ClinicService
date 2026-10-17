@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using ClinicServiceContext.Entities;
 using ClinicServiceContext.Enums;
 using WS_ClinicService.Contracts.Requests;
 using WS_ClinicService.Contracts.Responses;
@@ -100,17 +101,19 @@ namespace WS_ClinicService.Controllers
             }
 
             var securityState = await _securityService.GetOrCreateAsync(user.Id, cancellationToken);
-            var deviceToken = Request.Cookies[TrustedTwoFactorDeviceService.CookieName];
-            var trustedDevice = securityState.TwoFactorEnabled
-                && await _trustedDeviceService.IsTrustedAsync(user.Id, deviceToken, cancellationToken);
-            if (securityState.TwoFactorEnabled
-                && !trustedDevice
-                && (string.IsNullOrWhiteSpace(request.TwoFactorCode)
-                    || securityState.TwoFactorSecret is null
-                    || !_totpService.Verify(securityState.TwoFactorSecret, request.TwoFactorCode, DateTimeOffset.UtcNow)))
+            if (!await IsSecondFactorSatisfiedAsync(user, securityState, request.TwoFactorCode, cancellationToken))
             {
                 await _auditService.WriteAsync("login.2fa_failed", false, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
                 return Unauthorized(new ErrorResponse { Code = StatusCodes.Status401Unauthorized, Message = "Invalid two-factor code" });
+            }
+
+            if (securityState.MustChangePassword)
+            {
+                return StatusCode(StatusCodes.Status428PreconditionRequired, new ErrorResponse
+                {
+                    Code = StatusCodes.Status428PreconditionRequired,
+                    Message = "Password change required"
+                });
             }
 
             var role = GetRole(user.Type);
@@ -120,12 +123,49 @@ namespace WS_ClinicService.Controllers
 
             return Ok(new TokenResponse
             {
-                AccessToken = _tokenService.CreateToken(user.Login, role, permissions),
+                AccessToken = _tokenService.CreateToken(user.Login, role, user.Id, permissions),
                 RefreshToken = refresh.Token,
                 TokenType = "Bearer",
                 ExpiresIn = _jwtOptions.Value.ExpiresMinutes * 60,
                 RefreshTokenExpiresAt = refresh.Session.ExpiresAt
             });
+        }
+
+        [HttpPost("change-password")]
+        [AllowAnonymous]
+        [EnableRateLimiting("login")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+        {
+            Response.Headers.CacheControl = "no-store";
+            var user = await _authenticationService.AuthenticateAsync(request.Login, request.CurrentPassword, cancellationToken);
+            if (user == null)
+            {
+                return Unauthorized(new ErrorResponse { Code = StatusCodes.Status401Unauthorized, Message = "Invalid credentials" });
+            }
+
+            var securityState = await _securityService.GetOrCreateAsync(user.Id, cancellationToken);
+            if (!await IsSecondFactorSatisfiedAsync(user, securityState, request.TwoFactorCode, cancellationToken))
+            {
+                await _auditService.WriteAsync("password.change_2fa_failed", false, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
+                return Unauthorized(new ErrorResponse { Code = StatusCodes.Status401Unauthorized, Message = "Invalid two-factor code" });
+            }
+
+            if (!securityState.MustChangePassword)
+            {
+                return Conflict(new ErrorResponse
+                {
+                    Code = StatusCodes.Status409Conflict,
+                    Message = "Password change is not required for this account."
+                });
+            }
+
+            await _authenticationService.ChangePasswordAsync(user, request.NewPassword, cancellationToken);
+            await _auditService.WriteAsync("password.changed", true, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
+            return NoContent();
         }
 
         [HttpPost("refresh")]
@@ -148,7 +188,7 @@ namespace WS_ClinicService.Controllers
             var role = GetRole(user.Type);
             return Ok(new TokenResponse
             {
-                AccessToken = _tokenService.CreateToken(user.Login, role, GetPermissions(role)),
+                AccessToken = _tokenService.CreateToken(user.Login, role, user.Id, GetPermissions(role)),
                 RefreshToken = rotated.Value.Token,
                 TokenType = "Bearer",
                 ExpiresIn = _jwtOptions.Value.ExpiresMinutes * 60,
@@ -267,6 +307,28 @@ namespace WS_ClinicService.Controllers
             ClearTrustedDeviceCookie();
             await _auditService.WriteAsync("2fa.disabled", true, user.Id, GetIpAddress(), Request.Headers.UserAgent, null, cancellationToken);
             return NoContent();
+        }
+
+        private async Task<bool> IsSecondFactorSatisfiedAsync(
+            PersonSnapshot user,
+            AccountSecurityState securityState,
+            string? code,
+            CancellationToken cancellationToken)
+        {
+            if (!securityState.TwoFactorEnabled)
+            {
+                return true;
+            }
+
+            var deviceToken = Request.Cookies[TrustedTwoFactorDeviceService.CookieName];
+            if (await _trustedDeviceService.IsTrustedAsync(user.Id, deviceToken, cancellationToken))
+            {
+                return true;
+            }
+
+            return !string.IsNullOrWhiteSpace(code)
+                && securityState.TwoFactorSecret is not null
+                && _totpService.Verify(securityState.TwoFactorSecret, code, DateTimeOffset.UtcNow);
         }
 
         private void SetTrustedDeviceCookie(string token)

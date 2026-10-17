@@ -16,7 +16,7 @@ namespace WS_ClinicService.Core.Requests
 
     public record GetPersonByIdQuery(Guid Id) : IRequest<PersonSnapshot>;
 
-    public record CreatePersonCommand(CreatePersonRequest Request) : IRequest<CreatedAccountResponse<PersonSnapshot>>;
+    public record CreatePersonCommand(CreatePersonRequest Request) : IRequest<PersonSnapshot>;
 
     public record UpdatePersonCommand(Guid Id, UpdatePersonRequest Request) : IRequest<PersonSnapshot>;
 
@@ -46,10 +46,10 @@ namespace WS_ClinicService.Core.Requests
         IUnitOfWork unitOfWork,
         IMapper mapper,
         DatabaseAuthenticationService authenticationService,
-        PasswordSetupService passwordSetupService) :
-        IRequestHandler<CreatePersonCommand, CreatedAccountResponse<PersonSnapshot>>
+        AccountSecurityService securityService) :
+        IRequestHandler<CreatePersonCommand, PersonSnapshot>
     {
-        public async Task<CreatedAccountResponse<PersonSnapshot>> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
+        public async Task<PersonSnapshot> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
         {
             var repository = unitOfWork.GetRepository<IPersonSnapshotRepository>();
 
@@ -61,18 +61,14 @@ namespace WS_ClinicService.Core.Requests
             var entity = mapper.Map<Administrator>(request.Request);
             entity.IsCurrent = true;
             entity.IsDeleted = false;
+            entity.PasswordHash = authenticationService.HashPassword(entity, request.Request.Password);
 
             await repository.AddObject(entity);
-            var invitation = passwordSetupService.CreateInvitation(entity.Id);
+            securityService.RequirePasswordChange(entity.Id);
 
             await unitOfWork.CommitToDBAsync(cancellationToken);
 
-            return new CreatedAccountResponse<PersonSnapshot>
-            {
-                Account = mapper.Map<PersonSnapshot>(entity),
-                SetupToken = invitation.Token,
-                SetupTokenExpiresAt = invitation.ExpiresAt
-            };
+            return mapper.Map<PersonSnapshot>(entity);
         }
     }
 

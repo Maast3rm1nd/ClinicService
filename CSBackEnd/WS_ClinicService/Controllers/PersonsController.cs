@@ -35,13 +35,13 @@ namespace WS_ClinicService.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(CreatedAccountResponse<PersonSnapshotDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(PersonSnapshotDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CreatedAccountResponse<PersonSnapshotDto>>> CreatePerson(
+        public async Task<ActionResult<PersonSnapshotDto>> CreatePerson(
             [FromBody] CreatePersonRequest request,
             CancellationToken cancellationToken)
         {

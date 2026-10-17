@@ -85,6 +85,11 @@ namespace WS_ClinicService.Core.Requests
                 entity.IcdCode = request.Request.IcdCode;
             }
 
+            if (request.Request.Name != null)
+            {
+                entity.Name = request.Request.Name;
+            }
+
             if (request.Request.Doctor.HasValue)
             {
                 entity.Doctor = request.Request.Doctor.Value;

@@ -6,6 +6,7 @@
         Confirmed,
         Cancelled,
         Completed,
-        Rescheduled
+        Rescheduled,
+        InProgress
     }
 }

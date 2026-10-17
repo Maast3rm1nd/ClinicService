@@ -1,29 +1,30 @@
-// Mirrors ClinicServiceContext.Enums.* on the backend (serialized as camelCase strings).
+// Mirrors ClinicServiceContext.Enums.* on the backend (serialized as PascalCase strings).
 
 export enum PersonType {
-  Person = 'person',
-  Administrator = 'administrator',
-  Doctor = 'doctor',
+  Person = 'Person',
+  Administrator = 'Administrator',
+  Doctor = 'Doctor',
 }
 
 export enum EmployeeWorkStatus {
-  AtWork = 'atWork',
-  SickLeave = 'sickLeave',
-  Vacation = 'vacation',
+  AtWork = 'AtWork',
+  SickLeave = 'SickLeave',
+  Vacation = 'Vacation',
 }
 
 export enum AppointmentStatus {
-  Pending = 'pending',
-  Confirmed = 'confirmed',
-  Cancelled = 'cancelled',
-  Completed = 'completed',
-  Rescheduled = 'rescheduled',
+  Pending = 'Pending',
+  Confirmed = 'Confirmed',
+  Cancelled = 'Cancelled',
+  Completed = 'Completed',
+  Rescheduled = 'Rescheduled',
+  InProgress = 'InProgress',
 }
 
 export enum PolicyType {
-  EHIC = 'ehic',
-  Private = 'private',
-  Mixed = 'mixed',
+  EHIC = 'EHIC',
+  Private = 'Private',
+  Mixed = 'Mixed',
 }
 
 export const employeeWorkStatusLabels: Record<EmployeeWorkStatus, string> = {
@@ -38,10 +39,21 @@ export const appointmentStatusLabels: Record<AppointmentStatus, string> = {
   [AppointmentStatus.Cancelled]: 'Cancelled',
   [AppointmentStatus.Completed]: 'Completed',
   [AppointmentStatus.Rescheduled]: 'Rescheduled',
+  [AppointmentStatus.InProgress]: 'In progress',
 };
 
 export const policyTypeLabels: Record<PolicyType, string> = {
   [PolicyType.EHIC]: 'EHIC (mandatory)',
   [PolicyType.Private]: 'Private (voluntary)',
   [PolicyType.Mixed]: 'Mixed',
+};
+
+export enum DiagnosisStatus {
+  Actual = 'Actual',
+  Inactual = 'Inactual',
+}
+
+export const diagnosisStatusLabels: Record<DiagnosisStatus, string> = {
+  [DiagnosisStatus.Actual]: 'Actual',
+  [DiagnosisStatus.Inactual]: 'Inactual',
 };

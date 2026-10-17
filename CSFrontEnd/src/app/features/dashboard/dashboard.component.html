@@ -12,6 +12,7 @@
     </div>
 
     <div class="dashboard__actions">
+      @if (!auth.isDoctor()) {
       <mat-form-field appearance="outline" class="dashboard__doctor-filter">
         <mat-label>Doctor</mat-label>
         <mat-select [value]="selectedDoctorId()" (selectionChange)="selectedDoctorId.set($event.value)">
@@ -26,6 +27,7 @@
         <mat-icon>add</mat-icon>
         New appointment
       </button>
+      }
     </div>
   </div>
 
@@ -35,6 +37,7 @@
     </div>
   } @else {
     <div class="calendar">
+     <div class="calendar__scroll">
       <div class="calendar__header calendar__row">
         <div class="calendar__gutter"></div>
         @for (day of weekDays(); track day.getTime()) {
@@ -71,10 +74,12 @@
                   [style.height.px]="event.heightPx"
                   [matTooltip]="event.doctorName + ' — ' + event.patientName + ' (' + statusLabels[event.appointment.status] + ')'"
                 >
-                  <span class="calendar__event-time">
-                    {{ event.appointment.appointmentDateTime | date: 'HH:mm' }}
-                  </span>
-                  <span class="calendar__event-title">{{ event.patientName }}</span>
+                  <div class="calendar__event-main">
+                    <span class="calendar__event-time">
+                      {{ event.appointment.appointmentDateTime | date: 'HH:mm' }}
+                    </span>
+                    <span class="calendar__event-title">{{ event.patientName }}</span>
+                  </div>
                   <span class="calendar__event-doctor">{{ event.doctorName }}</span>
                 </div>
               }
@@ -82,6 +87,7 @@
           </div>
         }
       </div>
+     </div>
     </div>
   }
 </div>

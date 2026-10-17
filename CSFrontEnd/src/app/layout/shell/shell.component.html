@@ -5,6 +5,12 @@
       <span>Clinic Service</span>
     </div>
     <mat-nav-list>
+      @if (auth.isDoctor()) {
+        <a mat-list-item routerLink="/current-appointment" routerLinkActive="active">
+          <mat-icon matListItemIcon>medical_information</mat-icon>
+          <span matListItemTitle>Current appointment</span>
+        </a>
+      }
       <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <mat-icon matListItemIcon>calendar_month</mat-icon>
         <span matListItemTitle>Schedule</span>
@@ -46,6 +52,12 @@
         <span matListItemTitle>Account security</span>
       </a>
     </mat-nav-list>
+    <div class="shell__version">
+      <span>Frontend v{{ appVersion }}</span>
+      @if (apiVersion(); as version) {
+        <span>API v{{ version }}</span>
+      }
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>

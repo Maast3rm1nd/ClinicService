@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard, authGuard } from './core/guards/auth.guard';
+import { adminGuard, authGuard, doctorGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -16,6 +16,14 @@ export const routes: Routes = [
     title: 'Set password — Clinic',
   },
   {
+    path: 'change-password',
+    loadComponent: () =>
+      import('./features/auth/change-password/change-password.component').then(
+        (m) => m.ChangePasswordComponent,
+      ),
+    title: 'Change password — Clinic',
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
     canActivate: [authGuard],
@@ -26,6 +34,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
         title: 'Schedule — Clinic',
+      },
+      {
+        path: 'current-appointment',
+        loadComponent: () =>
+          import('./features/current-appointment/current-appointment.component').then(
+            (m) => m.CurrentAppointmentComponent,
+          ),
+        canActivate: [doctorGuard],
+        title: 'Current appointment — Clinic',
       },
       {
         path: 'register',
@@ -76,6 +93,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/medical-cards/medical-cards.component').then((m) => m.MedicalCardsComponent),
         title: 'Medical cards — Clinic',
+      },
+      {
+        path: 'medical-cards/:entityId',
+        loadComponent: () =>
+          import('./features/medical-cards/medical-card-detail/medical-card-detail.component').then(
+            (m) => m.MedicalCardDetailComponent,
+          ),
+        title: 'Medical card — Clinic',
       },
       {
         path: 'patients',

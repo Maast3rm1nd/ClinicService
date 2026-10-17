@@ -7,7 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 import { AppointmentsService } from '../../core/services/appointments.service';
 import { DoctorsService } from '../../core/services/doctors.service';
 import { PatientsService } from '../../core/services/patients.service';
@@ -121,7 +122,10 @@ export class DashboardComponent {
           dayIndex,
           topPx: (minutesFromStart / 60) * HOUR_HEIGHT_PX,
           heightPx: (DEFAULT_DURATION_MIN / 60) * HOUR_HEIGHT_PX,
-          doctorName: doctorNames.get(appointment.doctor) ?? 'Unknown doctor',
+          doctorName:
+            doctorNames.get(appointment.doctor) ??
+            (this.auth.isDoctor() ? this.auth.currentUser()?.login : undefined) ??
+            'Unknown doctor',
           patientName: patientNames.get(appointment.patient) ?? 'Patient',
         } satisfies CalendarEvent;
       });
@@ -133,17 +137,26 @@ export class DashboardComponent {
     private readonly patientsService: PatientsService,
     private readonly medicalCardsService: MedicalCardsService,
     private readonly dialog: MatDialog,
+    protected readonly auth: AuthService,
   ) {
     this.loadAll();
   }
 
   private loadAll(): void {
     this.loading.set(true);
+    // A doctor sees only their own upcoming appointments; the doctors list is for administrators.
+    const doctorId = this.auth.isDoctor() ? this.auth.currentUser()?.id : null;
     forkJoin({
-      doctors: this.doctorsService.getAll(),
+      doctors: doctorId ? of([] as Doctor[]) : this.doctorsService.getAll(),
       patients: this.patientsService.getAll(),
       medicalCards: this.medicalCardsService.getAll(),
-      appointments: this.appointmentsService.getAll(),
+      appointments: doctorId
+        ? this.appointmentsService.filter([
+            ['doctor', 'Equal', doctorId],
+            'And',
+            ['appointmentDateTime', 'GreaterThanOrEqual', new Date().toISOString()],
+          ])
+        : this.appointmentsService.getAll(),
     }).subscribe({
       next: ({ doctors, patients, medicalCards, appointments }) => {
         this.doctors.set(doctors);

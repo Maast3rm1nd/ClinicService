@@ -7,3 +7,7 @@ export interface ErrorResponse {
   message: string;
   details?: string | null;
 }
+
+export interface FilterResponse<T> {
+  items: T[];
+}
