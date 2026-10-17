@@ -1,3 +1,5 @@
+Instruction: https://github.com/Maast3rm1nd/ClinicService/wiki
+
 A Reception Desk Without the Paperwork
 
 Anyone who has ever queued at a clinic knows that the scarcest resource in medicine is not equipment but time: a doctor hunting for a patient file, a patient waiting at the window, an administrator reconciling the schedule with a paper notebook.
